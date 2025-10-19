@@ -241,6 +241,7 @@ const Index = () => {
 
     setSubmittedTopic(poemTopic);
     setGeneratedPoems({});
+    setValidationError(null);
     setIsGenerating(true);
 
     // Generate poems for all types
@@ -490,7 +491,10 @@ const Index = () => {
             <label htmlFor="poem-type-select" className="block text-sm font-medium text-foreground mb-2">
               Select a poem type to learn more
             </label>
-            <Select value={selectedPoem} onValueChange={setSelectedPoem}>
+            <Select value={selectedPoem} onValueChange={(value) => {
+              setSelectedPoem(value);
+              setValidationError(null);
+            }}>
               <SelectTrigger 
                 id="poem-type-select"
                 className="w-full text-base h-12 border-2 bg-card hover:border-accent transition-all"
