@@ -355,7 +355,7 @@ const Index = () => {
     try {
       const { data, error } = await supabase.functions.invoke('generate-poem', {
         body: { 
-          topic: `Create a very short title (maximum 4 words) that captures the essence of: ${currentGeneratedPoem.substring(0, 150)}`,
+          topic: `Based on this poem, create ONLY a short, evocative title of 2-4 words that captures its main theme or imagery. Return just the title, nothing else:\n\n${currentGeneratedPoem.substring(0, 300)}`,
           poemType: 'haiku'
         }
       });
@@ -363,10 +363,15 @@ const Index = () => {
       if (error) throw error;
 
       if (data?.poem) {
-        // Extract first line and limit to 4 words max
-        const firstLine = data.poem.split('\n')[0].trim();
-        const words = firstLine.replace(/[,;.!?]/g, '').split(/\s+/).slice(0, 4);
-        const title = words.join(' ');
+        // Clean and limit the response
+        const title = data.poem
+          .split('\n')[0]
+          .trim()
+          .replace(/^["'\-–—]+|["'\-–—]+$/g, '')
+          .replace(/[,;.!?:]/g, '')
+          .split(/\s+/)
+          .slice(0, 4)
+          .join(' ');
         
         if (forDialog === 'save') {
           setSaveTitle(title);
