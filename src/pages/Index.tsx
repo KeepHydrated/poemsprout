@@ -232,10 +232,6 @@ const Index = () => {
   const handleRandomTopic = () => {
     const randomTopic = randomTopics[Math.floor(Math.random() * randomTopics.length)];
     setPoemTopic(randomTopic);
-    toast({
-      title: "Random topic selected! ✨",
-      description: `Try writing about "${randomTopic}"`,
-    });
   };
 
   const handlePublish = async () => {
