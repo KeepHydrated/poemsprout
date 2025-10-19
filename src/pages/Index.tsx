@@ -117,6 +117,7 @@ const Index = () => {
   const [isPublishing, setIsPublishing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isGeneratingTitle, setIsGeneratingTitle] = useState(false);
+  const [validationError, setValidationError] = useState<string | null>(null);
   const [user, setUser] = useState<any>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -136,6 +137,54 @@ const Index = () => {
 
   const currentPoem = poemTypes[selectedPoem];
   const currentGeneratedPoem = generatedPoems[selectedPoem] || "";
+
+  const validatePoem = (poem: string, poemType: string): string | null => {
+    if (!poem.trim()) return "Poem cannot be empty";
+    
+    const lines = poem.trim().split('\n').filter(line => line.trim());
+    const lineCount = lines.length;
+    
+    switch (poemType) {
+      case "sonnet":
+        if (lineCount !== 14) {
+          return `A sonnet must have exactly 14 lines. Current: ${lineCount} lines`;
+        }
+        break;
+      case "haiku":
+        if (lineCount !== 3) {
+          return `A haiku must have exactly 3 lines. Current: ${lineCount} lines`;
+        }
+        break;
+      case "limerick":
+        if (lineCount !== 5) {
+          return `A limerick must have exactly 5 lines. Current: ${lineCount} lines`;
+        }
+        break;
+      case "acrostic":
+        // Skip validation for acrostic if we don't have a topic yet
+        if (submittedTopic) {
+          const topic = submittedTopic.toLowerCase();
+          const firstLetters = lines.map(line => line.trim()[0]?.toLowerCase() || '').join('');
+          if (firstLetters !== topic.toLowerCase()) {
+            return `An acrostic poem's first letters must spell "${submittedTopic}". Current: "${firstLetters.toUpperCase()}"`;
+          }
+        }
+        break;
+      case "ballad":
+        if (lineCount < 8) {
+          return `A ballad must have at least 8 lines (2 stanzas of 4 lines). Current: ${lineCount} lines`;
+        }
+        if (lineCount % 4 !== 0) {
+          return `A ballad's lines should be in groups of 4. Current: ${lineCount} lines`;
+        }
+        break;
+      case "free-verse":
+        // No strict requirements for free verse
+        break;
+    }
+    
+    return null;
+  };
 
   const generatePoemForType = async (poemType: string, topic: string) => {
     if (generatedPoems[poemType]) {
@@ -487,22 +536,29 @@ const Index = () => {
                 <h3 className="font-semibold text-lg text-foreground mb-2">Example</h3>
                 {currentGeneratedPoem ? (
                   <div className="space-y-4">
-                    <Textarea
-                      value={currentGeneratedPoem}
-                      onChange={(e) => {
-                        setGeneratedPoems(prev => ({
-                          ...prev,
-                          [selectedPoem]: e.target.value
-                        }));
-                      }}
-                      className="bg-accent/10 border-2 border-accent min-h-[300px] text-foreground whitespace-pre-line leading-relaxed resize-y"
-                      placeholder="Your generated poem will appear here..."
-                    />
+                    <div className="space-y-2">
+                      <Textarea
+                        value={currentGeneratedPoem}
+                        onChange={(e) => {
+                          setGeneratedPoems(prev => ({
+                            ...prev,
+                            [selectedPoem]: e.target.value
+                          }));
+                          const error = validatePoem(e.target.value, selectedPoem);
+                          setValidationError(error);
+                        }}
+                        className="bg-accent/10 border-2 border-accent min-h-[300px] text-foreground whitespace-pre-line leading-relaxed resize-y"
+                        placeholder="Your generated poem will appear here..."
+                      />
+                      {validationError && (
+                        <p className="text-destructive text-sm font-medium">{validationError}</p>
+                      )}
+                    </div>
                     {user && (
                       <div className="flex gap-2">
                         <Dialog open={isSaveDialogOpen} onOpenChange={setIsSaveDialogOpen}>
                           <DialogTrigger asChild>
-                            <Button variant="outline" className="flex-1 gap-2">
+                            <Button variant="outline" className="flex-1 gap-2" disabled={!!validationError}>
                               <Save className="h-4 w-4" />
                               Save
                             </Button>
@@ -570,7 +626,7 @@ const Index = () => {
                         
                         <Dialog open={isPublishDialogOpen} onOpenChange={setIsPublishDialogOpen}>
                           <DialogTrigger asChild>
-                            <Button className="flex-1 gap-2">
+                            <Button className="flex-1 gap-2" disabled={!!validationError}>
                               <Sparkles className="h-4 w-4" />
                               Publish
                             </Button>
