@@ -14,7 +14,86 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      poem_likes: {
+        Row: {
+          created_at: string
+          id: string
+          poem_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          poem_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          poem_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "poem_likes_poem_id_fkey"
+            columns: ["poem_id"]
+            isOneToOne: false
+            referencedRelation: "published_poems"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          display_name: string | null
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          display_name?: string | null
+          id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      published_poems: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          original_topic: string | null
+          poem_type: string
+          title: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          original_topic?: string | null
+          poem_type: string
+          title: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          original_topic?: string | null
+          poem_type?: string
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
