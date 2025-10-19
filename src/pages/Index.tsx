@@ -7,7 +7,6 @@ import { Sparkles, Loader2, Shuffle, Save } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 const randomTopics = [
@@ -117,7 +116,6 @@ const Index = () => {
   const [isPublishing, setIsPublishing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isGeneratingTitle, setIsGeneratingTitle] = useState(false);
-  const [validationError, setValidationError] = useState<string | null>(null);
   const [user, setUser] = useState<any>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -137,147 +135,6 @@ const Index = () => {
 
   const currentPoem = poemTypes[selectedPoem];
   const currentGeneratedPoem = generatedPoems[selectedPoem] || "";
-
-  const countSyllables = (word: string): number => {
-    word = word.toLowerCase().trim().replace(/[^a-z]/g, '');
-    if (word.length === 0) return 0;
-    if (word.length <= 3) return 1;
-    
-    // Count vowel groups
-    word = word.replace(/(?:[^laeiouy]es|ed|[^laeiouy]e)$/, '');
-    word = word.replace(/^y/, '');
-    const syllables = word.match(/[aeiouy]{1,2}/g);
-    return syllables ? syllables.length : 1;
-  };
-
-  const countLineSyllables = (line: string): number => {
-    const words = line.trim().split(/\s+/).filter(w => w.length > 0);
-    return words.reduce((total, word) => total + countSyllables(word), 0);
-  };
-
-  const getLastWord = (line: string): string => {
-    const words = line.trim().replace(/[.,!?;:]$/, '').split(/\s+/);
-    return words[words.length - 1]?.toLowerCase() || '';
-  };
-
-  const soundsSimilar = (word1: string, word2: string): boolean => {
-    if (!word1 || !word2 || word1.length < 2 || word2.length < 2) return false;
-    
-    // Clean words
-    const clean1 = word1.toLowerCase().replace(/[^a-z]/g, '');
-    const clean2 = word2.toLowerCase().replace(/[^a-z]/g, '');
-    
-    if (clean1 === clean2) return true;
-    
-    // Check if last 2-3 characters match for rhyming
-    const len = Math.min(3, Math.min(clean1.length, clean2.length));
-    return clean1.slice(-len) === clean2.slice(-len);
-  };
-
-  const validatePoem = (poem: string, poemType: string): string | null => {
-    if (!poem.trim()) return "Poem cannot be empty";
-    
-    const lines = poem.trim().split('\n').filter(line => line.trim());
-    const lineCount = lines.length;
-    
-    switch (poemType) {
-      case "sonnet":
-        if (lineCount !== 14) {
-          return `A sonnet must have exactly 14 lines. Current: ${lineCount} lines`;
-        }
-        // Check for Shakespearean (ABAB CDCD EFEF GG) or Petrarchan (ABBA ABBA CDE CDE) rhyme scheme
-        const lastWords = lines.map(getLastWord);
-        if (lastWords.length === 14) {
-          // Check for Shakespearean pattern first (ABAB in first quatrain)
-          const shakespearean = 
-            soundsSimilar(lastWords[0], lastWords[2]) && 
-            soundsSimilar(lastWords[1], lastWords[3]) &&
-            soundsSimilar(lastWords[4], lastWords[6]) &&
-            soundsSimilar(lastWords[5], lastWords[7]) &&
-            soundsSimilar(lastWords[12], lastWords[13]);
-          
-          // Check for Petrarchan pattern (ABBA in first quatrain)
-          const petrarchan = 
-            soundsSimilar(lastWords[0], lastWords[3]) && 
-            soundsSimilar(lastWords[1], lastWords[2]) &&
-            soundsSimilar(lastWords[4], lastWords[7]) &&
-            soundsSimilar(lastWords[5], lastWords[6]);
-          
-          if (!shakespearean && !petrarchan) {
-            return "A sonnet must follow either Shakespearean (ABAB CDCD EFEF GG) or Petrarchan (ABBA ABBA...) rhyme scheme";
-          }
-        }
-        break;
-        
-      case "haiku":
-        if (lineCount !== 3) {
-          return `A haiku must have exactly 3 lines. Current: ${lineCount} lines`;
-        }
-        // Check 5-7-5 syllable pattern with tolerance
-        const syllableCounts = lines.map(line => countLineSyllables(line));
-        if (Math.abs(syllableCounts[0] - 5) > 1) {
-          return `First line should have ~5 syllables. Current: ${syllableCounts[0]} syllables`;
-        }
-        if (Math.abs(syllableCounts[1] - 7) > 1) {
-          return `Second line should have ~7 syllables. Current: ${syllableCounts[1]} syllables`;
-        }
-        if (Math.abs(syllableCounts[2] - 5) > 1) {
-          return `Third line should have ~5 syllables. Current: ${syllableCounts[2]} syllables`;
-        }
-        break;
-        
-      case "limerick":
-        if (lineCount !== 5) {
-          return `A limerick must have exactly 5 lines. Current: ${lineCount} lines`;
-        }
-        // Check AABBA rhyme scheme
-        const limerickWords = lines.map(getLastWord);
-        if (limerickWords.length === 5) {
-          const rhymes = [
-            soundsSimilar(limerickWords[0], limerickWords[1]),
-            soundsSimilar(limerickWords[0], limerickWords[4]),
-            soundsSimilar(limerickWords[2], limerickWords[3])
-          ];
-          if (!rhymes.every(r => r)) {
-            return "A limerick should follow AABBA rhyme scheme";
-          }
-        }
-        break;
-        
-      case "acrostic":
-        if (submittedTopic) {
-          const topic = submittedTopic.toLowerCase();
-          const firstLetters = lines.map(line => line.trim()[0]?.toLowerCase() || '').join('');
-          if (firstLetters !== topic.toLowerCase()) {
-            return `An acrostic poem's first letters must spell "${submittedTopic}". Current: "${firstLetters.toUpperCase()}"`;
-          }
-        }
-        break;
-        
-      case "ballad":
-        if (lineCount < 8) {
-          return `A ballad must have at least 8 lines (2 stanzas). Current: ${lineCount} lines`;
-        }
-        if (lineCount % 4 !== 0) {
-          return `A ballad's lines should be in groups of 4. Current: ${lineCount} lines`;
-        }
-        break;
-        
-      case "villanelle":
-        if (lineCount !== 19) {
-          return `A villanelle must have exactly 19 lines. Current: ${lineCount} lines`;
-        }
-        break;
-        
-      case "free-verse":
-      case "ode":
-      case "epic":
-        // No strict structural requirements
-        break;
-    }
-    
-    return null;
-  };
 
   const generatePoemForType = async (poemType: string, topic: string) => {
     if (generatedPoems[poemType]) {
@@ -331,7 +188,6 @@ const Index = () => {
 
     setSubmittedTopic(poemTopic);
     setGeneratedPoems({});
-    setValidationError(null);
     setIsGenerating(true);
 
     // Generate poems for all types
@@ -393,21 +249,6 @@ const Index = () => {
     const currentGeneratedPoem = generatedPoems[selectedPoem];
     if (!currentGeneratedPoem) return;
 
-    // Validate poem structure before publishing
-    const validationError = validatePoem(currentGeneratedPoem, selectedPoem);
-    console.log('Publish validation:', { poemType: selectedPoem, validationError });
-    
-    if (validationError) {
-      setValidationError(validationError);
-      setIsPublishDialogOpen(false);
-      toast({
-        title: "Cannot publish - Invalid poem structure",
-        description: validationError,
-        variant: "destructive",
-      });
-      return;
-    }
-
     setIsPublishing(true);
 
     try {
@@ -463,21 +304,6 @@ const Index = () => {
 
     const currentGeneratedPoem = generatedPoems[selectedPoem];
     if (!currentGeneratedPoem) return;
-
-    // Validate poem structure before saving
-    const validationError = validatePoem(currentGeneratedPoem, selectedPoem);
-    console.log('Save validation:', { poemType: selectedPoem, validationError });
-    
-    if (validationError) {
-      setValidationError(validationError);
-      setIsSaveDialogOpen(false);
-      toast({
-        title: "Cannot save - Invalid poem structure",
-        description: validationError,
-        variant: "destructive",
-      });
-      return;
-    }
 
     setIsSaving(true);
 
@@ -611,10 +437,7 @@ const Index = () => {
             <label htmlFor="poem-type-select" className="block text-sm font-medium text-foreground mb-2">
               Select a poem type to learn more
             </label>
-            <Select value={selectedPoem} onValueChange={(value) => {
-              setSelectedPoem(value);
-              setValidationError(null);
-            }}>
+            <Select value={selectedPoem} onValueChange={setSelectedPoem}>
               <SelectTrigger 
                 id="poem-type-select"
                 className="w-full text-base h-12 border-2 bg-card hover:border-accent transition-all"
@@ -663,25 +486,10 @@ const Index = () => {
                 <h3 className="font-semibold text-lg text-foreground mb-2">Example</h3>
                 {currentGeneratedPoem ? (
                   <div className="space-y-4">
-                    <div className="space-y-2">
-                      <Textarea
-                        key={selectedPoem}
-                        value={currentGeneratedPoem}
-                        onChange={(e) => {
-                          const newValue = e.target.value;
-                          setGeneratedPoems(prev => ({
-                            ...prev,
-                            [selectedPoem]: newValue
-                          }));
-                          // Clear any existing validation error when user is editing
-                          if (validationError) setValidationError(null);
-                        }}
-                        className="bg-accent/10 border-2 border-accent min-h-[300px] text-foreground whitespace-pre-line leading-relaxed resize-y"
-                        placeholder="Your generated poem will appear here..."
-                      />
-                      {validationError && (
-                        <p className="text-destructive text-sm font-medium">{validationError}</p>
-                      )}
+                    <div className="bg-accent/10 p-6 rounded-lg border-2 border-accent">
+                      <p className="text-foreground whitespace-pre-line leading-relaxed">
+                        {currentGeneratedPoem}
+                      </p>
                     </div>
                     {user && (
                       <div className="flex gap-2">
