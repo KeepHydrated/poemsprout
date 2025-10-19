@@ -138,32 +138,6 @@ const Index = () => {
   const currentPoem = poemTypes[selectedPoem];
   const currentGeneratedPoem = generatedPoems[selectedPoem] || "";
 
-  const countSyllables = (word: string): number => {
-    word = word.toLowerCase().trim();
-    if (word.length <= 3) return 1;
-    
-    // Remove non-alphabetic characters
-    word = word.replace(/[^a-z]/g, '');
-    
-    // Count vowel groups
-    const vowelGroups = word.match(/[aeiouy]+/g);
-    let syllables = vowelGroups ? vowelGroups.length : 1;
-    
-    // Adjust for silent e
-    if (word.endsWith('e')) syllables--;
-    
-    // Adjust for common patterns
-    if (word.endsWith('le') && word.length > 2) syllables++;
-    if (word.endsWith('ed') && !word.endsWith('ted') && !word.endsWith('ded')) syllables--;
-    
-    return Math.max(1, syllables);
-  };
-
-  const countLineSyllables = (line: string): number => {
-    const words = line.trim().split(/\s+/).filter(w => w.length > 0);
-    return words.reduce((total, word) => total + countSyllables(word), 0);
-  };
-
   const validatePoem = (poem: string, poemType: string): string | null => {
     if (!poem.trim()) return "Poem cannot be empty";
     
@@ -179,17 +153,6 @@ const Index = () => {
       case "haiku":
         if (lineCount !== 3) {
           return `A haiku must have exactly 3 lines. Current: ${lineCount} lines`;
-        }
-        // Check syllable count (5-7-5)
-        const syllableCounts = lines.map(line => countLineSyllables(line));
-        if (syllableCounts[0] !== 5) {
-          return `First line must have 5 syllables. Current: ${syllableCounts[0]} syllables`;
-        }
-        if (syllableCounts[1] !== 7) {
-          return `Second line must have 7 syllables. Current: ${syllableCounts[1]} syllables`;
-        }
-        if (syllableCounts[2] !== 5) {
-          return `Third line must have 5 syllables. Current: ${syllableCounts[2]} syllables`;
         }
         break;
       case "limerick":
@@ -216,7 +179,10 @@ const Index = () => {
         }
         break;
       case "free-verse":
-        // No strict requirements for free verse
+      case "villanelle":
+      case "ode":
+      case "epic":
+        // No strict line count requirements for these types
         break;
     }
     
