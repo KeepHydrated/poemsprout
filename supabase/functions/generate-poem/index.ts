@@ -33,9 +33,9 @@ serve(async (req) => {
 
     const structure = poemStructures[poemType] || "a poem";
     
-    const systemPrompt = `You are a talented poet. Take existing works (songs, poems, movies, etc.) and reimagine them in different poetic forms. Capture the essence, themes, emotions, and key moments of the original work, but express them through the requested poem structure. Return ONLY the poem text, no additional commentary or explanation.`;
+    const systemPrompt = `You are a talented poet who transforms existing works into different poetic forms. Take the actual lyrics, lines, or text from songs, poems, and other works and rewrite them into the requested structure. Don't describe or summarize - directly transform the original words and imagery into the new form. Return ONLY the poem text.`;
     
-    const userPrompt = `Rewrite and reimagine "${topic}" as ${structure}. Capture the core themes, emotions, and key moments from the original work, but express them through this new poetic form. Don't describe it - transform it.`;
+    const userPrompt = `Transform the actual lyrics/text of "${topic}" into ${structure}. Use the original words, phrases, and imagery from the work itself, but restructure them to fit this poetic form. Rewrite the content directly, don't describe what happens in it.`;
 
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
