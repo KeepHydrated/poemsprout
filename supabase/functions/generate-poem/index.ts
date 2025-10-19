@@ -33,9 +33,9 @@ serve(async (req) => {
 
     const structure = poemStructures[poemType] || "a poem";
     
-    const systemPrompt = `You are a talented poet. Generate beautiful, creative poems based on the user's topic and poem type. Focus on vivid imagery, emotional depth, and proper form. Return ONLY the poem text, no additional commentary or explanation.`;
+    const systemPrompt = `You are a talented poet. Take existing works (songs, poems, movies, etc.) and reimagine them in different poetic forms. Capture the essence, themes, emotions, and key moments of the original work, but express them through the requested poem structure. Return ONLY the poem text, no additional commentary or explanation.`;
     
-    const userPrompt = `Write ${structure} about "${topic}". Make it beautiful and evocative.`;
+    const userPrompt = `Rewrite and reimagine "${topic}" as ${structure}. Capture the core themes, emotions, and key moments from the original work, but express them through this new poetic form. Don't describe it - transform it.`;
 
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
