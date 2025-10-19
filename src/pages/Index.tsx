@@ -379,10 +379,6 @@ const Index = () => {
         } else {
           setPublishTitle(title);
         }
-        toast({
-          title: "Title generated! ✨",
-          description: "Feel free to edit it if you'd like.",
-        });
       }
     } catch (error: any) {
       console.error('Error generating title:', error);
