@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -120,6 +120,7 @@ const Index = () => {
   const [user, setUser] = useState<any>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -195,6 +196,15 @@ const Index = () => {
       return;
     }
 
+    // Cancel any ongoing generation
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+
+    // Create new AbortController for this generation
+    abortControllerRef.current = new AbortController();
+    const signal = abortControllerRef.current.signal;
+
     setSubmittedTopic(poemTopic);
     setGeneratedPoems({});
     setIsGenerating(true);
@@ -203,6 +213,11 @@ const Index = () => {
     const poemTypeKeys = Object.keys(poemTypes);
     
     for (const poemType of poemTypeKeys) {
+      // Check if generation was cancelled
+      if (signal.aborted) {
+        break;
+      }
+
       try {
         const { data, error } = await supabase.functions.invoke('generate-poem', {
           body: { 
@@ -213,10 +228,19 @@ const Index = () => {
 
         if (error) throw error;
 
+        // Check again after async operation
+        if (signal.aborted) {
+          break;
+        }
+
         if (data?.poem) {
           setGeneratedPoems(prev => ({ ...prev, [poemType]: data.poem }));
         }
       } catch (error: any) {
+        // Don't show error if it was an intentional abort
+        if (error.name === 'AbortError' || signal.aborted) {
+          break;
+        }
         console.error(`Error generating ${poemType}:`, error);
       }
     }
