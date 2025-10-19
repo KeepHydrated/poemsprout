@@ -212,10 +212,6 @@ const Index = () => {
     }
 
     setIsGenerating(false);
-    toast({
-      title: "All poems generated! ✨",
-      description: `Created poems in all formats about "${poemTopic}"`,
-    });
   };
 
   const handleRandomTopic = () => {
