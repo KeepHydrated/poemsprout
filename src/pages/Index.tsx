@@ -400,14 +400,6 @@ const Index = () => {
         <div className="flex gap-8 max-w-7xl mx-auto">
           {/* Main Content */}
           <div className="flex-1 max-w-4xl">
-            <div className="mb-8">
-              <h1 className="text-4xl md:text-5xl font-serif font-bold text-foreground mb-3 tracking-tight">
-                Poetry Forms Generator
-              </h1>
-              <p className="text-lg text-muted-foreground">
-                Create beautiful poetry in various classical forms
-              </p>
-            </div>
 
         <Card className="border-2 shadow-lg">
           <CardContent className="space-y-6 pt-6">
