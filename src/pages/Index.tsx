@@ -389,10 +389,59 @@ const Index = () => {
               <div>
                 <h3 className="font-semibold text-lg text-foreground mb-2">Example</h3>
                 {currentGeneratedPoem ? (
-                  <div className="bg-accent/10 p-6 rounded-lg border-2 border-accent">
-                    <p className="text-foreground whitespace-pre-line leading-relaxed">
-                      {currentGeneratedPoem}
-                    </p>
+                  <div className="space-y-4">
+                    <div className="bg-accent/10 p-6 rounded-lg border-2 border-accent">
+                      <p className="text-foreground whitespace-pre-line leading-relaxed">
+                        {currentGeneratedPoem}
+                      </p>
+                    </div>
+                    {user && (
+                      <Dialog open={isPublishDialogOpen} onOpenChange={setIsPublishDialogOpen}>
+                        <DialogTrigger asChild>
+                          <Button className="w-full gap-2">
+                            <Sparkles className="h-4 w-4" />
+                            Publish This Poem
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                          <DialogHeader>
+                            <DialogTitle>Publish Your Poem</DialogTitle>
+                            <DialogDescription>
+                              Give your poem a title and share it with the community.
+                            </DialogDescription>
+                          </DialogHeader>
+                          <div className="space-y-4 pt-4">
+                            <div>
+                              <label htmlFor="title-input" className="block text-sm font-medium mb-2">
+                                Poem Title
+                              </label>
+                              <Input
+                                id="title-input"
+                                type="text"
+                                value={publishTitle}
+                                onChange={(e) => setPublishTitle(e.target.value)}
+                                placeholder="Enter a title..."
+                                className="border-2"
+                              />
+                            </div>
+                            <Button 
+                              onClick={handlePublish} 
+                              disabled={isPublishing}
+                              className="w-full"
+                            >
+                              {isPublishing ? (
+                                <>
+                                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                                  Publishing...
+                                </>
+                              ) : (
+                                "Publish"
+                              )}
+                            </Button>
+                          </div>
+                        </DialogContent>
+                      </Dialog>
+                    )}
                   </div>
                 ) : (
                   <blockquote className="border-l-4 border-accent pl-4 py-2 text-foreground/70 italic">
