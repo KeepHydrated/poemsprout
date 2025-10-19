@@ -138,6 +138,36 @@ const Index = () => {
   const currentPoem = poemTypes[selectedPoem];
   const currentGeneratedPoem = generatedPoems[selectedPoem] || "";
 
+  const countSyllables = (word: string): number => {
+    word = word.toLowerCase().trim().replace(/[^a-z]/g, '');
+    if (word.length === 0) return 0;
+    if (word.length <= 3) return 1;
+    
+    // Count vowel groups
+    word = word.replace(/(?:[^laeiouy]es|ed|[^laeiouy]e)$/, '');
+    word = word.replace(/^y/, '');
+    const syllables = word.match(/[aeiouy]{1,2}/g);
+    return syllables ? syllables.length : 1;
+  };
+
+  const countLineSyllables = (line: string): number => {
+    const words = line.trim().split(/\s+/).filter(w => w.length > 0);
+    return words.reduce((total, word) => total + countSyllables(word), 0);
+  };
+
+  const getLastWord = (line: string): string => {
+    const words = line.trim().replace(/[.,!?;:]$/, '').split(/\s+/);
+    return words[words.length - 1]?.toLowerCase() || '';
+  };
+
+  const soundsSimilar = (word1: string, word2: string): boolean => {
+    if (!word1 || !word2) return false;
+    // Get last 2-3 characters for basic rhyme detection
+    const ending1 = word1.slice(-3);
+    const ending2 = word2.slice(-3);
+    return ending1 === ending2 || word1.slice(-2) === word2.slice(-2);
+  };
+
   const validatePoem = (poem: string, poemType: string): string | null => {
     if (!poem.trim()) return "Poem cannot be empty";
     
@@ -149,19 +179,55 @@ const Index = () => {
         if (lineCount !== 14) {
           return `A sonnet must have exactly 14 lines. Current: ${lineCount} lines`;
         }
+        // Check for basic rhyme pattern (simplified check)
+        const lastWords = lines.map(getLastWord);
+        if (lastWords.length === 14) {
+          // Check if there's some rhyme pattern present
+          const hasRhymes = lastWords.some((word, i) => 
+            lastWords.some((w, j) => i !== j && soundsSimilar(word, w))
+          );
+          if (!hasRhymes) {
+            return "A sonnet should have a rhyme scheme (e.g., ABAB CDCD EFEF GG)";
+          }
+        }
         break;
+        
       case "haiku":
         if (lineCount !== 3) {
           return `A haiku must have exactly 3 lines. Current: ${lineCount} lines`;
         }
+        // Check 5-7-5 syllable pattern with tolerance
+        const syllableCounts = lines.map(line => countLineSyllables(line));
+        if (Math.abs(syllableCounts[0] - 5) > 1) {
+          return `First line should have ~5 syllables. Current: ${syllableCounts[0]} syllables`;
+        }
+        if (Math.abs(syllableCounts[1] - 7) > 1) {
+          return `Second line should have ~7 syllables. Current: ${syllableCounts[1]} syllables`;
+        }
+        if (Math.abs(syllableCounts[2] - 5) > 1) {
+          return `Third line should have ~5 syllables. Current: ${syllableCounts[2]} syllables`;
+        }
         break;
+        
       case "limerick":
         if (lineCount !== 5) {
           return `A limerick must have exactly 5 lines. Current: ${lineCount} lines`;
         }
+        // Check AABBA rhyme scheme
+        const limerickWords = lines.map(getLastWord);
+        if (limerickWords.length === 5) {
+          const rhymes = [
+            soundsSimilar(limerickWords[0], limerickWords[1]),
+            soundsSimilar(limerickWords[0], limerickWords[4]),
+            soundsSimilar(limerickWords[2], limerickWords[3])
+          ];
+          if (!rhymes.every(r => r)) {
+            return "A limerick should follow AABBA rhyme scheme";
+          }
+        }
         break;
+        
       case "acrostic":
-        // Skip validation for acrostic if we don't have a topic yet
         if (submittedTopic) {
           const topic = submittedTopic.toLowerCase();
           const firstLetters = lines.map(line => line.trim()[0]?.toLowerCase() || '').join('');
@@ -170,19 +236,26 @@ const Index = () => {
           }
         }
         break;
+        
       case "ballad":
         if (lineCount < 8) {
-          return `A ballad must have at least 8 lines (2 stanzas of 4 lines). Current: ${lineCount} lines`;
+          return `A ballad must have at least 8 lines (2 stanzas). Current: ${lineCount} lines`;
         }
         if (lineCount % 4 !== 0) {
           return `A ballad's lines should be in groups of 4. Current: ${lineCount} lines`;
         }
         break;
-      case "free-verse":
+        
       case "villanelle":
+        if (lineCount !== 19) {
+          return `A villanelle must have exactly 19 lines. Current: ${lineCount} lines`;
+        }
+        break;
+        
+      case "free-verse":
       case "ode":
       case "epic":
-        // No strict line count requirements for these types
+        // No strict structural requirements
         break;
     }
     
