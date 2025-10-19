@@ -184,7 +184,35 @@ const Index = () => {
 
     setSubmittedTopic(poemTopic);
     setGeneratedPoems({});
-    await generatePoemForType(selectedPoem, poemTopic);
+    setIsGenerating(true);
+
+    // Generate poems for all types
+    const poemTypeKeys = Object.keys(poemTypes);
+    
+    for (const poemType of poemTypeKeys) {
+      try {
+        const { data, error } = await supabase.functions.invoke('generate-poem', {
+          body: { 
+            topic: poemTopic,
+            poemType: poemType 
+          }
+        });
+
+        if (error) throw error;
+
+        if (data?.poem) {
+          setGeneratedPoems(prev => ({ ...prev, [poemType]: data.poem }));
+        }
+      } catch (error: any) {
+        console.error(`Error generating ${poemType}:`, error);
+      }
+    }
+
+    setIsGenerating(false);
+    toast({
+      title: "All poems generated! ✨",
+      description: `Created poems in all formats about "${poemTopic}"`,
+    });
   };
 
   const handleRandomTopic = () => {
