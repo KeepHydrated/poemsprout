@@ -26,16 +26,16 @@ serve(async (req) => {
       haiku: "a traditional haiku with 3 lines following the 5-7-5 syllable pattern",
       limerick: "a humorous limerick with 5 lines and AABBA rhyme scheme",
       villanelle: "a 19-line villanelle with repeating lines and two rhymes throughout",
-      ode: "a lyrical ode with elevated language and formal structure",
+      ode: "a formal ode with multiple stanzas using elevated, lyrical language and consistent meter, addressing the subject with reverence",
       ballad: "a narrative ballad with rhythm and rhyme, telling a dramatic story",
-      epic: "an epic poem telling a grand story with elevated style"
+      epic: "an epic poem with multiple stanzas in heroic verse, using elevated diction, grand imagery, and formal meter to tell an expansive story"
     };
 
     const structure = poemStructures[poemType] || "a poem";
     
-    const systemPrompt = `You are a talented poet who transforms existing works into different poetic forms. Take the actual lyrics, lines, or text from songs, poems, and other works and rewrite them into the requested structure. Don't describe or summarize - directly transform the original words and imagery into the new form. Return ONLY the poem text.`;
+    const systemPrompt = `You are a master poet who transforms existing works into different poetic forms. You must STRICTLY follow the formal requirements of each poem type. Take songs, poems, or other works and completely reimagine them in the requested structure - this means changing line lengths, meter, rhyme scheme, and style to match the target form. Return ONLY the poem text.`;
     
-    const userPrompt = `Transform the actual lyrics/text of "${topic}" into ${structure}. Use the original words, phrases, and imagery from the work itself, but restructure them to fit this poetic form. Rewrite the content directly, don't describe what happens in it.`;
+    const userPrompt = `Transform "${topic}" into ${structure}. You MUST follow the exact formal requirements of this poetic form - if it's an ode, use elevated lyrical language with multiple stanzas; if it's an epic, write in heroic verse with grand imagery. Don't just reformat the lyrics - completely reimagine them to fit the structure and style of the target form.`;
 
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
