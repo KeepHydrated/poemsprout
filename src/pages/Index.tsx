@@ -120,7 +120,7 @@ const Index = () => {
   const [user, setUser] = useState<any>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
-  const abortControllerRef = useRef<AbortController | null>(null);
+  const currentGenerationId = useRef<number>(0);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -196,14 +196,9 @@ const Index = () => {
       return;
     }
 
-    // Cancel any ongoing generation
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
-    }
-
-    // Create new AbortController for this generation
-    abortControllerRef.current = new AbortController();
-    const signal = abortControllerRef.current.signal;
+    // Increment generation ID to mark previous generations as stale
+    currentGenerationId.current += 1;
+    const thisGenerationId = currentGenerationId.current;
 
     setSubmittedTopic(poemTopic);
     setGeneratedPoems({});
@@ -213,11 +208,6 @@ const Index = () => {
     const poemTypeKeys = Object.keys(poemTypes);
     
     for (const poemType of poemTypeKeys) {
-      // Check if generation was cancelled
-      if (signal.aborted) {
-        break;
-      }
-
       try {
         const { data, error } = await supabase.functions.invoke('generate-poem', {
           body: { 
@@ -228,24 +218,19 @@ const Index = () => {
 
         if (error) throw error;
 
-        // Check again after async operation
-        if (signal.aborted) {
-          break;
-        }
-
-        if (data?.poem) {
+        // Only update if this is still the current generation
+        if (thisGenerationId === currentGenerationId.current && data?.poem) {
           setGeneratedPoems(prev => ({ ...prev, [poemType]: data.poem }));
         }
       } catch (error: any) {
-        // Don't show error if it was an intentional abort
-        if (error.name === 'AbortError' || signal.aborted) {
-          break;
-        }
         console.error(`Error generating ${poemType}:`, error);
       }
     }
 
-    setIsGenerating(false);
+    // Only set generating to false if this is still the current generation
+    if (thisGenerationId === currentGenerationId.current) {
+      setIsGenerating(false);
+    }
   };
 
   const handleRandomTopic = () => {
