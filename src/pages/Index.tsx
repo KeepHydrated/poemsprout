@@ -161,10 +161,6 @@ const Index = () => {
 
       if (data?.poem) {
         setGeneratedPoems(prev => ({ ...prev, [poemType]: data.poem }));
-        toast({
-          title: isRegenerate ? "Poem regenerated! ✨" : "Poem generated! ✨",
-          description: `Created a ${poemTypes[poemType].name.toLowerCase()} about "${topic}"`,
-        });
       } else {
         throw new Error('No poem generated');
       }
