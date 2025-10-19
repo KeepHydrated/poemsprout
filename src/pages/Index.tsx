@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Sparkles, Loader2, Shuffle } from "lucide-react";
+import { Sparkles, Loader2, Shuffle, Save } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
@@ -110,8 +110,11 @@ const Index = () => {
   const [generatedPoems, setGeneratedPoems] = useState<Record<string, string>>({});
   const [isGenerating, setIsGenerating] = useState(false);
   const [isPublishDialogOpen, setIsPublishDialogOpen] = useState(false);
+  const [isSaveDialogOpen, setIsSaveDialogOpen] = useState(false);
   const [publishTitle, setPublishTitle] = useState("");
+  const [saveTitle, setSaveTitle] = useState("");
   const [isPublishing, setIsPublishing] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [user, setUser] = useState<any>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -280,6 +283,62 @@ const Index = () => {
     }
   };
 
+  const handleSave = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    
+    if (!session?.user) {
+      toast({
+        title: "Please log in",
+        description: "You need to be logged in to save poems.",
+        variant: "destructive",
+      });
+      navigate("/auth");
+      return;
+    }
+
+    if (!saveTitle.trim()) {
+      toast({
+        title: "Title required",
+        description: "Please enter a title for your poem.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const currentGeneratedPoem = generatedPoems[selectedPoem];
+    if (!currentGeneratedPoem) return;
+
+    setIsSaving(true);
+
+    try {
+      const { error } = await supabase.from("saved_poems").insert({
+        user_id: session.user.id,
+        title: saveTitle,
+        content: currentGeneratedPoem,
+        poem_type: poemTypes[selectedPoem].name,
+        original_topic: submittedTopic,
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Saved!",
+        description: "Your poem has been saved to your collection.",
+      });
+
+      setIsSaveDialogOpen(false);
+      setSaveTitle("");
+    } catch (error: any) {
+      toast({
+        title: "Save failed",
+        description: error.message || "Failed to save poem. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-secondary/20">
@@ -396,51 +455,99 @@ const Index = () => {
                       </p>
                     </div>
                     {user && (
-                      <Dialog open={isPublishDialogOpen} onOpenChange={setIsPublishDialogOpen}>
-                        <DialogTrigger asChild>
-                          <Button className="w-full gap-2">
-                            <Sparkles className="h-4 w-4" />
-                            Publish This Poem
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent>
-                          <DialogHeader>
-                            <DialogTitle>Publish Your Poem</DialogTitle>
-                            <DialogDescription>
-                              Give your poem a title and share it with the community.
-                            </DialogDescription>
-                          </DialogHeader>
-                          <div className="space-y-4 pt-4">
-                            <div>
-                              <label htmlFor="title-input" className="block text-sm font-medium mb-2">
-                                Poem Title
-                              </label>
-                              <Input
-                                id="title-input"
-                                type="text"
-                                value={publishTitle}
-                                onChange={(e) => setPublishTitle(e.target.value)}
-                                placeholder="Enter a title..."
-                                className="border-2"
-                              />
-                            </div>
-                            <Button 
-                              onClick={handlePublish} 
-                              disabled={isPublishing}
-                              className="w-full"
-                            >
-                              {isPublishing ? (
-                                <>
-                                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                                  Publishing...
-                                </>
-                              ) : (
-                                "Publish"
-                              )}
+                      <div className="flex gap-2">
+                        <Dialog open={isSaveDialogOpen} onOpenChange={setIsSaveDialogOpen}>
+                          <DialogTrigger asChild>
+                            <Button variant="outline" className="flex-1 gap-2">
+                              <Save className="h-4 w-4" />
+                              Save
                             </Button>
-                          </div>
-                        </DialogContent>
-                      </Dialog>
+                          </DialogTrigger>
+                          <DialogContent>
+                            <DialogHeader>
+                              <DialogTitle>Save Your Poem</DialogTitle>
+                              <DialogDescription>
+                                Save this poem to your private collection.
+                              </DialogDescription>
+                            </DialogHeader>
+                            <div className="space-y-4 pt-4">
+                              <div>
+                                <label htmlFor="save-title-input" className="block text-sm font-medium mb-2">
+                                  Poem Title
+                                </label>
+                                <Input
+                                  id="save-title-input"
+                                  type="text"
+                                  value={saveTitle}
+                                  onChange={(e) => setSaveTitle(e.target.value)}
+                                  placeholder="Enter a title..."
+                                  className="border-2"
+                                />
+                              </div>
+                              <Button 
+                                onClick={handleSave} 
+                                disabled={isSaving}
+                                className="w-full"
+                              >
+                                {isSaving ? (
+                                  <>
+                                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                                    Saving...
+                                  </>
+                                ) : (
+                                  "Save"
+                                )}
+                              </Button>
+                            </div>
+                          </DialogContent>
+                        </Dialog>
+                        
+                        <Dialog open={isPublishDialogOpen} onOpenChange={setIsPublishDialogOpen}>
+                          <DialogTrigger asChild>
+                            <Button className="flex-1 gap-2">
+                              <Sparkles className="h-4 w-4" />
+                              Publish
+                            </Button>
+                          </DialogTrigger>
+                          <DialogContent>
+                            <DialogHeader>
+                              <DialogTitle>Publish Your Poem</DialogTitle>
+                              <DialogDescription>
+                                Give your poem a title and share it with the community.
+                              </DialogDescription>
+                            </DialogHeader>
+                            <div className="space-y-4 pt-4">
+                              <div>
+                                <label htmlFor="title-input" className="block text-sm font-medium mb-2">
+                                  Poem Title
+                                </label>
+                                <Input
+                                  id="title-input"
+                                  type="text"
+                                  value={publishTitle}
+                                  onChange={(e) => setPublishTitle(e.target.value)}
+                                  placeholder="Enter a title..."
+                                  className="border-2"
+                                />
+                              </div>
+                              <Button 
+                                onClick={handlePublish} 
+                                disabled={isPublishing}
+                                className="w-full"
+                              >
+                                {isPublishing ? (
+                                  <>
+                                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                                    Publishing...
+                                  </>
+                                ) : (
+                                  "Publish"
+                                )}
+                              </Button>
+                            </div>
+                          </DialogContent>
+                        </Dialog>
+                      </div>
                     )}
                   </div>
                 ) : (
