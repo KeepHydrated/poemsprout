@@ -635,13 +635,15 @@ const Index = () => {
                   <div className="space-y-4">
                     <div className="space-y-2">
                       <Textarea
+                        key={selectedPoem}
                         value={currentGeneratedPoem}
                         onChange={(e) => {
+                          const newValue = e.target.value;
                           setGeneratedPoems(prev => ({
                             ...prev,
-                            [selectedPoem]: e.target.value
+                            [selectedPoem]: newValue
                           }));
-                          const error = validatePoem(e.target.value, selectedPoem);
+                          const error = validatePoem(newValue, selectedPoem);
                           setValidationError(error);
                         }}
                         className="bg-accent/10 border-2 border-accent min-h-[300px] text-foreground whitespace-pre-line leading-relaxed resize-y"
