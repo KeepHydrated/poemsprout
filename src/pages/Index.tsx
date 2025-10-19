@@ -355,7 +355,7 @@ const Index = () => {
     try {
       const { data, error } = await supabase.functions.invoke('generate-poem', {
         body: { 
-          topic: `Generate a creative, poetic title (maximum 8 words) for this ${poemTypes[selectedPoem].name.toLowerCase()}: ${currentGeneratedPoem.substring(0, 200)}...`,
+          topic: `Generate a short, creative title (3-4 words maximum) for this ${poemTypes[selectedPoem].name.toLowerCase()}: ${currentGeneratedPoem.substring(0, 200)}...`,
           poemType: 'haiku'
         }
       });
