@@ -7,6 +7,7 @@ import { Sparkles, Loader2, Shuffle, Save } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 const randomTopics = [
@@ -486,11 +487,17 @@ const Index = () => {
                 <h3 className="font-semibold text-lg text-foreground mb-2">Example</h3>
                 {currentGeneratedPoem ? (
                   <div className="space-y-4">
-                    <div className="bg-accent/10 p-6 rounded-lg border-2 border-accent">
-                      <p className="text-foreground whitespace-pre-line leading-relaxed">
-                        {currentGeneratedPoem}
-                      </p>
-                    </div>
+                    <Textarea
+                      value={currentGeneratedPoem}
+                      onChange={(e) => {
+                        setGeneratedPoems(prev => ({
+                          ...prev,
+                          [selectedPoem]: e.target.value
+                        }));
+                      }}
+                      className="bg-accent/10 border-2 border-accent min-h-[300px] text-foreground whitespace-pre-line leading-relaxed resize-y"
+                      placeholder="Your generated poem will appear here..."
+                    />
                     {user && (
                       <div className="flex gap-2">
                         <Dialog open={isSaveDialogOpen} onOpenChange={setIsSaveDialogOpen}>
