@@ -363,7 +363,7 @@ const Index = () => {
       if (error) throw error;
 
       if (data?.poem) {
-        // Clean and limit the response
+        // Clean and limit the response, then apply title case
         const title = data.poem
           .split('\n')[0]
           .trim()
@@ -371,6 +371,7 @@ const Index = () => {
           .replace(/[,;.!?:]/g, '')
           .split(/\s+/)
           .slice(0, 4)
+          .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
           .join(' ');
         
         if (forDialog === 'save') {
