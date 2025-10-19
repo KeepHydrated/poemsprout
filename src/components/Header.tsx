@@ -34,41 +34,12 @@ const Header = () => {
     <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-8">
-            <button
-              onClick={() => navigate("/")}
-              className="text-2xl font-serif font-bold text-foreground hover:text-primary transition-colors"
-            >
-              Poetry Forms
-            </button>
-            
-            <nav className="hidden md:flex items-center gap-1">
-              <Button
-                variant={isActive("/") ? "default" : "ghost"}
-                size="sm"
-                onClick={() => navigate("/")}
-              >
-                <Home className="mr-2 h-4 w-4" />
-                Home
-              </Button>
-              <Button
-                variant={isActive("/poem") ? "default" : "ghost"}
-                size="sm"
-                onClick={() => navigate("/poem")}
-              >
-                <PenTool className="mr-2 h-4 w-4" />
-                Generate
-              </Button>
-              <Button
-                variant={isActive("/gallery") ? "default" : "ghost"}
-                size="sm"
-                onClick={() => navigate("/gallery")}
-              >
-                <BookOpen className="mr-2 h-4 w-4" />
-                Gallery
-              </Button>
-            </nav>
-          </div>
+          <button
+            onClick={() => navigate("/")}
+            className="text-2xl font-serif font-bold text-foreground hover:text-primary transition-colors"
+          >
+            Poetry Forms
+          </button>
 
           <div className="flex items-center gap-2">
             {user ? (
