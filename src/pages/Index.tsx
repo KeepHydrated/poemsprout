@@ -115,6 +115,7 @@ const Index = () => {
   const [saveTitle, setSaveTitle] = useState("");
   const [isPublishing, setIsPublishing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [isGeneratingTitle, setIsGeneratingTitle] = useState(false);
   const [user, setUser] = useState<any>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -335,6 +336,46 @@ const Index = () => {
     }
   };
 
+  const generateTitle = async (forDialog: 'save' | 'publish') => {
+    const currentGeneratedPoem = generatedPoems[selectedPoem];
+    if (!currentGeneratedPoem) return;
+
+    setIsGeneratingTitle(true);
+
+    try {
+      const { data, error } = await supabase.functions.invoke('generate-poem', {
+        body: { 
+          topic: `Generate a creative, poetic title (maximum 8 words) for this ${poemTypes[selectedPoem].name.toLowerCase()}: ${currentGeneratedPoem.substring(0, 200)}...`,
+          poemType: 'haiku'
+        }
+      });
+
+      if (error) throw error;
+
+      if (data?.poem) {
+        const title = data.poem.trim().replace(/^["']|["']$/g, '');
+        if (forDialog === 'save') {
+          setSaveTitle(title);
+        } else {
+          setPublishTitle(title);
+        }
+        toast({
+          title: "Title generated! ✨",
+          description: "Feel free to edit it if you'd like.",
+        });
+      }
+    } catch (error: any) {
+      console.error('Error generating title:', error);
+      toast({
+        title: "Failed to generate title",
+        description: "Please try again or enter your own title.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsGeneratingTitle(false);
+    }
+  };
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-secondary/20">
@@ -468,9 +509,31 @@ const Index = () => {
                             </DialogHeader>
                             <div className="space-y-4 pt-4">
                               <div>
-                                <label htmlFor="save-title-input" className="block text-sm font-medium mb-2">
-                                  Poem Title
-                                </label>
+                                <div className="flex items-center justify-between mb-2">
+                                  <label htmlFor="save-title-input" className="block text-sm font-medium">
+                                    Poem Title
+                                  </label>
+                                  <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => generateTitle('save')}
+                                    disabled={isGeneratingTitle}
+                                    className="gap-2 h-8 text-xs"
+                                  >
+                                    {isGeneratingTitle ? (
+                                      <>
+                                        <Loader2 className="h-3 w-3 animate-spin" />
+                                        Generating...
+                                      </>
+                                    ) : (
+                                      <>
+                                        <Sparkles className="h-3 w-3" />
+                                        Generate Title
+                                      </>
+                                    )}
+                                  </Button>
+                                </div>
                                 <Input
                                   id="save-title-input"
                                   type="text"
@@ -514,9 +577,31 @@ const Index = () => {
                             </DialogHeader>
                             <div className="space-y-4 pt-4">
                               <div>
-                                <label htmlFor="title-input" className="block text-sm font-medium mb-2">
-                                  Poem Title
-                                </label>
+                                <div className="flex items-center justify-between mb-2">
+                                  <label htmlFor="title-input" className="block text-sm font-medium">
+                                    Poem Title
+                                  </label>
+                                  <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => generateTitle('publish')}
+                                    disabled={isGeneratingTitle}
+                                    className="gap-2 h-8 text-xs"
+                                  >
+                                    {isGeneratingTitle ? (
+                                      <>
+                                        <Loader2 className="h-3 w-3 animate-spin" />
+                                        Generating...
+                                      </>
+                                    ) : (
+                                      <>
+                                        <Sparkles className="h-3 w-3" />
+                                        Generate Title
+                                      </>
+                                    )}
+                                  </Button>
+                                </div>
                                 <Input
                                   id="title-input"
                                   type="text"
