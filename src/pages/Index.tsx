@@ -393,6 +393,18 @@ const Index = () => {
     const currentGeneratedPoem = generatedPoems[selectedPoem];
     if (!currentGeneratedPoem) return;
 
+    // Validate poem structure before publishing
+    const validationError = validatePoem(currentGeneratedPoem, selectedPoem);
+    if (validationError) {
+      setValidationError(validationError);
+      toast({
+        title: "Invalid poem structure",
+        description: validationError,
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsPublishing(true);
 
     try {
@@ -448,6 +460,18 @@ const Index = () => {
 
     const currentGeneratedPoem = generatedPoems[selectedPoem];
     if (!currentGeneratedPoem) return;
+
+    // Validate poem structure before saving
+    const validationError = validatePoem(currentGeneratedPoem, selectedPoem);
+    if (validationError) {
+      setValidationError(validationError);
+      toast({
+        title: "Invalid poem structure",
+        description: validationError,
+        variant: "destructive",
+      });
+      return;
+    }
 
     setIsSaving(true);
 
@@ -643,8 +667,8 @@ const Index = () => {
                             ...prev,
                             [selectedPoem]: newValue
                           }));
-                          const error = validatePoem(newValue, selectedPoem);
-                          setValidationError(error);
+                          // Clear any existing validation error when user is editing
+                          if (validationError) setValidationError(null);
                         }}
                         className="bg-accent/10 border-2 border-accent min-h-[300px] text-foreground whitespace-pre-line leading-relaxed resize-y"
                         placeholder="Your generated poem will appear here..."
@@ -657,7 +681,7 @@ const Index = () => {
                       <div className="flex gap-2">
                         <Dialog open={isSaveDialogOpen} onOpenChange={setIsSaveDialogOpen}>
                           <DialogTrigger asChild>
-                            <Button variant="outline" className="flex-1 gap-2" disabled={!!validationError}>
+                            <Button variant="outline" className="flex-1 gap-2">
                               <Save className="h-4 w-4" />
                               Save
                             </Button>
@@ -725,7 +749,7 @@ const Index = () => {
                         
                         <Dialog open={isPublishDialogOpen} onOpenChange={setIsPublishDialogOpen}>
                           <DialogTrigger asChild>
-                            <Button className="flex-1 gap-2" disabled={!!validationError}>
+                            <Button className="flex-1 gap-2">
                               <Sparkles className="h-4 w-4" />
                               Publish
                             </Button>
