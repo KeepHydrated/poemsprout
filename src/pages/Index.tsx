@@ -395,10 +395,13 @@ const Index = () => {
 
     // Validate poem structure before publishing
     const validationError = validatePoem(currentGeneratedPoem, selectedPoem);
+    console.log('Publish validation:', { poemType: selectedPoem, validationError });
+    
     if (validationError) {
       setValidationError(validationError);
+      setIsPublishDialogOpen(false);
       toast({
-        title: "Invalid poem structure",
+        title: "Cannot publish - Invalid poem structure",
         description: validationError,
         variant: "destructive",
       });
@@ -463,10 +466,13 @@ const Index = () => {
 
     // Validate poem structure before saving
     const validationError = validatePoem(currentGeneratedPoem, selectedPoem);
+    console.log('Save validation:', { poemType: selectedPoem, validationError });
+    
     if (validationError) {
       setValidationError(validationError);
+      setIsSaveDialogOpen(false);
       toast({
-        title: "Invalid poem structure",
+        title: "Cannot save - Invalid poem structure",
         description: validationError,
         variant: "destructive",
       });
