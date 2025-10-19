@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Sparkles, Loader2, Shuffle, Save } from "lucide-react";
+import { Sparkles, Loader2, Shuffle, Save, RefreshCw } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
@@ -483,7 +483,28 @@ const Index = () => {
               </div>
 
               <div>
-                <h3 className="font-semibold text-lg text-foreground mb-2">Example</h3>
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="font-semibold text-lg text-foreground">Example</h3>
+                  {submittedTopic && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setGeneratedPoems(prev => {
+                          const updated = { ...prev };
+                          delete updated[selectedPoem];
+                          return updated;
+                        });
+                        generatePoemForType(selectedPoem, submittedTopic);
+                      }}
+                      disabled={isGenerating}
+                      className="gap-2"
+                    >
+                      <RefreshCw className={`h-4 w-4 ${isGenerating ? 'animate-spin' : ''}`} />
+                      Regenerate
+                    </Button>
+                  )}
+                </div>
                 {currentGeneratedPoem ? (
                   <div className="space-y-4">
                     <div className="bg-accent/10 p-6 rounded-lg border-2 border-accent">
