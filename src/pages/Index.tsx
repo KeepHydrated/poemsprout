@@ -109,6 +109,7 @@ const Index = () => {
   const [submittedTopic, setSubmittedTopic] = useState<string>("");
   const [generatedPoems, setGeneratedPoems] = useState<Record<string, string>>({});
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isRegenerating, setIsRegenerating] = useState(false);
   const [isPublishDialogOpen, setIsPublishDialogOpen] = useState(false);
   const [isSaveDialogOpen, setIsSaveDialogOpen] = useState(false);
   const [publishTitle, setPublishTitle] = useState("");
@@ -136,12 +137,16 @@ const Index = () => {
   const currentPoem = poemTypes[selectedPoem];
   const currentGeneratedPoem = generatedPoems[selectedPoem] || "";
 
-  const generatePoemForType = async (poemType: string, topic: string) => {
-    if (generatedPoems[poemType]) {
+  const generatePoemForType = async (poemType: string, topic: string, isRegenerate = false) => {
+    if (generatedPoems[poemType] && !isRegenerate) {
       return;
     }
 
-    setIsGenerating(true);
+    if (isRegenerate) {
+      setIsRegenerating(true);
+    } else {
+      setIsGenerating(true);
+    }
 
     try {
       const { data, error } = await supabase.functions.invoke('generate-poem', {
@@ -156,7 +161,7 @@ const Index = () => {
       if (data?.poem) {
         setGeneratedPoems(prev => ({ ...prev, [poemType]: data.poem }));
         toast({
-          title: "Poem generated! ✨",
+          title: isRegenerate ? "Poem regenerated! ✨" : "Poem generated! ✨",
           description: `Created a ${poemTypes[poemType].name.toLowerCase()} about "${topic}"`,
         });
       } else {
@@ -170,7 +175,11 @@ const Index = () => {
         variant: "destructive",
       });
     } finally {
-      setIsGenerating(false);
+      if (isRegenerate) {
+        setIsRegenerating(false);
+      } else {
+        setIsGenerating(false);
+      }
     }
   };
 
@@ -485,22 +494,15 @@ const Index = () => {
               <div>
                 <div className="flex items-center justify-between mb-2">
                   <h3 className="font-semibold text-lg text-foreground">Example</h3>
-                  {submittedTopic && (
+                  {submittedTopic && currentGeneratedPoem && (
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => {
-                        setGeneratedPoems(prev => {
-                          const updated = { ...prev };
-                          delete updated[selectedPoem];
-                          return updated;
-                        });
-                        generatePoemForType(selectedPoem, submittedTopic);
-                      }}
-                      disabled={isGenerating}
+                      onClick={() => generatePoemForType(selectedPoem, submittedTopic, true)}
+                      disabled={isRegenerating}
                       className="gap-2"
                     >
-                      <RefreshCw className={`h-4 w-4 ${isGenerating ? 'animate-spin' : ''}`} />
+                      <RefreshCw className={`h-4 w-4 ${isRegenerating ? 'animate-spin' : ''}`} />
                       Regenerate
                     </Button>
                   )}
