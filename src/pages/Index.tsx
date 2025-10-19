@@ -3,11 +3,34 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Sparkles, Loader2 } from "lucide-react";
+import { Sparkles, Loader2, Shuffle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+
+const randomTopics = [
+  "a sunset over the ocean",
+  "childhood memories",
+  "the beauty of autumn leaves",
+  "a starry night sky",
+  "love at first sight",
+  "the sound of rain",
+  "a forgotten dream",
+  "winter's first snowfall",
+  "the passage of time",
+  "a mountain adventure",
+  "coffee in the morning",
+  "the smell of old books",
+  "friendship and loyalty",
+  "dancing in the moonlight",
+  "the changing seasons",
+  "a journey through the forest",
+  "city lights at night",
+  "the courage to begin again",
+  "whispers of the wind",
+  "hope after darkness"
+];
 
 
 type PoemType = {
@@ -154,6 +177,15 @@ const Index = () => {
     await generatePoemForType(selectedPoem, poemTopic);
   };
 
+  const handleRandomTopic = () => {
+    const randomTopic = randomTopics[Math.floor(Math.random() * randomTopics.length)];
+    setPoemTopic(randomTopic);
+    toast({
+      title: "Random topic selected! ✨",
+      description: `Try writing about "${randomTopic}"`,
+    });
+  };
+
   const handlePublish = async () => {
     const { data: { session } } = await supabase.auth.getSession();
     
@@ -219,9 +251,21 @@ const Index = () => {
           <CardContent className="space-y-6 pt-6">
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label htmlFor="topic-input" className="block text-sm font-medium text-foreground mb-2">
-                  What would you like to write a poem about?
-                </label>
+                <div className="flex items-center justify-between mb-2">
+                  <label htmlFor="topic-input" className="block text-sm font-medium text-foreground">
+                    What would you like to write a poem about?
+                  </label>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={handleRandomTopic}
+                    className="gap-2"
+                  >
+                    <Shuffle className="h-4 w-4" />
+                    Random Topic
+                  </Button>
+                </div>
                 <Input
                   id="topic-input"
                   type="text"
