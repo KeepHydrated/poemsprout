@@ -161,11 +161,17 @@ const Index = () => {
   };
 
   const soundsSimilar = (word1: string, word2: string): boolean => {
-    if (!word1 || !word2) return false;
-    // Get last 2-3 characters for basic rhyme detection
-    const ending1 = word1.slice(-3);
-    const ending2 = word2.slice(-3);
-    return ending1 === ending2 || word1.slice(-2) === word2.slice(-2);
+    if (!word1 || !word2 || word1.length < 2 || word2.length < 2) return false;
+    
+    // Clean words
+    const clean1 = word1.toLowerCase().replace(/[^a-z]/g, '');
+    const clean2 = word2.toLowerCase().replace(/[^a-z]/g, '');
+    
+    if (clean1 === clean2) return true;
+    
+    // Check if last 2-3 characters match for rhyming
+    const len = Math.min(3, Math.min(clean1.length, clean2.length));
+    return clean1.slice(-len) === clean2.slice(-len);
   };
 
   const validatePoem = (poem: string, poemType: string): string | null => {
@@ -179,15 +185,26 @@ const Index = () => {
         if (lineCount !== 14) {
           return `A sonnet must have exactly 14 lines. Current: ${lineCount} lines`;
         }
-        // Check for basic rhyme pattern (simplified check)
+        // Check for Shakespearean (ABAB CDCD EFEF GG) or Petrarchan (ABBA ABBA CDE CDE) rhyme scheme
         const lastWords = lines.map(getLastWord);
         if (lastWords.length === 14) {
-          // Check if there's some rhyme pattern present
-          const hasRhymes = lastWords.some((word, i) => 
-            lastWords.some((w, j) => i !== j && soundsSimilar(word, w))
-          );
-          if (!hasRhymes) {
-            return "A sonnet should have a rhyme scheme (e.g., ABAB CDCD EFEF GG)";
+          // Check for Shakespearean pattern first (ABAB in first quatrain)
+          const shakespearean = 
+            soundsSimilar(lastWords[0], lastWords[2]) && 
+            soundsSimilar(lastWords[1], lastWords[3]) &&
+            soundsSimilar(lastWords[4], lastWords[6]) &&
+            soundsSimilar(lastWords[5], lastWords[7]) &&
+            soundsSimilar(lastWords[12], lastWords[13]);
+          
+          // Check for Petrarchan pattern (ABBA in first quatrain)
+          const petrarchan = 
+            soundsSimilar(lastWords[0], lastWords[3]) && 
+            soundsSimilar(lastWords[1], lastWords[2]) &&
+            soundsSimilar(lastWords[4], lastWords[7]) &&
+            soundsSimilar(lastWords[5], lastWords[6]);
+          
+          if (!shakespearean && !petrarchan) {
+            return "A sonnet must follow either Shakespearean (ABAB CDCD EFEF GG) or Petrarchan (ABBA ABBA...) rhyme scheme";
           }
         }
         break;
