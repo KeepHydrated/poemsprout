@@ -33,9 +33,9 @@ serve(async (req) => {
 
     const structure = poemStructures[poemType] || "a poem";
     
-    const systemPrompt = `You are a master poet who transforms existing works into different poetic forms. You must STRICTLY follow the formal requirements of each poem type. Take songs, poems, or other works and completely reimagine them in the requested structure - this means changing line lengths, meter, rhyme scheme, and style to match the target form. Return ONLY the poem text.`;
+    const systemPrompt = `You are a master poet who rewrites existing songs and poems into different poetic forms. You take the actual content, themes, and imagery from the original work and transform them into the requested structure. Keep the essence and key elements of the original while adapting the form. Return ONLY the poem text.`;
     
-    const userPrompt = `Transform "${topic}" into ${structure}. You MUST follow the exact formal requirements of this poetic form - if it's an ode, use elevated lyrical language with multiple stanzas; if it's an epic, write in heroic verse with grand imagery. Don't just reformat the lyrics - completely reimagine them to fit the structure and style of the target form.`;
+    const userPrompt = `Take the song/work "${topic}" and rewrite it as ${structure}. Use the actual themes, imagery, and story from the original work, but express them in the formal style and structure of this poetic form. For epics, use heroic verse and elevated diction while retelling the original content. Maintain what the original is about while transforming how it's expressed.`;
 
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
