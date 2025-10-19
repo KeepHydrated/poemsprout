@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import GallerySidebar from "@/components/GallerySidebar";
 
 const randomTopics = [
   "Taylor Swift's 'All Too Well'",
@@ -395,7 +396,18 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-secondary/20">
-      <div className="container mx-auto px-4 py-16 max-w-4xl">
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex gap-8 max-w-7xl mx-auto">
+          {/* Main Content */}
+          <div className="flex-1 max-w-4xl">
+            <div className="mb-8">
+              <h1 className="text-4xl md:text-5xl font-serif font-bold text-foreground mb-3 tracking-tight">
+                Poetry Forms Generator
+              </h1>
+              <p className="text-lg text-muted-foreground">
+                Create beautiful poetry in various classical forms
+              </p>
+            </div>
 
         <Card className="border-2 shadow-lg">
           <CardContent className="space-y-6 pt-6">
@@ -669,8 +681,16 @@ const Index = () => {
               </div>
             </CardContent>
           </Card>
-        </div>
+          </div>
+          </div>
 
+          {/* Gallery Sidebar */}
+          <div className="hidden lg:block w-96 shrink-0">
+            <div className="sticky top-24 max-h-[calc(100vh-8rem)]">
+              <GallerySidebar />
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
