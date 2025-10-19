@@ -3,64 +3,12 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Sparkles, Loader2, Upload, TrendingUp } from "lucide-react";
+import { Sparkles, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel";
 
-const popularPoems = [
-  {
-    title: "The Road Not Taken",
-    author: "Robert Frost",
-    excerpt: "Two roads diverged in a yellow wood,\nAnd sorry I could not travel both...",
-    type: "Modern Classic",
-    poemType: "ballad"
-  },
-  {
-    title: "Still I Rise",
-    author: "Maya Angelou",
-    excerpt: "You may write me down in history\nWith your bitter, twisted lies...",
-    type: "Empowerment",
-    poemType: "ode"
-  },
-  {
-    title: "If—",
-    author: "Rudyard Kipling",
-    excerpt: "If you can keep your head when all about you\nAre losing theirs and blaming it on you...",
-    type: "Inspirational",
-    poemType: "ode"
-  },
-  {
-    title: "Imagine",
-    author: "John Lennon",
-    excerpt: "Imagine there's no heaven\nIt's easy if you try...",
-    type: "Song Lyrics",
-    poemType: "ballad"
-  },
-  {
-    title: "Hallelujah",
-    author: "Leonard Cohen",
-    excerpt: "Well I heard there was a secret chord\nThat David played and it pleased the Lord...",
-    type: "Song Lyrics",
-    poemType: "ballad"
-  },
-  {
-    title: "Do Not Go Gentle",
-    author: "Dylan Thomas",
-    excerpt: "Do not go gentle into that good night,\nOld age should burn and rave at close of day...",
-    type: "Villanelle",
-    poemType: "villanelle"
-  }
-];
 
 type PoemType = {
   name: string;
@@ -131,7 +79,6 @@ const Index = () => {
   const [isPublishDialogOpen, setIsPublishDialogOpen] = useState(false);
   const [publishTitle, setPublishTitle] = useState("");
   const [isPublishing, setIsPublishing] = useState(false);
-  const [selectedPopularPoem, setSelectedPopularPoem] = useState<number | null>(null);
   const [user, setUser] = useState<any>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -263,117 +210,49 @@ const Index = () => {
     }
   };
 
-  const handlePopularPoemSelect = (index: number) => {
-    setSelectedPopularPoem(index);
-    const selectedPoemData = popularPoems[index];
-    setSelectedPoem(selectedPoemData.poemType);
-    const topic = `${selectedPoemData.title} by ${selectedPoemData.author}`;
-    setSubmittedTopic(topic);
-    setGeneratedPoems({});
-    generatePoemForType(selectedPoemData.poemType, topic);
-  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-secondary/20">
       <div className="container mx-auto px-4 py-16 max-w-4xl">
 
-        <Tabs defaultValue="write" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 rounded-b-none border-b-0">
-            <TabsTrigger value="write" className="gap-2">
-              <Sparkles className="h-4 w-4" />
-              Write Your Own Poem
-            </TabsTrigger>
-            <TabsTrigger value="view" className="gap-2">
-              <TrendingUp className="h-4 w-4" />
-              View Popular Poems
-            </TabsTrigger>
-          </TabsList>
+        <Card className="border-2 shadow-lg">
+          <CardContent className="space-y-6 pt-6">
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label htmlFor="topic-input" className="block text-sm font-medium text-foreground mb-2">
+                  What would you like to write a poem about?
+                </label>
+                <Input
+                  id="topic-input"
+                  type="text"
+                  value={poemTopic}
+                  onChange={(e) => setPoemTopic(e.target.value)}
+                  placeholder="Enter a topic, theme, or inspiration..."
+                  className="border-2"
+                />
+              </div>
 
-          <TabsContent value="write" className="mt-0">
-            <Card className="border-2 shadow-lg rounded-t-none border-t-0">
-              <CardContent className="space-y-6 pt-6">
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  <div>
-                    <label htmlFor="topic-input" className="block text-sm font-medium text-foreground mb-2">
-                      What would you like to write a poem about?
-                    </label>
-                    <Input
-                      id="topic-input"
-                      type="text"
-                      value={poemTopic}
-                      onChange={(e) => setPoemTopic(e.target.value)}
-                      placeholder="Enter a topic, theme, or inspiration..."
-                      className="border-2"
-                    />
-                  </div>
-
-                  <Button 
-                    type="submit" 
-                    size="lg" 
-                    className="w-full gap-2"
-                    disabled={isGenerating}
-                  >
-                    {isGenerating ? (
-                      <>
-                        <Loader2 className="h-5 w-5 animate-spin" />
-                        Generating...
-                      </>
-                    ) : (
-                      <>
-                        <Sparkles className="h-5 w-5" />
-                        Generate Poem
-                      </>
-                    )}
-                  </Button>
-                </form>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="view" className="mt-0">
-            <div className="max-w-4xl mx-auto">
-              <Card className="border-2 shadow-lg rounded-t-none border-t-0">
-                <CardContent className="pt-6">
-                  <Carousel className="w-full">
-                    <CarouselContent>
-                      {popularPoems.map((poem, index) => (
-                        <CarouselItem key={index} className="md:basis-1/2">
-                          <Card 
-                            className={`border-2 h-full hover:shadow-lg transition-all cursor-pointer ${
-                              selectedPopularPoem === index ? 'border-primary ring-2 ring-primary/20 shadow-lg' : ''
-                            }`}
-                            onClick={() => handlePopularPoemSelect(index)}
-                          >
-                            <CardHeader className="pb-3">
-                              <CardTitle className="text-2xl font-serif leading-tight mb-2">
-                                {poem.title}
-                              </CardTitle>
-                              <CardDescription className="text-base mb-3">
-                                {poem.author}
-                              </CardDescription>
-                              <div className="inline-block">
-                                <span className="text-sm px-3 py-1 rounded-full bg-primary/10 text-primary font-medium">
-                                  {poem.type}
-                                </span>
-                              </div>
-                            </CardHeader>
-                            <CardContent>
-                              <blockquote className="text-base text-foreground/70 italic leading-relaxed border-l-4 border-accent pl-4 whitespace-pre-line">
-                                {poem.excerpt}
-                              </blockquote>
-                            </CardContent>
-                          </Card>
-                        </CarouselItem>
-                      ))}
-                    </CarouselContent>
-                    <CarouselPrevious className="hidden md:flex" />
-                    <CarouselNext className="hidden md:flex" />
-                  </Carousel>
-                </CardContent>
-              </Card>
-            </div>
-          </TabsContent>
-        </Tabs>
+              <Button 
+                type="submit" 
+                size="lg" 
+                className="w-full gap-2"
+                disabled={isGenerating}
+              >
+                {isGenerating ? (
+                  <>
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                    Generating...
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="h-5 w-5" />
+                    Generate Poem
+                  </>
+                )}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
 
         <div className="mt-8">
           <div className="border-2 rounded-t-lg bg-card p-4">
