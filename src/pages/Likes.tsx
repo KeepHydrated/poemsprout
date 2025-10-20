@@ -16,8 +16,10 @@ type LikedPoem = {
   user_id: string;
   profiles: {
     display_name: string | null;
+    points: number;
   } | null;
   like_id: string;
+  like_count: number;
 };
 
 const Likes = () => {
@@ -79,12 +81,23 @@ const Likes = () => {
       const userIds = [...new Set(poems?.map(poem => poem.user_id) || [])];
       const { data: profilesData } = await supabase
         .from("profiles")
-        .select("id, display_name")
+        .select("id, display_name, points")
         .in("id", userIds);
 
       const profilesMap = new Map(
         profilesData?.map(profile => [profile.id, profile]) || []
       );
+
+      // Fetch like counts for each poem
+      const { data: likeCounts } = await supabase
+        .from("poem_likes")
+        .select("poem_id")
+        .in("poem_id", poemIds);
+
+      const likeCountsMap = new Map<string, number>();
+      likeCounts?.forEach(like => {
+        likeCountsMap.set(like.poem_id, (likeCountsMap.get(like.poem_id) || 0) + 1);
+      });
 
       // Combine the data
       const formattedPoems = poems?.map(poem => {
@@ -93,6 +106,7 @@ const Likes = () => {
           ...poem,
           profiles: profilesMap.get(poem.user_id) || null,
           like_id: like?.id || "",
+          like_count: likeCountsMap.get(poem.id) || 0,
         };
       }) || [];
 
@@ -168,36 +182,51 @@ const Likes = () => {
           <div className="space-y-6">
             {likedPoems.map((poem) => (
               <Card key={poem.id} className="hover:shadow-lg transition-shadow">
-                <CardHeader>
-                  <div className="flex justify-between items-start">
-                    <div className="flex-1">
-                      <CardDescription className="flex items-center gap-2 mb-2">
-                        <Avatar className="h-5 w-5">
-                          <AvatarFallback className="text-[10px]">
-                            {poem.profiles?.display_name?.[0]?.toUpperCase() || "A"}
-                          </AvatarFallback>
-                        </Avatar>
-                        <span>By {poem.profiles?.display_name || "Anonymous"}</span>
-                        <span>•</span>
-                        <span>{new Date(poem.created_at).toLocaleDateString()}</span>
-                      </CardDescription>
-                      <p className="text-sm text-muted-foreground mb-1">
-                        {poem.original_topic && <span>{poem.original_topic} • </span>}
-                        {poem.poem_type}
-                      </p>
-                      
+                <CardContent className="pt-6">
+                  {/* Header with date and like count */}
+                  <div className="flex justify-between items-start mb-4">
+                    <span className="text-muted-foreground text-sm">
+                      {new Date(poem.created_at).toLocaleDateString()}
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-medium">{poem.like_count}</span>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 -mr-2"
+                        onClick={() => handleUnlike(poem.like_id)}
+                      >
+                        <Heart className="h-5 w-5 fill-current text-red-500" />
+                      </Button>
                     </div>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleUnlike(poem.like_id)}
-                    >
-                      <Heart className="h-5 w-5 fill-current text-red-500" />
-                    </Button>
                   </div>
-                </CardHeader>
-                <CardContent>
-                  <p className="whitespace-pre-wrap text-foreground/90">{poem.content}</p>
+
+                  {/* Topic and type */}
+                  <div className="mb-4">
+                    <p className="text-foreground font-medium">
+                      {poem.original_topic && <span>{poem.original_topic} • </span>}
+                      {poem.poem_type}
+                    </p>
+                  </div>
+
+                  {/* Poem content with left border */}
+                  <div className="border-l-4 border-primary pl-4 mb-4">
+                    <p className="whitespace-pre-wrap text-foreground/90 font-serif text-lg leading-relaxed">
+                      {poem.content}
+                    </p>
+                  </div>
+
+                  {/* Author info */}
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Avatar className="h-6 w-6">
+                      <AvatarFallback className="text-xs bg-muted">
+                        {poem.profiles?.display_name?.[0]?.toUpperCase() || "A"}
+                      </AvatarFallback>
+                    </Avatar>
+                    <span>{poem.profiles?.display_name || "Anonymous"}</span>
+                    <span>•</span>
+                    <span>{poem.profiles?.points || 0} pts</span>
+                  </div>
                 </CardContent>
               </Card>
             ))}
