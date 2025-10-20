@@ -200,14 +200,14 @@ const GallerySidebar = () => {
             {poems.map((poem) => (
               <Card key={poem.id} className="border hover:shadow-md transition-shadow">
                 <CardHeader className="pb-3">
-                  <div className="flex items-start justify-between gap-2 mb-2">
+                  <div className="flex items-start justify-between gap-2">
                     <div className="flex-1 min-w-0">
-                      <CardDescription className="flex items-center gap-1 text-xs">
-                        <Avatar className="h-4 w-4">
-                          <AvatarFallback className="text-[8px]">
-                            {poem.profiles?.display_name?.[0]?.toUpperCase() || "A"}
-                          </AvatarFallback>
-                        </Avatar>
+                      <Avatar className="h-4 w-4 mb-1">
+                        <AvatarFallback className="text-[8px]">
+                          {poem.profiles?.display_name?.[0]?.toUpperCase() || "A"}
+                        </AvatarFallback>
+                      </Avatar>
+                      <CardDescription className="flex items-center gap-1 text-xs mb-2">
                         <span className="truncate">
                           {poem.profiles?.display_name || "Anonymous"}
                         </span>
