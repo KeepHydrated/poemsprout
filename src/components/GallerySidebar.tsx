@@ -203,10 +203,7 @@ const GallerySidebar = () => {
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex-1 min-w-0">
-                      <CardTitle className="text-lg font-serif line-clamp-2">
-                        {poem.title}
-                      </CardTitle>
-                      <CardDescription className="flex items-center gap-1 text-xs mt-1">
+                      <CardDescription className="flex items-center gap-1 text-xs mb-2">
                         <Avatar className="h-4 w-4">
                           <AvatarFallback className="text-[8px]">
                             {poem.profiles?.display_name?.[0]?.toUpperCase() || "A"}
@@ -216,6 +213,9 @@ const GallerySidebar = () => {
                           {poem.profiles?.display_name || "Anonymous"}
                         </span>
                       </CardDescription>
+                      <CardTitle className="text-lg font-serif line-clamp-2">
+                        {poem.title}
+                      </CardTitle>
                     </div>
                     <div className="flex items-center gap-1 shrink-0">
                       {poem.like_count! > 0 && (

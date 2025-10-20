@@ -197,10 +197,7 @@ const Gallery = () => {
                 <CardHeader>
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1">
-                      <CardTitle className="text-2xl font-serif mb-2">
-                        {poem.title}
-                      </CardTitle>
-                      <CardDescription className="flex items-center gap-2">
+                      <CardDescription className="flex items-center gap-2 mb-2">
                         <Avatar className="h-5 w-5">
                           <AvatarFallback className="text-[10px]">
                             {poem.profiles?.display_name?.[0]?.toUpperCase() || "A"}
@@ -216,6 +213,9 @@ const Gallery = () => {
                           {new Date(poem.created_at).toLocaleDateString()}
                         </span>
                       </CardDescription>
+                      <CardTitle className="text-2xl font-serif mb-2">
+                        {poem.title}
+                      </CardTitle>
                     </div>
                     <div className="flex items-center gap-1 shrink-0">
                       {poem.like_count! > 0 && (

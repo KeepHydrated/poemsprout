@@ -172,8 +172,7 @@ const Likes = () => {
                 <CardHeader>
                   <div className="flex justify-between items-start">
                     <div className="flex-1">
-                      <CardTitle className="text-2xl mb-2">{poem.title}</CardTitle>
-                      <CardDescription className="flex items-center gap-2">
+                      <CardDescription className="flex items-center gap-2 mb-2">
                         <Avatar className="h-5 w-5">
                           <AvatarFallback className="text-[10px]">
                             {poem.profiles?.display_name?.[0]?.toUpperCase() || "A"}
@@ -185,6 +184,7 @@ const Likes = () => {
                         <span>•</span>
                         <span>{new Date(poem.created_at).toLocaleDateString()}</span>
                       </CardDescription>
+                      <CardTitle className="text-2xl mb-2">{poem.title}</CardTitle>
                       {poem.original_topic && (
                         <CardDescription className="mt-1">
                           Original topic: {poem.original_topic}
