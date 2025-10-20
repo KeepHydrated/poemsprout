@@ -6,6 +6,13 @@ import { Heart, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 type LikedPoem = {
   id: string;
@@ -26,6 +33,8 @@ const Likes = () => {
   const [likedPoems, setLikedPoems] = useState<LikedPoem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
+  const [sortBy, setSortBy] = useState<"newest" | "oldest" | "most-liked">("newest");
+  const [filterType, setFilterType] = useState<string>("all");
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -150,6 +159,26 @@ const Likes = () => {
     }
   };
 
+  // Filter and sort poems
+  const uniquePoemTypes = Array.from(new Set(likedPoems.map(p => p.poem_type)));
+  
+  const filteredPoems = filterType === "all" 
+    ? likedPoems 
+    : likedPoems.filter(poem => poem.poem_type === filterType);
+
+  const sortedPoems = [...filteredPoems].sort((a, b) => {
+    switch (sortBy) {
+      case "newest":
+        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+      case "oldest":
+        return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+      case "most-liked":
+        return (b.like_count || 0) - (a.like_count || 0);
+      default:
+        return 0;
+    }
+  });
+
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -161,10 +190,35 @@ const Likes = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-secondary/20">
       <div className="container mx-auto px-4 py-16 max-w-4xl">
-        <header className="mb-12">
+        <header className="mb-12 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <p className="text-lg text-muted-foreground">
             All the poems you've hearted
           </p>
+          {likedPoems.length > 0 && (
+            <div className="flex items-center gap-3">
+              <Select value={filterType} onValueChange={setFilterType}>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="All Types" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Types</SelectItem>
+                  {uniquePoemTypes.map(type => (
+                    <SelectItem key={type} value={type}>{type}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Select value={sortBy} onValueChange={(value: "newest" | "oldest" | "most-liked") => setSortBy(value)}>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Sort by" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="newest">Newest First</SelectItem>
+                  <SelectItem value="oldest">Oldest First</SelectItem>
+                  <SelectItem value="most-liked">Most Liked</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          )}
         </header>
 
         {likedPoems.length === 0 ? (
@@ -177,7 +231,7 @@ const Likes = () => {
           </Card>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {likedPoems.map((poem) => (
+            {sortedPoems.map((poem) => (
               <Card key={poem.id} className="border hover:shadow-lg transition-shadow">
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between gap-2 mb-2">
