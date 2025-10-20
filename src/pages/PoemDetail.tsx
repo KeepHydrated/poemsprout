@@ -330,29 +330,31 @@ const PoemDetail = () => {
 
           {/* Main Content */}
           <div className="flex-1">
-            <Card className="border-2 shadow-lg mb-8">
-          <CardHeader className="pb-3">
-            <div className="flex items-center justify-end gap-2">
-              <span className="text-sm text-muted-foreground">
-                {poem.like_count} {poem.like_count === 1 ? 'like' : 'likes'}
-              </span>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={handleLike}
-              >
-                <Heart
-                  className={`h-5 w-5 ${poem.user_liked ? 'fill-current text-red-500' : ''}`}
-                />
-              </Button>
+            <div className="flex gap-4 mb-8">
+              <Card className="border-2 shadow-lg flex-1 max-w-3xl">
+                <CardContent className="pt-6">
+                  <blockquote className="border-l-4 border-accent pl-4 text-base whitespace-pre-wrap font-serif text-foreground/90 leading-relaxed">
+                    {poem.content}
+                  </blockquote>
+                </CardContent>
+              </Card>
+              
+              <div className="flex flex-col items-center gap-2 pt-6">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={handleLike}
+                  className="h-10 w-10"
+                >
+                  <Heart
+                    className={`h-6 w-6 ${poem.user_liked ? 'fill-current text-red-500' : ''}`}
+                  />
+                </Button>
+                <span className="text-sm text-muted-foreground">
+                  {poem.like_count} {poem.like_count === 1 ? 'like' : 'likes'}
+                </span>
+              </div>
             </div>
-          </CardHeader>
-          <CardContent>
-            <blockquote className="border-l-4 border-accent pl-4 text-base whitespace-pre-wrap font-serif text-foreground/90 leading-relaxed">
-              {poem.content}
-            </blockquote>
-          </CardContent>
-        </Card>
 
         <div className="space-y-6">
           <h2 className="text-2xl font-semibold text-foreground">
