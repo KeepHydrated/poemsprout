@@ -207,12 +207,13 @@ const Gallery = () => {
                           {poem.profiles?.display_name || "Anonymous"}
                         </span>
                         <span className="mx-2">•</span>
-                        <span>{poem.poem_type}</span>
-                        <span className="mx-2">•</span>
                         <span>
                           {new Date(poem.created_at).toLocaleDateString()}
                         </span>
                       </CardDescription>
+                      <p className="text-sm text-muted-foreground mb-1">
+                        {poem.poem_type}
+                      </p>
                       <CardTitle className="text-2xl font-serif mb-2">
                         {poem.title}
                       </CardTitle>

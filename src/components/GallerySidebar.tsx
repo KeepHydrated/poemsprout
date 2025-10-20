@@ -213,6 +213,9 @@ const GallerySidebar = () => {
                           {poem.profiles?.display_name || "Anonymous"}
                         </span>
                       </CardDescription>
+                      <p className="text-xs text-muted-foreground mb-1">
+                        {poem.poem_type}
+                      </p>
                       <CardTitle className="text-lg font-serif line-clamp-2">
                         {poem.title}
                       </CardTitle>
@@ -237,9 +240,6 @@ const GallerySidebar = () => {
                   </div>
                 </CardHeader>
                 <CardContent className="pt-0">
-                  <p className="text-xs text-muted-foreground mb-2">
-                    {poem.poem_type}
-                  </p>
                   <blockquote className="border-l-2 border-accent pl-3 text-sm whitespace-pre-wrap font-serif text-foreground/80 leading-relaxed line-clamp-6">
                     {poem.content}
                   </blockquote>
