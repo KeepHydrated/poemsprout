@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Heart, Trash2, Upload } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Heart, Trash2, Upload, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import type { User } from "@supabase/supabase-js";
 
@@ -38,6 +39,9 @@ const MyPoems = () => {
   const [profile, setProfile] = useState<{ display_name: string | null; avatar_url: string | null; points: number } | null>(null);
   const [sortBy, setSortBy] = useState<"newest" | "oldest" | "most-liked">("newest");
   const [activeTab, setActiveTab] = useState<"published" | "saved">("published");
+  const [isPublishDialogOpen, setIsPublishDialogOpen] = useState(false);
+  const [isPublishing, setIsPublishing] = useState(false);
+  const [selectedDraft, setSelectedDraft] = useState<SavedPoem | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -187,52 +191,58 @@ const MyPoems = () => {
     }
   };
 
-  const handlePublishDraft = async (poem: SavedPoem) => {
-    if (!user) return;
+  const handlePublishDraft = async () => {
+    if (!user || !selectedDraft) return;
 
-    // Insert into published_poems
-    const { error: publishError } = await supabase
-      .from('published_poems')
-      .insert({
-        user_id: user.id,
-        content: poem.content,
-        poem_type: poem.poem_type,
-        original_topic: poem.original_topic,
-      });
+    setIsPublishing(true);
 
-    if (publishError) {
+    try {
+      // Insert into published_poems
+      const { error: publishError } = await supabase
+        .from('published_poems')
+        .insert({
+          user_id: user.id,
+          content: selectedDraft.content,
+          poem_type: selectedDraft.poem_type,
+          original_topic: selectedDraft.original_topic,
+        });
+
+      if (publishError) throw publishError;
+
+      // Delete from saved_poems
+      const { error: deleteError } = await supabase
+        .from('saved_poems')
+        .delete()
+        .eq('id', selectedDraft.id);
+
+      if (deleteError) {
+        toast({
+          title: "Warning",
+          description: "Poem published but failed to remove from drafts",
+          variant: "destructive",
+        });
+        setIsPublishing(false);
+        return;
+      }
+
       toast({
-        title: "Error",
-        description: "Failed to publish poem",
-        variant: "destructive",
+        title: "Published!",
+        description: "Your poem has been shared with the community.",
       });
-      return;
-    }
 
-    // Delete from saved_poems
-    const { error: deleteError } = await supabase
-      .from('saved_poems')
-      .delete()
-      .eq('id', poem.id);
-
-    if (deleteError) {
-      toast({
-        title: "Warning",
-        description: "Poem published but failed to remove from drafts",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    toast({
-      title: "Success",
-      description: "Poem published successfully!",
-    });
-
-    // Refresh both lists
-    if (user) {
+      // Refresh both lists
       loadPublishedPoems(user.id);
-      setSavedPoems(savedPoems.filter(p => p.id !== poem.id));
+      setSavedPoems(savedPoems.filter(p => p.id !== selectedDraft.id));
+      
+      setIsPublishDialogOpen(false);
+    } catch (error: any) {
+      toast({
+        title: "Publishing failed",
+        description: error.message || "Failed to publish poem. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsPublishing(false);
     }
   };
 
@@ -382,15 +392,43 @@ const MyPoems = () => {
                               </p>
                             </div>
                             <div className="flex items-center gap-2">
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => handlePublishDraft(poem)}
-                                className="text-primary hover:text-primary"
-                                title="Publish poem"
-                              >
-                                <Upload className="h-4 w-4" />
-                              </Button>
+                              <Dialog open={isPublishDialogOpen} onOpenChange={setIsPublishDialogOpen}>
+                                <DialogTrigger asChild>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={() => setSelectedDraft(poem)}
+                                    className="text-primary hover:text-primary"
+                                    title="Publish poem"
+                                  >
+                                    <Upload className="h-4 w-4" />
+                                  </Button>
+                                </DialogTrigger>
+                                <DialogContent>
+                                  <DialogHeader>
+                                    <DialogTitle>Publish Your Poem</DialogTitle>
+                                    <DialogDescription>
+                                      Share your poem with the community.
+                                    </DialogDescription>
+                                  </DialogHeader>
+                                  <div className="space-y-4 pt-4">
+                                    <Button
+                                      onClick={handlePublishDraft}
+                                      disabled={isPublishing}
+                                      className="w-full"
+                                    >
+                                      {isPublishing ? (
+                                        <>
+                                          <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                                          Publishing...
+                                        </>
+                                      ) : (
+                                        "Publish"
+                                      )}
+                                    </Button>
+                                  </div>
+                                </DialogContent>
+                              </Dialog>
                               <Button
                                 variant="ghost"
                                 size="icon"
