@@ -115,7 +115,10 @@ const Index = () => {
   const [isSaveDialogOpen, setIsSaveDialogOpen] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const [usedTopics, setUsedTopics] = useState<string[]>([]);
+  const [usedTopics, setUsedTopics] = useState<string[]>(() => {
+    const saved = localStorage.getItem('usedTopics');
+    return saved ? JSON.parse(saved) : [];
+  });
   const [user, setUser] = useState<any>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -132,6 +135,11 @@ const Index = () => {
 
     return () => subscription.unsubscribe();
   }, []);
+
+  // Save used topics to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem('usedTopics', JSON.stringify(usedTopics));
+  }, [usedTopics]);
 
 
   const currentPoem = poemTypes[selectedPoem];
