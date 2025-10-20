@@ -200,43 +200,39 @@ const GallerySidebar = () => {
             {poems.map((poem) => (
               <Card key={poem.id} className="border hover:shadow-md transition-shadow">
                 <CardHeader className="pb-3">
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="flex-1 min-w-0">
-                      <CardDescription className="flex items-center gap-1 text-xs mb-2">
-                        <Avatar className="h-4 w-4">
-                          <AvatarFallback className="text-[8px]">
-                            {poem.profiles?.display_name?.[0]?.toUpperCase() || "A"}
-                          </AvatarFallback>
-                        </Avatar>
-                        <span className="truncate">
-                          {poem.profiles?.display_name || "Anonymous"}
+                  <div className="flex items-center justify-end gap-1 mb-2">
+                    <span className="text-xs text-muted-foreground">
+                      {new Date(poem.created_at).toLocaleDateString()}
+                    </span>
+                    <div className="flex items-center gap-1">
+                      {poem.like_count! > 0 && (
+                        <span className="text-xs text-muted-foreground">
+                          {poem.like_count}
                         </span>
-                        <span className="text-muted-foreground">• {poem.profiles?.points || 0} pts</span>
-                      </CardDescription>
-                    </div>
-                    <div className="flex flex-col items-end gap-1 shrink-0">
-                      <span className="text-xs text-muted-foreground">
-                        {new Date(poem.created_at).toLocaleDateString()}
-                      </span>
-                      <div className="flex items-center gap-1">
-                        {poem.like_count! > 0 && (
-                          <span className="text-xs text-muted-foreground">
-                            {poem.like_count}
-                          </span>
-                        )}
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8"
-                          onClick={() => handleLike(poem.id)}
-                        >
-                          <Heart
-                            className={`h-4 w-4 ${poem.user_liked ? 'fill-current text-red-500' : ''}`}
-                          />
-                        </Button>
-                      </div>
+                      )}
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8"
+                        onClick={() => handleLike(poem.id)}
+                      >
+                        <Heart
+                          className={`h-4 w-4 ${poem.user_liked ? 'fill-current text-red-500' : ''}`}
+                        />
+                      </Button>
                     </div>
                   </div>
+                  <CardDescription className="flex items-center gap-1 text-xs mb-2">
+                    <Avatar className="h-4 w-4">
+                      <AvatarFallback className="text-[8px]">
+                        {poem.profiles?.display_name?.[0]?.toUpperCase() || "A"}
+                      </AvatarFallback>
+                    </Avatar>
+                    <span className="truncate">
+                      {poem.profiles?.display_name || "Anonymous"}
+                    </span>
+                    <span className="text-muted-foreground">• {poem.profiles?.points || 0} pts</span>
+                  </CardDescription>
                   <p className="text-xs text-foreground/80 mb-1">
                     {poem.original_topic && <span>{poem.original_topic} • </span>}
                     {poem.poem_type}
