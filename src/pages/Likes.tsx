@@ -159,81 +159,75 @@ const Likes = () => {
   }
 
   return (
-    <div className="min-h-screen p-8">
-      <div className="max-w-4xl mx-auto">
-        <h1 className="text-4xl font-bold mb-2">Your Liked Poems</h1>
-        <p className="text-muted-foreground mb-8">
-          All the poems you've hearted
-        </p>
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-secondary/20">
+      <div className="container mx-auto px-4 py-16 max-w-4xl">
+        <header className="mb-12">
+          <p className="text-lg text-muted-foreground">
+            All the poems you've hearted
+          </p>
+        </header>
 
         {likedPoems.length === 0 ? (
-          <Card>
-            <CardContent className="p-8 text-center">
-              <Heart className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+          <Card className="border-2">
+            <CardContent className="py-12 text-center">
               <p className="text-muted-foreground">
                 You haven't liked any poems yet. Visit the gallery to start liking poems!
               </p>
-              <Button onClick={() => navigate("/gallery")} className="mt-4">
-                Go to Gallery
-              </Button>
             </CardContent>
           </Card>
         ) : (
-          <div className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {likedPoems.map((poem) => (
-              <Card key={poem.id} className="hover:shadow-lg transition-shadow">
-                <CardContent className="pt-6">
-                  {/* Header with date and like count */}
-                  <div className="flex justify-between items-start mb-4">
-                    <span className="text-muted-foreground text-sm">
+              <Card key={poem.id} className="border hover:shadow-lg transition-shadow">
+                <CardHeader className="pb-3">
+                  <div className="flex items-center justify-between gap-2 mb-2">
+                    <span className="text-xs text-muted-foreground">
                       {new Date(poem.created_at).toLocaleDateString()}
                     </span>
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium">{poem.like_count}</span>
+                    <div className="flex items-center gap-1">
+                      {poem.like_count > 0 && (
+                        <span className="text-xs text-muted-foreground">
+                          {poem.like_count}
+                        </span>
+                      )}
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="h-8 w-8 -mr-2"
+                        className="h-8 w-8"
                         onClick={() => handleUnlike(poem.like_id)}
                       >
-                        <Heart className="h-5 w-5 fill-current text-red-500" />
+                        <Heart className="h-4 w-4 fill-current text-red-500" />
                       </Button>
                     </div>
                   </div>
-
-                  {/* Topic and type */}
-                  <div className="mb-4">
-                    <p className="text-foreground font-medium">
-                      {poem.original_topic && <span>{poem.original_topic} • </span>}
-                      {poem.poem_type}
-                    </p>
-                  </div>
-
-                  {/* Poem content with left border */}
-                  <div className="border-l-4 border-primary pl-4 mb-4">
-                    <p className="whitespace-pre-wrap text-foreground/90 font-serif text-lg leading-relaxed">
-                      {poem.content}
-                    </p>
-                  </div>
-
-                  {/* Author info */}
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <p className="text-xs text-foreground/80 mb-1">
+                    {poem.original_topic && <span>{poem.original_topic} • </span>}
+                    {poem.poem_type}
+                  </p>
+                </CardHeader>
+                <CardContent className="pt-0">
+                  <blockquote className="border-l-2 border-accent pl-3 text-sm whitespace-pre-wrap font-serif text-foreground/80 leading-relaxed mb-3">
+                    {poem.content}
+                  </blockquote>
+                  <CardDescription className="flex items-center gap-1 text-xs">
                     <button
                       onClick={() => navigate(`/profile/${poem.user_id}`)}
-                      className="flex items-center gap-2 hover:text-foreground transition-colors cursor-pointer"
+                      className="flex items-center gap-1 hover:text-foreground transition-colors cursor-pointer"
                     >
-                      <Avatar className="h-6 w-6">
-                        <AvatarFallback className="text-xs bg-muted">
+                      <Avatar className="h-4 w-4">
+                        <AvatarFallback className="text-[8px]">
                           {poem.profiles?.display_name?.[0]?.toUpperCase() || "A"}
                         </AvatarFallback>
                       </Avatar>
-                      <span>{poem.profiles?.display_name || "Anonymous"}</span>
+                      <span className="truncate">
+                        {poem.profiles?.display_name || "Anonymous"}
+                      </span>
                     </button>
-                    <span>•</span>
-                    <span>{poem.profiles?.points || 0} pts</span>
-                  </div>
+                    <span className="text-muted-foreground">• {poem.profiles?.points || 0} pts</span>
+                  </CardDescription>
                 </CardContent>
               </Card>
+            
             ))}
           </div>
         )}
