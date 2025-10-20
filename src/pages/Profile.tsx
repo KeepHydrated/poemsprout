@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -28,8 +28,12 @@ interface PublishedPoem {
 }
 
 const Profile = () => {
+  const { userId } = useParams();
   const [user, setUser] = useState<User | null>(null);
+  const [profileUserId, setProfileUserId] = useState<string | null>(null);
+  const [isOwnProfile, setIsOwnProfile] = useState(false);
   const [displayName, setDisplayName] = useState("");
+  const [points, setPoints] = useState(0);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [savedPoems, setSavedPoems] = useState<SavedPoem[]>([]);
@@ -42,51 +46,81 @@ const Profile = () => {
     const loadProfile = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       
-      if (!session?.user) {
-        navigate("/auth");
-        return;
+      // If viewing another user's profile (userId in URL)
+      if (userId) {
+        setProfileUserId(userId);
+        setIsOwnProfile(session?.user?.id === userId);
+        
+        // Fetch the profile data for this user
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("display_name, points")
+          .eq("id", userId)
+          .maybeSingle();
+
+        if (profile) {
+          setDisplayName(profile.display_name || "Anonymous");
+          setPoints(profile.points || 0);
+        }
+
+        setLoading(false);
+        loadPoems(userId);
+        if (session?.user) {
+          setUser(session.user);
+        }
+      } else {
+        // Viewing own profile (no userId in URL)
+        if (!session?.user) {
+          navigate("/auth");
+          return;
+        }
+
+        setUser(session.user);
+        setProfileUserId(session.user.id);
+        setIsOwnProfile(true);
+
+        // Fetch profile data
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("display_name, points")
+          .eq("id", session.user.id)
+          .maybeSingle();
+
+        if (profile) {
+          setDisplayName(profile.display_name || "");
+          setPoints(profile.points || 0);
+        }
+
+        setLoading(false);
+        
+        // Load poems
+        loadPoems(session.user.id);
       }
-
-      setUser(session.user);
-
-      // Fetch profile data
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("display_name")
-        .eq("id", session.user.id)
-        .maybeSingle();
-
-      if (profile) {
-        setDisplayName(profile.display_name || "");
-      }
-
-      setLoading(false);
-      
-      // Load poems
-      loadPoems(session.user.id);
     };
 
     loadProfile();
-  }, [navigate]);
+  }, [navigate, userId]);
 
   const loadPoems = async (userId: string) => {
     setLoadingPoems(true);
     
-    // Fetch saved poems
-    const { data: saved } = await supabase
-      .from("saved_poems")
-      .select("*")
-      .eq("user_id", userId)
-      .order("created_at", { ascending: false });
+    // Only fetch saved poems if viewing own profile
+    if (isOwnProfile) {
+      const { data: saved } = await supabase
+        .from("saved_poems")
+        .select("*")
+        .eq("user_id", userId)
+        .order("created_at", { ascending: false });
+      setSavedPoems(saved || []);
+    }
 
-    // Fetch published poems
+    // Fetch published poems (visible to everyone)
     const { data: published } = await supabase
       .from("published_poems")
       .select("*")
       .eq("user_id", userId)
       .order("created_at", { ascending: false });
 
-    setSavedPoems(saved || []);
     setPublishedPoems(published || []);
     setLoadingPoems(false);
   };
@@ -169,10 +203,6 @@ const Profile = () => {
     );
   }
 
-  if (!user) {
-    return null;
-  }
-
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
@@ -196,78 +226,91 @@ const Profile = () => {
       <div className="mb-8">
         <Card>
           <CardHeader>
-            <CardTitle className="text-3xl font-serif">Profile</CardTitle>
-            <CardDescription>Manage your account information</CardDescription>
+            <CardTitle className="text-3xl font-serif">
+              {isOwnProfile ? "My Profile" : `${displayName}'s Profile`}
+            </CardTitle>
+            <CardDescription>
+              {isOwnProfile ? "Manage your account information" : "View user profile"}
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="flex items-center gap-4">
               <Avatar className="h-20 w-20">
-                <AvatarImage src={user.user_metadata?.avatar_url} alt={user.email || "User"} />
                 <AvatarFallback className="text-2xl">
-                  <UserIcon className="h-10 w-10" />
+                  {displayName?.[0]?.toUpperCase() || "A"}
                 </AvatarFallback>
               </Avatar>
               <div>
                 <h3 className="font-semibold text-lg">{displayName || "Anonymous"}</h3>
-                <p className="text-sm text-muted-foreground">{user.email}</p>
+                <p className="text-sm text-muted-foreground">{points} points</p>
               </div>
             </div>
 
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={user.email || ""}
-                  disabled
-                  className="bg-muted"
-                />
-              </div>
+            {isOwnProfile && user && (
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={user.email || ""}
+                    disabled
+                    className="bg-muted"
+                  />
+                </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="displayName">Display Name</Label>
-                <Input
-                  id="displayName"
-                  type="text"
-                  value={displayName}
-                  onChange={(e) => setDisplayName(e.target.value)}
-                  placeholder="Enter your display name"
-                />
-              </div>
+                <div className="space-y-2">
+                  <Label htmlFor="displayName">Display Name</Label>
+                  <Input
+                    id="displayName"
+                    type="text"
+                    value={displayName}
+                    onChange={(e) => setDisplayName(e.target.value)}
+                    placeholder="Enter your display name"
+                  />
+                </div>
 
-              <Button onClick={handleSave} disabled={saving} className="w-full">
-                {saving ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Saving...
-                  </>
-                ) : (
-                  "Save Changes"
-                )}
-              </Button>
-            </div>
+                <Button onClick={handleSave} disabled={saving} className="w-full">
+                  {saving ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Saving...
+                    </>
+                  ) : (
+                    "Save Changes"
+                  )}
+                </Button>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-2xl font-serif">My Poems</CardTitle>
-          <CardDescription>View and manage your saved and published poems</CardDescription>
+          <CardTitle className="text-2xl font-serif">
+            {isOwnProfile ? "My Poems" : "Published Poems"}
+          </CardTitle>
+          <CardDescription>
+            {isOwnProfile 
+              ? "View and manage your saved and published poems" 
+              : `Poems published by ${displayName}`
+            }
+          </CardDescription>
         </CardHeader>
         <CardContent>
-          <Tabs defaultValue="saved" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="saved" className="gap-2">
-                <BookMarked className="h-4 w-4" />
-                Saved ({savedPoems.length})
-              </TabsTrigger>
-              <TabsTrigger value="published" className="gap-2">
-                <Globe className="h-4 w-4" />
-                Published ({publishedPoems.length})
-              </TabsTrigger>
-            </TabsList>
+          {isOwnProfile ? (
+            <Tabs defaultValue="saved" className="w-full">
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="saved" className="gap-2">
+                  <BookMarked className="h-4 w-4" />
+                  Saved ({savedPoems.length})
+                </TabsTrigger>
+                <TabsTrigger value="published" className="gap-2">
+                  <Globe className="h-4 w-4" />
+                  Published ({publishedPoems.length})
+                </TabsTrigger>
+              </TabsList>
 
             <TabsContent value="saved" className="mt-6">
               {loadingPoems ? (
@@ -370,6 +413,43 @@ const Profile = () => {
               )}
             </TabsContent>
           </Tabs>
+          ) : (
+            // Public view - only show published poems
+            <div className="mt-6">
+              {loadingPoems ? (
+                <div className="flex justify-center py-12">
+                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                </div>
+              ) : publishedPoems.length === 0 ? (
+                <div className="text-center py-12">
+                  <Globe className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+                  <p className="text-muted-foreground">No published poems yet</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {publishedPoems.map((poem) => (
+                    <Card key={poem.id}>
+                      <CardHeader>
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <CardDescription className="mt-1">
+                              {poemTypeLabels[poem.poem_type] || poem.poem_type} • Published on {formatDate(poem.created_at)}
+                              {poem.original_topic && ` • Topic: ${poem.original_topic}`}
+                            </CardDescription>
+                          </div>
+                        </div>
+                      </CardHeader>
+                      <CardContent>
+                        <p className="whitespace-pre-wrap font-serif text-foreground/90">
+                          {poem.content}
+                        </p>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
