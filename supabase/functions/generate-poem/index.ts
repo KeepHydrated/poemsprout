@@ -71,6 +71,16 @@ serve(async (req) => {
       }
 
       const topicData = await topicResponse.json();
+      console.log('Topic response data:', JSON.stringify(topicData));
+      
+      if (!topicData.choices || !topicData.choices[0] || !topicData.choices[0].message) {
+        console.error('Invalid topic response structure:', topicData);
+        return new Response(
+          JSON.stringify({ error: 'Invalid response from AI. Please try again.' }),
+          { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+      
       const generatedTopic = topicData.choices[0].message.content.trim();
 
       console.log('Generated topic:', generatedTopic);
@@ -134,6 +144,13 @@ serve(async (req) => {
     }
 
     const data = await response.json();
+    console.log('Poem response data:', JSON.stringify(data));
+    
+    if (!data.choices || !data.choices[0] || !data.choices[0].message) {
+      console.error('Invalid poem response structure:', data);
+      throw new Error('Invalid response from AI. Please try again.');
+    }
+    
     const poem = data.choices[0].message.content;
 
     console.log('Generated poem successfully');
