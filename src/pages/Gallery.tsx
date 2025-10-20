@@ -212,19 +212,22 @@ const Gallery = () => {
                         </span>
                       </CardDescription>
                     </div>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleLike(poem.id)}
-                      className="shrink-0"
-                    >
-                      <Heart
-                        className={`h-5 w-5 ${poem.user_liked ? 'fill-current text-red-500' : ''}`}
-                      />
+                    <div className="flex items-center gap-1 shrink-0">
                       {poem.like_count! > 0 && (
-                        <span className="ml-1 text-sm">{poem.like_count}</span>
+                        <span className="text-sm text-muted-foreground">
+                          {poem.like_count}
+                        </span>
                       )}
-                    </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleLike(poem.id)}
+                      >
+                        <Heart
+                          className={`h-5 w-5 ${poem.user_liked ? 'fill-current text-red-500' : ''}`}
+                        />
+                      </Button>
+                    </div>
                   </div>
                 </CardHeader>
                 <CardContent>

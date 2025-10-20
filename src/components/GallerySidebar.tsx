@@ -212,16 +212,23 @@ const GallerySidebar = () => {
                         </span>
                       </CardDescription>
                     </div>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8 shrink-0"
-                      onClick={() => handleLike(poem.id)}
-                    >
-                      <Heart
-                        className={`h-4 w-4 ${poem.user_liked ? 'fill-current text-red-500' : ''}`}
-                      />
-                    </Button>
+                    <div className="flex items-center gap-1 shrink-0">
+                      {poem.like_count! > 0 && (
+                        <span className="text-xs text-muted-foreground">
+                          {poem.like_count}
+                        </span>
+                      )}
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8"
+                        onClick={() => handleLike(poem.id)}
+                      >
+                        <Heart
+                          className={`h-4 w-4 ${poem.user_liked ? 'fill-current text-red-500' : ''}`}
+                        />
+                      </Button>
+                    </div>
                   </div>
                 </CardHeader>
                 <CardContent className="pt-0">
@@ -231,11 +238,6 @@ const GallerySidebar = () => {
                   <blockquote className="border-l-2 border-accent pl-3 text-sm whitespace-pre-wrap font-serif text-foreground/80 leading-relaxed line-clamp-6">
                     {poem.content}
                   </blockquote>
-                  {poem.like_count! > 0 && (
-                    <p className="text-xs text-muted-foreground mt-2">
-                      {poem.like_count} {poem.like_count === 1 ? 'like' : 'likes'}
-                    </p>
-                  )}
                 </CardContent>
               </Card>
             ))}
