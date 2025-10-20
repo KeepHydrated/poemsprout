@@ -127,13 +127,32 @@ const Settings = () => {
         {/* Profile Picture Card */}
         <div className="bg-card border rounded-2xl p-8 md:p-12">
           <div className="space-y-6">
-            <div>
-              <h2 className="text-3xl font-bold text-foreground mb-2">
-                Profile Picture
-              </h2>
-              <p className="text-muted-foreground text-lg">
-                Upload and manage your profile picture
-              </p>
+            <div className="flex justify-between items-start">
+              <div>
+                <h2 className="text-3xl font-bold text-foreground mb-2">
+                  Profile Picture
+                </h2>
+                <p className="text-muted-foreground text-lg">
+                  Upload and manage your profile picture
+                </p>
+              </div>
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleAvatarUpload}
+                accept="image/*"
+                className="hidden"
+              />
+              <Button
+                onClick={() => fileInputRef.current?.click()}
+                variant="outline"
+                size="lg"
+                className="h-14 px-8"
+                disabled={uploading}
+              >
+                <Edit className="mr-2" />
+                {uploading ? "Uploading..." : "Edit"}
+              </Button>
             </div>
 
             <div className="flex flex-col items-start gap-4">
@@ -150,32 +169,13 @@ const Settings = () => {
 
             <div className="space-y-3">
               <Label className="text-lg font-semibold">Username</Label>
-              <div className="space-y-4">
-                <Input
-                  type="text"
-                  value={displayName}
-                  onChange={(e) => setDisplayName(e.target.value)}
-                  placeholder="Enter your username"
-                  className="h-14 text-lg"
-                />
-                <input
-                  type="file"
-                  ref={fileInputRef}
-                  onChange={handleAvatarUpload}
-                  accept="image/*"
-                  className="hidden"
-                />
-                <Button
-                  onClick={() => fileInputRef.current?.click()}
-                  variant="outline"
-                  size="lg"
-                  className="w-full h-14"
-                  disabled={uploading}
-                >
-                  <Edit className="mr-2" />
-                  {uploading ? "Uploading..." : "Edit"}
-                </Button>
-              </div>
+              <Input
+                type="text"
+                value={displayName}
+                onChange={(e) => setDisplayName(e.target.value)}
+                placeholder="Enter your username"
+                className="h-14 text-lg"
+              />
             </div>
           </div>
         </div>
