@@ -26,69 +26,77 @@ serve(async (req) => {
         ? `\n\nDo NOT suggest any of these recently used topics: ${recentTopics.slice(0, 15).join(', ')}`
         : '';
       
-      const topicResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${LOVABLE_API_KEY}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          model: 'google/gemini-2.5-flash',
-          messages: [
-            { 
-              role: 'system', 
-              content: 'You generate names of famous songs, poems, novels, and plays. Return ONLY the work title with artist/author, nothing else. No quotes, no extra text.' 
-            },
-            { 
-              role: 'user', 
-              content: `Give me one random topic. 80% of the time, choose a famous song, poem, novel, or play (include the artist or author name). 20% of the time, generate a completely random whimsical scenario. Examples of famous works: "Bohemian Rhapsody" by Queen, "The Raven" by Edgar Allan Poe, "Pride and Prejudice" by Jane Austen, "Romeo and Juliet" by Shakespeare. Examples of random scenarios: "green lizards eating pizza", "dancing robots in a library", "cats teaching yoga"${avoidList}` 
-            }
-          ],
-        }),
-      });
+      try {
+        const topicResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${LOVABLE_API_KEY}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            model: 'google/gemini-2.5-flash',
+            messages: [
+              { 
+                role: 'system', 
+                content: 'You generate names of famous songs, poems, novels, and plays. Return ONLY the work title with artist/author, nothing else. No quotes, no extra text.' 
+              },
+              { 
+                role: 'user', 
+                content: `Give me one random topic. 80% of the time, choose a famous song, poem, novel, or play (include the artist or author name). 20% of the time, generate a completely random whimsical scenario. Examples of famous works: "Bohemian Rhapsody" by Queen, "The Raven" by Edgar Allan Poe, "Pride and Prejudice" by Jane Austen, "Romeo and Juliet" by Shakespeare. Examples of random scenarios: "green lizards eating pizza", "dancing robots in a library", "cats teaching yoga"${avoidList}` 
+              }
+            ],
+          }),
+        });
 
-      if (!topicResponse.ok) {
-        const errorText = await topicResponse.text();
-        console.error('Topic generation error:', topicResponse.status, errorText);
-        
-        if (topicResponse.status === 429) {
+        if (!topicResponse.ok) {
+          const errorText = await topicResponse.text();
+          console.error('Topic generation error:', topicResponse.status, errorText);
+          
+          if (topicResponse.status === 429) {
+            return new Response(
+              JSON.stringify({ error: 'Rate limit exceeded. Please try again in a moment.' }),
+              { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+            );
+          }
+          if (topicResponse.status === 402) {
+            return new Response(
+              JSON.stringify({ error: 'Service temporarily unavailable. Please try again.' }),
+              { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+            );
+          }
+          
           return new Response(
-            JSON.stringify({ error: 'Rate limit exceeded. Please try again later.' }),
-            { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+            JSON.stringify({ error: `AI service error (${topicResponse.status}). Please try again.` }),
+            { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
           );
         }
-        if (topicResponse.status === 402) {
+
+        const topicData = await topicResponse.json();
+        console.log('Topic response received successfully');
+        
+        if (!topicData.choices || !topicData.choices[0] || !topicData.choices[0].message) {
+          console.error('Invalid topic response structure:', topicData);
           return new Response(
-            JSON.stringify({ error: 'Payment required. Please add credits to your workspace.' }),
-            { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+            JSON.stringify({ error: 'Invalid response from AI. Please try again.' }),
+            { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
           );
         }
         
+        const generatedTopic = topicData.choices[0].message.content.trim();
+
+        console.log('Generated topic:', generatedTopic);
+
         return new Response(
-          JSON.stringify({ error: 'Failed to generate random topic. Please try again.' }),
+          JSON.stringify({ topic: generatedTopic }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      } catch (topicError) {
+        console.error('Topic generation error:', topicError);
+        return new Response(
+          JSON.stringify({ error: 'Failed to generate topic. Please try again.' }),
           { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
       }
-
-      const topicData = await topicResponse.json();
-      console.log('Topic response data:', JSON.stringify(topicData));
-      
-      if (!topicData.choices || !topicData.choices[0] || !topicData.choices[0].message) {
-        console.error('Invalid topic response structure:', topicData);
-        return new Response(
-          JSON.stringify({ error: 'Invalid response from AI. Please try again.' }),
-          { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
-      }
-      
-      const generatedTopic = topicData.choices[0].message.content.trim();
-
-      console.log('Generated topic:', generatedTopic);
-
-      return new Response(
-        JSON.stringify({ topic: generatedTopic }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
     }
 
     console.log('Generating poem about:', topic, 'type:', poemType);
