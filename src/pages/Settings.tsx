@@ -13,6 +13,7 @@ const Settings = () => {
   const [user, setUser] = useState<User | null>(null);
   const [displayName, setDisplayName] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
+  const [points, setPoints] = useState(0);
   const [uploading, setUploading] = useState(false);
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -44,13 +45,14 @@ const Settings = () => {
   const loadProfile = async (userId: string) => {
     const { data, error } = await supabase
       .from('profiles')
-      .select('display_name, avatar_url')
+      .select('display_name, avatar_url, points')
       .eq('id', userId)
       .single();
 
     if (!error && data) {
       setDisplayName(data.display_name || "");
       setAvatarUrl(data.avatar_url || "");
+      setPoints(data.points || 0);
     }
   };
 
@@ -157,7 +159,7 @@ const Settings = () => {
                   Profile Picture
                 </h2>
                 <p className="text-muted-foreground text-lg">
-                  Upload and manage your profile picture
+                  Upload and manage your profile picture • <span className="font-semibold text-primary">{points} points</span>
                 </p>
               </div>
               {!isEditingProfile ? (
