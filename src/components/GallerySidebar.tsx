@@ -17,6 +17,7 @@ type PublishedPoem = {
   user_id: string;
   profiles: {
     display_name: string | null;
+    points: number;
   } | null;
   like_count?: number;
   user_liked?: boolean;
@@ -69,7 +70,7 @@ const GallerySidebar = () => {
 
         const { data: profilesData } = await supabase
           .from("profiles")
-          .select("id, display_name")
+          .select("id, display_name, points")
           .in("id", userIds);
 
         // Get like counts
@@ -210,6 +211,7 @@ const GallerySidebar = () => {
                         <span className="truncate">
                           {poem.profiles?.display_name || "Anonymous"}
                         </span>
+                        <span className="text-muted-foreground">• {poem.profiles?.points || 0} pts</span>
                       </CardDescription>
                       <p className="text-xs text-foreground/80 mb-1 mt-4">
                         {poem.original_topic && <span>{poem.original_topic} • </span>}
