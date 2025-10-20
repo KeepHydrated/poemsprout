@@ -38,6 +38,10 @@ All colors MUST be HSL.
 
     --radius: 0.75rem;
     
+    --upvote: 16 100% 50%;
+    --downvote: 221 100% 70%;
+    --comment-hover: 40 30% 96%;
+    
     --gradient-literary: linear-gradient(135deg, hsl(243 75% 25%), hsl(243 55% 35%));
     --shadow-elegant: 0 10px 30px -10px hsl(243 75% 25% / 0.2);
 
@@ -86,6 +90,10 @@ All colors MUST be HSL.
     --border: 240 40% 20%;
     --input: 240 40% 20%;
     --ring: 42 100% 88%;
+    
+    --upvote: 16 100% 50%;
+    --downvote: 221 100% 70%;
+    --comment-hover: 240 40% 15%;
     
     --gradient-literary: linear-gradient(135deg, hsl(243 55% 35%), hsl(243 75% 45%));
     --shadow-elegant: 0 10px 30px -10px hsl(42 100% 88% / 0.1);

@@ -465,6 +465,8 @@ const PoemDetail = () => {
                     user={user}
                     onReply={setReplyingTo}
                     onDelete={handleDeleteComment}
+                    onRefresh={fetchComments}
+                    poemId={id!}
                     depth={0}
                   />
                 </div>
@@ -484,11 +486,15 @@ type CommentItemProps = {
   user: any;
   onReply: (id: string) => void;
   onDelete: (id: string) => void;
+  onRefresh: () => void;
+  poemId: string;
   depth?: number;
 };
 
-const CommentItem = ({ comment, user, onReply, onDelete, depth = 0 }: CommentItemProps) => {
+const CommentItem = ({ comment, user, onReply, onDelete, onRefresh, poemId, depth = 0 }: CommentItemProps) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [showReply, setShowReply] = useState(false);
+  const [replyText, setReplyText] = useState("");
   const [votes, setVotes] = useState(0);
   const [voteState, setVoteState] = useState<"up" | "down" | null>(null);
 
@@ -502,6 +508,29 @@ const CommentItem = ({ comment, user, onReply, onDelete, depth = 0 }: CommentIte
     } else {
       setVotes(type === "up" ? 2 : -2);
       setVoteState(type);
+    }
+  };
+
+  const handleReply = async () => {
+    if (!replyText.trim() || !user) return;
+
+    try {
+      const { error } = await supabase
+        .from("poem_comments")
+        .insert({
+          poem_id: poemId,
+          user_id: user.id,
+          content: replyText.trim(),
+          parent_comment_id: comment.id,
+        });
+
+      if (error) throw error;
+
+      setReplyText("");
+      setShowReply(false);
+      onRefresh();
+    } catch (error: any) {
+      console.error("Error posting reply:", error);
     }
   };
 
@@ -527,8 +556,8 @@ const CommentItem = ({ comment, user, onReply, onDelete, depth = 0 }: CommentIte
         <div className="flex flex-col items-center gap-1 pt-1">
           <button
             onClick={() => handleVote("up")}
-            className={`p-1 rounded hover:bg-primary/10 transition-colors ${
-              voteState === "up" ? "text-primary" : "text-muted-foreground"
+            className={`p-1 rounded hover:bg-upvote/10 transition-colors ${
+              voteState === "up" ? "text-upvote" : "text-muted-foreground"
             }`}
             aria-label="Upvote"
           >
@@ -537,9 +566,9 @@ const CommentItem = ({ comment, user, onReply, onDelete, depth = 0 }: CommentIte
           <span
             className={`text-xs font-bold min-w-[24px] text-center ${
               voteState === "up"
-                ? "text-primary"
+                ? "text-upvote"
                 : voteState === "down"
-                ? "text-destructive"
+                ? "text-downvote"
                 : "text-foreground"
             }`}
           >
@@ -547,8 +576,8 @@ const CommentItem = ({ comment, user, onReply, onDelete, depth = 0 }: CommentIte
           </span>
           <button
             onClick={() => handleVote("down")}
-            className={`p-1 rounded hover:bg-destructive/10 transition-colors ${
-              voteState === "down" ? "text-destructive" : "text-muted-foreground"
+            className={`p-1 rounded hover:bg-downvote/10 transition-colors ${
+              voteState === "down" ? "text-downvote" : "text-muted-foreground"
             }`}
             aria-label="Downvote"
           >
@@ -588,7 +617,7 @@ const CommentItem = ({ comment, user, onReply, onDelete, depth = 0 }: CommentIte
               <div className="flex items-center gap-3 mb-2">
                 {user && (
                   <button
-                    onClick={() => onReply(comment.id)}
+                    onClick={() => setShowReply(!showReply)}
                     className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
                   >
                     <MessageSquare className="w-3 h-3" />
@@ -606,6 +635,33 @@ const CommentItem = ({ comment, user, onReply, onDelete, depth = 0 }: CommentIte
                 )}
               </div>
 
+              {showReply && (
+                <div className="mb-3 p-3 bg-comment-hover rounded-lg">
+                  <Textarea
+                    value={replyText}
+                    onChange={(e) => setReplyText(e.target.value)}
+                    placeholder="Write a reply..."
+                    className="min-h-[80px] resize-none mb-2"
+                  />
+                  <div className="flex gap-2 justify-end">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setShowReply(false)}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      size="sm"
+                      onClick={handleReply}
+                      disabled={!replyText.trim()}
+                    >
+                      Reply
+                    </Button>
+                  </div>
+                </div>
+              )}
+
               {comment.replies && comment.replies.length > 0 && depth < 8 && (
                 <div className="mt-2 space-y-2 border-l-2 border-border pl-4">
                   {comment.replies.map((reply) => (
@@ -615,6 +671,8 @@ const CommentItem = ({ comment, user, onReply, onDelete, depth = 0 }: CommentIte
                       user={user}
                       onReply={onReply}
                       onDelete={onDelete}
+                      onRefresh={onRefresh}
+                      poemId={poemId}
                       depth={depth + 1}
                     />
                   ))}

@@ -57,6 +57,9 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        upvote: "hsl(var(--upvote))",
+        downvote: "hsl(var(--downvote))",
+        "comment-hover": "hsl(var(--comment-hover))",
       },
       borderRadius: {
         lg: "var(--radius)",
