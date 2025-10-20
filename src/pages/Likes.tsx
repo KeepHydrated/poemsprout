@@ -182,12 +182,8 @@ const Likes = () => {
                         <span>•</span>
                         <span>{new Date(poem.created_at).toLocaleDateString()}</span>
                       </CardDescription>
-                      {poem.original_topic && (
-                        <p className="text-sm text-muted-foreground mb-1">
-                          {poem.original_topic}
-                        </p>
-                      )}
                       <p className="text-sm text-muted-foreground mb-1">
+                        {poem.original_topic && <span>{poem.original_topic} • </span>}
                         {poem.poem_type}
                       </p>
                       <CardTitle className="text-2xl mb-2">{poem.title}</CardTitle>

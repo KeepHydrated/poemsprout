@@ -213,12 +213,8 @@ const GallerySidebar = () => {
                           {poem.profiles?.display_name || "Anonymous"}
                         </span>
                       </CardDescription>
-                      {poem.original_topic && (
-                        <p className="text-xs text-muted-foreground mb-1">
-                          {poem.original_topic}
-                        </p>
-                      )}
                       <p className="text-xs text-muted-foreground mb-1">
+                        {poem.original_topic && <span>{poem.original_topic} • </span>}
                         {poem.poem_type}
                       </p>
                       <CardTitle className="text-lg font-serif line-clamp-2">
