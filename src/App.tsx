@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Header from "./components/Header";
 import Index from "./pages/Index";
 import Poem from "./pages/Poem";
+import PoemDetail from "./pages/PoemDetail";
 import Auth from "./pages/Auth";
 import Gallery from "./pages/Gallery";
 import Profile from "./pages/Profile";
@@ -26,6 +27,7 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/poem" element={<Poem />} />
+          <Route path="/poem/:id" element={<PoemDetail />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/gallery" element={<Gallery />} />
           <Route path="/profile/:userId" element={<Profile />} />

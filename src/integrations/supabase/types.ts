@@ -14,6 +14,41 @@ export type Database = {
   }
   public: {
     Tables: {
+      poem_comments: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          poem_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          poem_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          poem_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "poem_comments_poem_id_fkey"
+            columns: ["poem_id"]
+            isOneToOne: false
+            referencedRelation: "published_poems"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       poem_likes: {
         Row: {
           created_at: string

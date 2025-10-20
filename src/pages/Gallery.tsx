@@ -261,7 +261,11 @@ const Gallery = () => {
                 return matchesType && matchesSearch;
               })
               .map((poem) => (
-              <Card key={poem.id} className="border hover:shadow-lg transition-shadow">
+              <Card 
+                key={poem.id} 
+                className="border hover:shadow-lg transition-shadow cursor-pointer"
+                onClick={() => navigate(`/poem/${poem.id}`)}
+              >
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between gap-2 mb-2">
                     <span className="text-xs text-muted-foreground">
@@ -277,7 +281,10 @@ const Gallery = () => {
                         variant="ghost"
                         size="icon"
                         className="h-8 w-8"
-                        onClick={() => handleLike(poem.id)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleLike(poem.id);
+                        }}
                       >
                         <Heart
                           className={`h-4 w-4 ${poem.user_liked ? 'fill-current text-red-500' : ''}`}
