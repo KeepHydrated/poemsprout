@@ -19,6 +19,7 @@ export type Database = {
           content: string
           created_at: string
           id: string
+          parent_comment_id: string | null
           poem_id: string
           updated_at: string
           user_id: string
@@ -27,6 +28,7 @@ export type Database = {
           content: string
           created_at?: string
           id?: string
+          parent_comment_id?: string | null
           poem_id: string
           updated_at?: string
           user_id: string
@@ -35,11 +37,19 @@ export type Database = {
           content?: string
           created_at?: string
           id?: string
+          parent_comment_id?: string | null
           poem_id?: string
           updated_at?: string
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "poem_comments_parent_comment_id_fkey"
+            columns: ["parent_comment_id"]
+            isOneToOne: false
+            referencedRelation: "poem_comments"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "poem_comments_poem_id_fkey"
             columns: ["poem_id"]

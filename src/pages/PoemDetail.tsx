@@ -28,9 +28,11 @@ type Comment = {
   content: string;
   created_at: string;
   user_id: string;
+  parent_comment_id: string | null;
   profiles: {
     display_name: string | null;
   } | null;
+  replies?: Comment[];
 };
 
 const PoemDetail = () => {
@@ -43,6 +45,7 @@ const PoemDetail = () => {
   const [user, setUser] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [replyingTo, setReplyingTo] = useState<string | null>(null);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -124,7 +127,7 @@ const PoemDetail = () => {
     try {
       const { data: commentsData, error } = await supabase
         .from("poem_comments")
-        .select("id, content, created_at, user_id")
+        .select("id, content, created_at, user_id, parent_comment_id")
         .eq("poem_id", id)
         .order("created_at", { ascending: false });
 
@@ -146,7 +149,17 @@ const PoemDetail = () => {
           profiles: profilesMap.get(comment.user_id) || null,
         }));
 
-        setComments(commentsWithProfiles);
+        // Organize comments into parent-child structure
+        const parentComments = commentsWithProfiles.filter(c => !c.parent_comment_id);
+        const childComments = commentsWithProfiles.filter(c => c.parent_comment_id);
+
+        const commentsTree = parentComments.map(parent => ({
+          ...parent,
+          replies: childComments.filter(child => child.parent_comment_id === parent.id)
+            .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
+        }));
+
+        setComments(commentsTree);
       }
     } catch (error) {
       console.error("Error fetching comments:", error);
@@ -230,15 +243,17 @@ const PoemDetail = () => {
           poem_id: id,
           user_id: user.id,
           content: newComment.trim(),
+          parent_comment_id: replyingTo,
         });
 
       if (error) throw error;
 
       setNewComment("");
+      setReplyingTo(null);
       fetchComments();
       toast({
-        title: "Comment posted",
-        description: "Your comment has been added",
+        title: replyingTo ? "Reply posted" : "Comment posted",
+        description: replyingTo ? "Your reply has been added" : "Your comment has been added",
       });
     } catch (error: any) {
       toast({
@@ -361,15 +376,29 @@ const PoemDetail = () => {
 
           {user && (
             <form onSubmit={handleSubmitComment} className="space-y-3">
+              {replyingTo && (
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <span>Replying to comment</span>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setReplyingTo(null)}
+                    className="h-6 px-2"
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              )}
               <Textarea
                 value={newComment}
                 onChange={(e) => setNewComment(e.target.value)}
-                placeholder="Share your thoughts..."
+                placeholder={replyingTo ? "Write your reply..." : "Share your thoughts..."}
                 className="min-h-[100px]"
               />
               <Button type="submit" disabled={isSubmitting}>
                 <Send className="mr-2 h-4 w-4" />
-                Post Comment
+                {replyingTo ? "Post Reply" : "Post Comment"}
               </Button>
             </form>
           )}
@@ -385,36 +414,88 @@ const PoemDetail = () => {
               </Card>
             ) : (
               comments.map((comment) => (
-                <Card key={comment.id}>
-                  <CardContent className="pt-4">
-                    <div className="flex items-start justify-between mb-2">
-                      <div className="flex items-center gap-2">
-                        <Avatar className="h-6 w-6">
-                          <AvatarFallback className="text-xs">
-                            {comment.profiles?.display_name?.[0]?.toUpperCase() || "A"}
-                          </AvatarFallback>
-                        </Avatar>
-                        <span className="text-sm font-medium">
-                          {comment.profiles?.display_name || "Anonymous"}
-                        </span>
-                        <span className="text-xs text-muted-foreground">
-                          {new Date(comment.created_at).toLocaleDateString()}
-                        </span>
+                <div key={comment.id} className="space-y-2">
+                  <Card>
+                    <CardContent className="pt-4">
+                      <div className="flex items-start justify-between mb-2">
+                        <div className="flex items-center gap-2">
+                          <Avatar className="h-6 w-6">
+                            <AvatarFallback className="text-xs">
+                              {comment.profiles?.display_name?.[0]?.toUpperCase() || "A"}
+                            </AvatarFallback>
+                          </Avatar>
+                          <span className="text-sm font-medium">
+                            {comment.profiles?.display_name || "Anonymous"}
+                          </span>
+                          <span className="text-xs text-muted-foreground">
+                            {new Date(comment.created_at).toLocaleDateString()}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          {user && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-8 px-2"
+                              onClick={() => setReplyingTo(comment.id)}
+                            >
+                              Reply
+                            </Button>
+                          )}
+                          {user?.id === comment.user_id && (
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8"
+                              onClick={() => handleDeleteComment(comment.id)}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          )}
+                        </div>
                       </div>
-                      {user?.id === comment.user_id && (
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8"
-                          onClick={() => handleDeleteComment(comment.id)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      )}
+                      <p className="text-sm text-foreground/90">{comment.content}</p>
+                    </CardContent>
+                  </Card>
+                  
+                  {/* Replies */}
+                  {comment.replies && comment.replies.length > 0 && (
+                    <div className="ml-8 space-y-2">
+                      {comment.replies.map((reply) => (
+                        <Card key={reply.id} className="bg-muted/30">
+                          <CardContent className="pt-4">
+                            <div className="flex items-start justify-between mb-2">
+                              <div className="flex items-center gap-2">
+                                <Avatar className="h-5 w-5">
+                                  <AvatarFallback className="text-xs">
+                                    {reply.profiles?.display_name?.[0]?.toUpperCase() || "A"}
+                                  </AvatarFallback>
+                                </Avatar>
+                                <span className="text-sm font-medium">
+                                  {reply.profiles?.display_name || "Anonymous"}
+                                </span>
+                                <span className="text-xs text-muted-foreground">
+                                  {new Date(reply.created_at).toLocaleDateString()}
+                                </span>
+                              </div>
+                              {user?.id === reply.user_id && (
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-7 w-7"
+                                  onClick={() => handleDeleteComment(reply.id)}
+                                >
+                                  <Trash2 className="h-3 w-3" />
+                                </Button>
+                              )}
+                            </div>
+                            <p className="text-sm text-foreground/90">{reply.content}</p>
+                          </CardContent>
+                        </Card>
+                      ))}
                     </div>
-                    <p className="text-sm text-foreground/90">{comment.content}</p>
-                  </CardContent>
-                </Card>
+                  )}
+                </div>
               ))
             )}
           </div>
