@@ -1,23 +1,15 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Card, CardContent } from "@/components/ui/card";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, User as UserIcon, Trash2, BookMarked, Globe } from "lucide-react";
+import { Loader2, Heart, Globe, Trash2 } from "lucide-react";
 import type { User } from "@supabase/supabase-js";
-
-interface SavedPoem {
-  id: string;
-  content: string;
-  poem_type: string;
-  original_topic: string | null;
-  created_at: string;
-}
 
 interface PublishedPoem {
   id: string;
@@ -36,9 +28,10 @@ const Profile = () => {
   const [points, setPoints] = useState(0);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [savedPoems, setSavedPoems] = useState<SavedPoem[]>([]);
   const [publishedPoems, setPublishedPoems] = useState<PublishedPoem[]>([]);
+  const [likeCounts, setLikeCounts] = useState<Record<string, number>>({});
   const [loadingPoems, setLoadingPoems] = useState(false);
+  const [sortBy, setSortBy] = useState<"newest" | "oldest" | "most-liked">("newest");
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -101,52 +94,54 @@ const Profile = () => {
     loadProfile();
   }, [navigate, userId]);
 
-  const loadPoems = async (userId: string) => {
+  const loadPoems = async (targetUserId: string) => {
     setLoadingPoems(true);
-    
-    // Only fetch saved poems if viewing own profile
-    if (isOwnProfile) {
-      const { data: saved } = await supabase
-        .from("saved_poems")
-        .select("*")
-        .eq("user_id", userId)
-        .order("created_at", { ascending: false });
-      setSavedPoems(saved || []);
-    }
 
     // Fetch published poems (visible to everyone)
     const { data: published } = await supabase
       .from("published_poems")
       .select("*")
-      .eq("user_id", userId)
+      .eq("user_id", targetUserId)
       .order("created_at", { ascending: false });
 
     setPublishedPoems(published || []);
+
+    // Load like counts for all poems
+    const poemIds = (published || []).map(p => p.id);
+    if (poemIds.length > 0) {
+      const { data: likesData } = await supabase
+        .from('poem_likes')
+        .select('poem_id')
+        .in('poem_id', poemIds);
+
+      if (likesData) {
+        const counts: Record<string, number> = {};
+        likesData.forEach(like => {
+          counts[like.poem_id] = (counts[like.poem_id] || 0) + 1;
+        });
+        setLikeCounts(counts);
+      }
+    }
+
     setLoadingPoems(false);
   };
 
-  const handleDeleteSaved = async (poemId: string) => {
-    const { error } = await supabase
-      .from("saved_poems")
-      .delete()
-      .eq("id", poemId);
-
-    if (error) {
-      toast({
-        title: "Error",
-        description: "Failed to delete poem",
-        variant: "destructive",
-      });
-    } else {
-      setSavedPoems(savedPoems.filter(p => p.id !== poemId));
-      toast({
-        title: "Success",
-        description: "Poem deleted successfully",
-      });
+  const sortedPoems = [...publishedPoems].sort((a, b) => {
+    switch (sortBy) {
+      case "newest":
+        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+      case "oldest":
+        return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+      case "most-liked":
+        return (likeCounts[b.id] || 0) - (likeCounts[a.id] || 0);
+      default:
+        return 0;
     }
-  };
+  });
 
   const handleDeletePublished = async (poemId: string) => {
+    if (!confirm("Are you sure you want to delete this poem?")) return;
+
     const { error } = await supabase
       .from("published_poems")
       .delete()
@@ -204,254 +199,164 @@ const Profile = () => {
   }
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
+    return new Date(dateString).toLocaleDateString();
   };
 
-  const poemTypeLabels: Record<string, string> = {
-    sonnet: "Sonnet",
-    haiku: "Haiku",
-    limerick: "Limerick",
-    villanelle: "Villanelle",
-    ode: "Ode",
-    ballad: "Ballad",
-    epic: "Epic"
-  };
+  // If viewing own profile and not authenticated, redirect
+  if (!userId && !user) {
+    return null;
+  }
 
+  // Two-column layout matching MyProfile page
   return (
-    <div className="container mx-auto px-4 py-8 max-w-6xl">
-      <div className="mb-8">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-3xl font-serif">
-              {isOwnProfile ? "My Profile" : `${displayName}'s Profile`}
-            </CardTitle>
-            <CardDescription>
-              {isOwnProfile ? "Manage your account information" : "View user profile"}
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="flex items-center gap-4">
-              <Avatar className="h-20 w-20">
-                <AvatarFallback className="text-2xl">
-                  {displayName?.[0]?.toUpperCase() || "A"}
-                </AvatarFallback>
-              </Avatar>
-              <div>
-                <h3 className="font-semibold text-lg">{displayName || "Anonymous"}</h3>
-                <p className="text-sm text-muted-foreground">{points} points</p>
-              </div>
-            </div>
-
-            {isOwnProfile && user && (
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    value={user.email || ""}
-                    disabled
-                    className="bg-muted"
-                  />
+    <div className="min-h-screen bg-background">
+      <div className="container mx-auto px-4 py-12 max-w-6xl">
+        <div className="flex gap-8">
+          {/* Sidebar */}
+          <div className="w-64 flex-shrink-0">
+            <Card className="sticky top-4">
+              <CardContent className="p-6">
+                <div className="flex flex-col items-center text-center space-y-4">
+                  <Avatar className="h-24 w-24">
+                    <AvatarFallback className="text-2xl">
+                      {displayName?.[0]?.toUpperCase() || "A"}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <h3 className="font-semibold text-lg">
+                      {displayName || "Anonymous"}
+                    </h3>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      {points} points
+                    </p>
+                  </div>
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="displayName">Display Name</Label>
-                  <Input
-                    id="displayName"
-                    type="text"
-                    value={displayName}
-                    onChange={(e) => setDisplayName(e.target.value)}
-                    placeholder="Enter your display name"
-                  />
-                </div>
+                {isOwnProfile && user && (
+                  <div className="mt-6 space-y-4 pt-6 border-t">
+                    <div className="space-y-2">
+                      <Label htmlFor="email" className="text-xs">Email</Label>
+                      <Input
+                        id="email"
+                        type="email"
+                        value={user.email || ""}
+                        disabled
+                        className="bg-muted h-8 text-sm"
+                      />
+                    </div>
 
-                <Button onClick={handleSave} disabled={saving} className="w-full">
-                  {saving ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Saving...
-                    </>
-                  ) : (
-                    "Save Changes"
-                  )}
-                </Button>
+                    <div className="space-y-2">
+                      <Label htmlFor="displayName" className="text-xs">Display Name</Label>
+                      <Input
+                        id="displayName"
+                        type="text"
+                        value={displayName}
+                        onChange={(e) => setDisplayName(e.target.value)}
+                        placeholder="Enter your display name"
+                        className="h-8 text-sm"
+                      />
+                    </div>
+
+                    <Button onClick={handleSave} disabled={saving} size="sm" className="w-full">
+                      {saving ? (
+                        <>
+                          <Loader2 className="mr-2 h-3 w-3 animate-spin" />
+                          Saving...
+                        </>
+                      ) : (
+                        "Save Changes"
+                      )}
+                    </Button>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Main Content */}
+          <div className="flex-1 min-w-0">
+            {!loadingPoems && publishedPoems.length > 0 && (
+              <div className="mb-6 flex items-center justify-between">
+                <h2 className="text-2xl font-semibold text-foreground">Poems</h2>
+                <Select value={sortBy} onValueChange={(value: "newest" | "oldest" | "most-liked") => setSortBy(value)}>
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="Sort by" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="newest">Newest First</SelectItem>
+                    <SelectItem value="oldest">Oldest First</SelectItem>
+                    <SelectItem value="most-liked">Most Liked</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             )}
-          </CardContent>
-        </Card>
+
+            {loadingPoems ? (
+              <div className="text-center py-12">
+                <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto" />
+                <p className="text-muted-foreground mt-4">Loading poems...</p>
+              </div>
+            ) : publishedPoems.length === 0 ? (
+              <div className="text-center py-12">
+                <Globe className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+                <p className="text-muted-foreground mb-4">
+                  {isOwnProfile ? "You haven't published any poems yet" : "No published poems yet"}
+                </p>
+                {isOwnProfile && (
+                  <Button onClick={() => navigate("/")}>
+                    Create Your First Poem
+                  </Button>
+                )}
+              </div>
+            ) : (
+              <div className="space-y-6">
+                {sortedPoems.map((poem) => (
+                  <Card key={poem.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+                    <CardContent className="p-6">
+                      <div className="flex justify-between items-start mb-4">
+                        <div>
+                          <h3 className="font-semibold text-lg text-foreground mb-1">
+                            {poem.poem_type}
+                          </h3>
+                          <p className="text-sm text-muted-foreground">
+                            {poem.original_topic}
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-1 text-muted-foreground">
+                            <Heart className="h-4 w-4" />
+                            <span className="text-sm">{likeCounts[poem.id] || 0}</span>
+                          </div>
+                          {isOwnProfile && (
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => handleDeletePublished(poem.id)}
+                              className="text-destructive hover:text-destructive"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                      
+                      <div className="bg-muted/30 rounded-lg p-4">
+                        <p className="whitespace-pre-wrap font-serif text-foreground">
+                          {poem.content}
+                        </p>
+                      </div>
+                      
+                      <p className="text-xs text-muted-foreground mt-3">
+                        Published {formatDate(poem.created_at)}
+                      </p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
       </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-2xl font-serif">
-            {isOwnProfile ? "My Poems" : "Published Poems"}
-          </CardTitle>
-          <CardDescription>
-            {isOwnProfile 
-              ? "View and manage your saved and published poems" 
-              : `Poems published by ${displayName}`
-            }
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {isOwnProfile ? (
-            <Tabs defaultValue="saved" className="w-full">
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="saved" className="gap-2">
-                  <BookMarked className="h-4 w-4" />
-                  Saved ({savedPoems.length})
-                </TabsTrigger>
-                <TabsTrigger value="published" className="gap-2">
-                  <Globe className="h-4 w-4" />
-                  Published ({publishedPoems.length})
-                </TabsTrigger>
-              </TabsList>
-
-            <TabsContent value="saved" className="mt-6">
-              {loadingPoems ? (
-                <div className="flex justify-center py-12">
-                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                </div>
-              ) : savedPoems.length === 0 ? (
-                <div className="text-center py-12">
-                  <BookMarked className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                  <p className="text-muted-foreground">No saved poems yet</p>
-                  <Button
-                    variant="outline"
-                    className="mt-4"
-                    onClick={() => navigate("/poem")}
-                  >
-                    Generate Your First Poem
-                  </Button>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {savedPoems.map((poem) => (
-                    <Card key={poem.id}>
-                      <CardHeader>
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <CardDescription className="mt-1">
-                              {poemTypeLabels[poem.poem_type] || poem.poem_type} • Saved on {formatDate(poem.created_at)}
-                              {poem.original_topic && ` • Topic: ${poem.original_topic}`}
-                            </CardDescription>
-                          </div>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => handleDeleteSaved(poem.id)}
-                            className="text-destructive hover:text-destructive"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="whitespace-pre-wrap font-serif text-foreground/90">
-                          {poem.content}
-                        </p>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              )}
-            </TabsContent>
-
-            <TabsContent value="published" className="mt-6">
-              {loadingPoems ? (
-                <div className="flex justify-center py-12">
-                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                </div>
-              ) : publishedPoems.length === 0 ? (
-                <div className="text-center py-12">
-                  <Globe className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                  <p className="text-muted-foreground">No published poems yet</p>
-                  <Button
-                    variant="outline"
-                    className="mt-4"
-                    onClick={() => navigate("/poem")}
-                  >
-                    Generate and Publish a Poem
-                  </Button>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {publishedPoems.map((poem) => (
-                    <Card key={poem.id}>
-                      <CardHeader>
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            
-                            <CardDescription className="mt-1">
-                              {poemTypeLabels[poem.poem_type] || poem.poem_type} • Published on {formatDate(poem.created_at)}
-                              {poem.original_topic && ` • Topic: ${poem.original_topic}`}
-                            </CardDescription>
-                          </div>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => handleDeletePublished(poem.id)}
-                            className="text-destructive hover:text-destructive"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="whitespace-pre-wrap font-serif text-foreground/90">
-                          {poem.content}
-                        </p>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              )}
-            </TabsContent>
-          </Tabs>
-          ) : (
-            // Public view - only show published poems
-            <div className="mt-6">
-              {loadingPoems ? (
-                <div className="flex justify-center py-12">
-                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                </div>
-              ) : publishedPoems.length === 0 ? (
-                <div className="text-center py-12">
-                  <Globe className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                  <p className="text-muted-foreground">No published poems yet</p>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {publishedPoems.map((poem) => (
-                    <Card key={poem.id}>
-                      <CardHeader>
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <CardDescription className="mt-1">
-                              {poemTypeLabels[poem.poem_type] || poem.poem_type} • Published on {formatDate(poem.created_at)}
-                              {poem.original_topic && ` • Topic: ${poem.original_topic}`}
-                            </CardDescription>
-                          </div>
-                        </div>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="whitespace-pre-wrap font-serif text-foreground/90">
-                          {poem.content}
-                        </p>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
-        </CardContent>
-      </Card>
     </div>
   );
 };
