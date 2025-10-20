@@ -33,6 +33,7 @@ const Gallery = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
   const [sortBy, setSortBy] = useState<"newest" | "oldest" | "most-liked">("newest");
+  const [filterType, setFilterType] = useState<string>("all");
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -190,20 +191,37 @@ const Gallery = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-secondary/20">
       <div className="container mx-auto px-4 py-16 max-w-4xl">
-        <header className="mb-12 flex items-center justify-between">
+        <header className="mb-12 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <p className="text-lg text-muted-foreground">
             Explore poems shared by our community
           </p>
-          <Select value={sortBy} onValueChange={(value: "newest" | "oldest" | "most-liked") => setSortBy(value)}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="newest">Newest First</SelectItem>
-              <SelectItem value="oldest">Oldest First</SelectItem>
-              <SelectItem value="most-liked">Most Liked</SelectItem>
-            </SelectContent>
-          </Select>
+          <div className="flex items-center gap-3">
+            <Select value={filterType} onValueChange={setFilterType}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Types</SelectItem>
+                <SelectItem value="Sonnet">Sonnet</SelectItem>
+                <SelectItem value="Haiku">Haiku</SelectItem>
+                <SelectItem value="Limerick">Limerick</SelectItem>
+                <SelectItem value="Villanelle">Villanelle</SelectItem>
+                <SelectItem value="Ode">Ode</SelectItem>
+                <SelectItem value="Ballad">Ballad</SelectItem>
+                <SelectItem value="Epic">Epic</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select value={sortBy} onValueChange={(value: "newest" | "oldest" | "most-liked") => setSortBy(value)}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="newest">Newest First</SelectItem>
+                <SelectItem value="oldest">Oldest First</SelectItem>
+                <SelectItem value="most-liked">Most Liked</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </header>
 
         {isLoading ? (
@@ -220,7 +238,9 @@ const Gallery = () => {
           </Card>
         ) : (
           <div className="grid gap-6">
-            {poems.map((poem) => (
+            {poems
+              .filter(poem => filterType === "all" || poem.poem_type === filterType)
+              .map((poem) => (
               <Card key={poem.id} className="border hover:shadow-lg transition-shadow">
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between gap-2 mb-2">
