@@ -94,7 +94,7 @@ const Header = () => {
                     
                     <DropdownMenuItem
                       className="cursor-pointer py-2.5"
-                      onClick={() => navigate("/my-poems")}
+                      onClick={() => navigate("/my-profile")}
                     >
                       <UserIcon className="mr-2 h-4 w-4" />
                       <span>Profile</span>
