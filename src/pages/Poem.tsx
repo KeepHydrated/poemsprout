@@ -123,7 +123,6 @@ const Poem = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [selectedPopularPoem, setSelectedPopularPoem] = useState<number | null>(null);
   const [isPublishDialogOpen, setIsPublishDialogOpen] = useState(false);
-  const [publishTitle, setPublishTitle] = useState("");
   const [isPublishing, setIsPublishing] = useState(false);
   const navigate = useNavigate();
 
@@ -215,14 +214,6 @@ const Poem = () => {
       return;
     }
 
-    if (!publishTitle.trim()) {
-      toast({
-        title: "Title required",
-        description: "Please enter a title for your poem.",
-        variant: "destructive",
-      });
-      return;
-    }
 
     const currentGeneratedPoem = generatedPoems[selectedPoem];
     if (!currentGeneratedPoem) return;
@@ -232,7 +223,6 @@ const Poem = () => {
     try {
       const { error } = await supabase.from("published_poems").insert({
         user_id: session.user.id,
-        title: publishTitle,
         content: currentGeneratedPoem,
         poem_type: poemTypes[selectedPoem].name,
         original_topic: submittedTopic,
@@ -246,7 +236,6 @@ const Poem = () => {
       });
 
       setIsPublishDialogOpen(false);
-      setPublishTitle("");
     } catch (error: any) {
       toast({
         title: "Publishing failed",
@@ -397,18 +386,6 @@ const Poem = () => {
                   </DialogDescription>
                 </DialogHeader>
                 <div className="space-y-4 py-4">
-                  <div>
-                    <label htmlFor="title" className="block text-sm font-medium mb-2">
-                      Poem Title
-                    </label>
-                    <Input
-                      id="title"
-                      value={publishTitle}
-                      onChange={(e) => setPublishTitle(e.target.value)}
-                      placeholder="Give your poem a title..."
-                      className="border-2"
-                    />
-                  </div>
                   <div className="bg-muted/50 p-4 rounded-lg">
                     <p className="text-sm text-muted-foreground mb-2">Preview:</p>
                     <p className="font-serif text-sm whitespace-pre-wrap">

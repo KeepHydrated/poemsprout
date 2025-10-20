@@ -71,7 +71,6 @@ export type Database = {
           id: string
           original_topic: string | null
           poem_type: string
-          title: string
           user_id: string
         }
         Insert: {
@@ -80,7 +79,6 @@ export type Database = {
           id?: string
           original_topic?: string | null
           poem_type: string
-          title: string
           user_id: string
         }
         Update: {
@@ -89,7 +87,6 @@ export type Database = {
           id?: string
           original_topic?: string | null
           poem_type?: string
-          title?: string
           user_id?: string
         }
         Relationships: []
@@ -101,7 +98,6 @@ export type Database = {
           id: string
           original_topic: string | null
           poem_type: string
-          title: string
           updated_at: string
           user_id: string
         }
@@ -111,7 +107,6 @@ export type Database = {
           id?: string
           original_topic?: string | null
           poem_type: string
-          title: string
           updated_at?: string
           user_id: string
         }
@@ -121,7 +116,6 @@ export type Database = {
           id?: string
           original_topic?: string | null
           poem_type?: string
-          title?: string
           updated_at?: string
           user_id?: string
         }

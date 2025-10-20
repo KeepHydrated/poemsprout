@@ -10,7 +10,6 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 type PublishedPoem = {
   id: string;
-  title: string;
   content: string;
   poem_type: string;
   original_topic: string | null;
@@ -52,7 +51,6 @@ const GallerySidebar = () => {
         .from("published_poems")
         .select(`
           id,
-          title,
           content,
           poem_type,
           original_topic,
@@ -217,9 +215,6 @@ const GallerySidebar = () => {
                         {poem.original_topic && <span>{poem.original_topic} • </span>}
                         {poem.poem_type}
                       </p>
-                      <CardTitle className="text-lg font-serif line-clamp-2">
-                        {poem.title}
-                      </CardTitle>
                     </div>
                     <div className="flex items-center gap-1 shrink-0">
                       {poem.like_count! > 0 && (

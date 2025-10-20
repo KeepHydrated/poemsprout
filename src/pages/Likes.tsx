@@ -9,7 +9,6 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 type LikedPoem = {
   id: string;
-  title: string;
   content: string;
   poem_type: string;
   created_at: string;
@@ -71,7 +70,7 @@ const Likes = () => {
       const poemIds = likes.map(like => like.poem_id);
       const { data: poems, error: poemsError } = await supabase
         .from("published_poems")
-        .select("id, title, content, poem_type, created_at, original_topic, user_id")
+        .select("id, content, poem_type, created_at, original_topic, user_id")
         .in("id", poemIds);
 
       if (poemsError) throw poemsError;
@@ -186,7 +185,7 @@ const Likes = () => {
                         {poem.original_topic && <span>{poem.original_topic} • </span>}
                         {poem.poem_type}
                       </p>
-                      <CardTitle className="text-lg mb-2">{poem.title}</CardTitle>
+                      
                     </div>
                     <Button
                       variant="ghost"

@@ -13,7 +13,6 @@ import type { User } from "@supabase/supabase-js";
 
 interface SavedPoem {
   id: string;
-  title: string;
   content: string;
   poem_type: string;
   original_topic: string | null;
@@ -22,7 +21,6 @@ interface SavedPoem {
 
 interface PublishedPoem {
   id: string;
-  title: string;
   content: string;
   poem_type: string;
   original_topic: string | null;
@@ -295,7 +293,6 @@ const Profile = () => {
                       <CardHeader>
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
-                            <CardTitle className="text-xl font-serif">{poem.title}</CardTitle>
                             <CardDescription className="mt-1">
                               {poemTypeLabels[poem.poem_type] || poem.poem_type} • Saved on {formatDate(poem.created_at)}
                               {poem.original_topic && ` • Topic: ${poem.original_topic}`}
@@ -346,7 +343,7 @@ const Profile = () => {
                       <CardHeader>
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
-                            <CardTitle className="text-xl font-serif">{poem.title}</CardTitle>
+                            
                             <CardDescription className="mt-1">
                               {poemTypeLabels[poem.poem_type] || poem.poem_type} • Published on {formatDate(poem.created_at)}
                               {poem.original_topic && ` • Topic: ${poem.original_topic}`}

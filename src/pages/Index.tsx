@@ -113,11 +113,8 @@ const Index = () => {
   const [isRegenerating, setIsRegenerating] = useState(false);
   const [isPublishDialogOpen, setIsPublishDialogOpen] = useState(false);
   const [isSaveDialogOpen, setIsSaveDialogOpen] = useState(false);
-  const [publishTitle, setPublishTitle] = useState("");
-  const [saveTitle, setSaveTitle] = useState("");
   const [isPublishing, setIsPublishing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const [isGeneratingTitle, setIsGeneratingTitle] = useState(false);
   const [user, setUser] = useState<any>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -248,14 +245,6 @@ const Index = () => {
       return;
     }
 
-    if (!publishTitle.trim()) {
-      toast({
-        title: "Title required",
-        description: "Please enter a title for your poem.",
-        variant: "destructive",
-      });
-      return;
-    }
 
     const currentGeneratedPoem = generatedPoems[selectedPoem];
     if (!currentGeneratedPoem) return;
@@ -265,7 +254,6 @@ const Index = () => {
     try {
       const { error } = await supabase.from("published_poems").insert({
         user_id: session.user.id,
-        title: publishTitle,
         content: currentGeneratedPoem,
         poem_type: poemTypes[selectedPoem].name,
         original_topic: submittedTopic,
@@ -279,7 +267,6 @@ const Index = () => {
       });
 
       setIsPublishDialogOpen(false);
-      setPublishTitle("");
     } catch (error: any) {
       toast({
         title: "Publishing failed",
@@ -304,14 +291,6 @@ const Index = () => {
       return;
     }
 
-    if (!saveTitle.trim()) {
-      toast({
-        title: "Title required",
-        description: "Please enter a title for your poem.",
-        variant: "destructive",
-      });
-      return;
-    }
 
     const currentGeneratedPoem = generatedPoems[selectedPoem];
     if (!currentGeneratedPoem) return;
@@ -321,7 +300,6 @@ const Index = () => {
     try {
       const { error } = await supabase.from("saved_poems").insert({
         user_id: session.user.id,
-        title: saveTitle,
         content: currentGeneratedPoem,
         poem_type: poemTypes[selectedPoem].name,
         original_topic: submittedTopic,
@@ -335,7 +313,6 @@ const Index = () => {
       });
 
       setIsSaveDialogOpen(false);
-      setSaveTitle("");
     } catch (error: any) {
       toast({
         title: "Save failed",
@@ -347,51 +324,6 @@ const Index = () => {
     }
   };
 
-  const generateTitle = async (forDialog: 'save' | 'publish') => {
-    const currentGeneratedPoem = generatedPoems[selectedPoem];
-    if (!currentGeneratedPoem) return;
-
-    setIsGeneratingTitle(true);
-
-    try {
-      const { data, error } = await supabase.functions.invoke('generate-poem', {
-        body: { 
-          topic: `Based on this poem, create ONLY a short, evocative title of 2-4 words that captures its main theme or imagery. Return just the title, nothing else:\n\n${currentGeneratedPoem.substring(0, 300)}`,
-          poemType: 'haiku'
-        }
-      });
-
-      if (error) throw error;
-
-      if (data?.poem) {
-        // Clean and limit the response, then apply title case
-        const title = data.poem
-          .split('\n')[0]
-          .trim()
-          .replace(/^["'\-–—]+|["'\-–—]+$/g, '')
-          .replace(/[,;.!?:]/g, '')
-          .split(/\s+/)
-          .slice(0, 4)
-          .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-          .join(' ');
-        
-        if (forDialog === 'save') {
-          setSaveTitle(title);
-        } else {
-          setPublishTitle(title);
-        }
-      }
-    } catch (error: any) {
-      console.error('Error generating title:', error);
-      toast({
-        title: "Failed to generate title",
-        description: "Please try again or enter your own title.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsGeneratingTitle(false);
-    }
-  };
 
 
   return (
@@ -542,42 +474,7 @@ const Index = () => {
                               </DialogDescription>
                             </DialogHeader>
                             <div className="space-y-4 pt-4">
-                              <div>
-                                <div className="flex items-center justify-between mb-2">
-                                  <label htmlFor="save-title-input" className="block text-sm font-medium">
-                                    Poem Title
-                                  </label>
-                                  <Button
-                                    type="button"
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() => generateTitle('save')}
-                                    disabled={isGeneratingTitle}
-                                    className="gap-2 h-8 text-xs"
-                                  >
-                                    {isGeneratingTitle ? (
-                                      <>
-                                        <Loader2 className="h-3 w-3 animate-spin" />
-                                        Generating...
-                                      </>
-                                    ) : (
-                                      <>
-                                        <Sparkles className="h-3 w-3" />
-                                        Generate Title
-                                      </>
-                                    )}
-                                  </Button>
-                                </div>
-                                <Input
-                                  id="save-title-input"
-                                  type="text"
-                                  value={saveTitle}
-                                  onChange={(e) => setSaveTitle(e.target.value)}
-                                  placeholder="Enter a title..."
-                                  className="border-2"
-                                />
-                              </div>
-                              <Button 
+                              <Button
                                 onClick={handleSave} 
                                 disabled={isSaving}
                                 className="w-full"
@@ -606,46 +503,11 @@ const Index = () => {
                             <DialogHeader>
                               <DialogTitle>Publish Your Poem</DialogTitle>
                               <DialogDescription>
-                                Give your poem a title and share it with the community.
+                                Share your poem with the community.
                               </DialogDescription>
                             </DialogHeader>
                             <div className="space-y-4 pt-4">
-                              <div>
-                                <div className="flex items-center justify-between mb-2">
-                                  <label htmlFor="title-input" className="block text-sm font-medium">
-                                    Poem Title
-                                  </label>
-                                  <Button
-                                    type="button"
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() => generateTitle('publish')}
-                                    disabled={isGeneratingTitle}
-                                    className="gap-2 h-8 text-xs"
-                                  >
-                                    {isGeneratingTitle ? (
-                                      <>
-                                        <Loader2 className="h-3 w-3 animate-spin" />
-                                        Generating...
-                                      </>
-                                    ) : (
-                                      <>
-                                        <Sparkles className="h-3 w-3" />
-                                        Generate Title
-                                      </>
-                                    )}
-                                  </Button>
-                                </div>
-                                <Input
-                                  id="title-input"
-                                  type="text"
-                                  value={publishTitle}
-                                  onChange={(e) => setPublishTitle(e.target.value)}
-                                  placeholder="Enter a title..."
-                                  className="border-2"
-                                />
-                              </div>
-                              <Button 
+                              <Button
                                 onClick={handlePublish} 
                                 disabled={isPublishing}
                                 className="w-full"
