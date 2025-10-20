@@ -372,8 +372,6 @@ const PoemDetail = () => {
             </Card>
 
         <div className="space-y-6">
-          <h2 className="text-2xl font-bold">Comments</h2>
-          
           {user && (
             <Card className="border p-4">
               <div className="flex items-start gap-3">
