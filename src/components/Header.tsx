@@ -108,22 +108,6 @@ const Header = () => {
                       <span>Drafts</span>
                     </DropdownMenuItem>
                     
-                    <DropdownMenuItem
-                      className="cursor-pointer py-2.5"
-                      onClick={() => navigate("/gallery")}
-                    >
-                      <BookOpen className="mr-2 h-4 w-4" />
-                      <span>All Poems</span>
-                    </DropdownMenuItem>
-                    
-                    <DropdownMenuItem 
-                      className="cursor-pointer py-2.5"
-                      onClick={() => navigate("/likes")}
-                    >
-                      <Heart className="mr-2 h-4 w-4" />
-                      <span>Liked Poems</span>
-                    </DropdownMenuItem>
-                    
                     <DropdownMenuSeparator />
                     
                     <DropdownMenuItem 
