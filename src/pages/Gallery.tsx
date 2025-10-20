@@ -3,9 +3,16 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { User, Heart } from "lucide-react";
+import { User, Heart, ChevronDown } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 type PublishedPoem = {
   id: string;
@@ -25,6 +32,7 @@ const Gallery = () => {
   const [poems, setPoems] = useState<PublishedPoem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
+  const [sortBy, setSortBy] = useState<"newest" | "oldest" | "most-liked">("newest");
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -42,11 +50,11 @@ const Gallery = () => {
 
   useEffect(() => {
     fetchPoems();
-  }, [user]);
+  }, [user, sortBy]);
 
   const fetchPoems = async () => {
     try {
-      const { data, error } = await supabase
+      let query = supabase
         .from("published_poems")
         .select(`
           id,
@@ -55,8 +63,17 @@ const Gallery = () => {
           original_topic,
           created_at,
           user_id
-        `)
-        .order("created_at", { ascending: false });
+        `);
+
+      // Apply sorting based on sortBy state
+      if (sortBy === "newest") {
+        query = query.order("created_at", { ascending: false });
+      } else if (sortBy === "oldest") {
+        query = query.order("created_at", { ascending: true });
+      }
+      // For most-liked, we'll sort after fetching
+
+      const { data, error } = await query;
 
       if (error) throw error;
 
@@ -104,6 +121,11 @@ const Gallery = () => {
           like_count: likesCountMap.get(poem.id) || 0,
           user_liked: userLikesSet.has(poem.id),
         }));
+
+        // Sort by most liked if that option is selected
+        if (sortBy === "most-liked") {
+          poemsWithProfiles.sort((a, b) => (b.like_count || 0) - (a.like_count || 0));
+        }
 
         setPoems(poemsWithProfiles);
       } else {
@@ -168,10 +190,20 @@ const Gallery = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-secondary/20">
       <div className="container mx-auto px-4 py-16 max-w-4xl">
-        <header className="mb-12">
+        <header className="mb-12 flex items-center justify-between">
           <p className="text-lg text-muted-foreground">
             Explore poems shared by our community
           </p>
+          <Select value={sortBy} onValueChange={(value: "newest" | "oldest" | "most-liked") => setSortBy(value)}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="newest">Newest First</SelectItem>
+              <SelectItem value="oldest">Oldest First</SelectItem>
+              <SelectItem value="most-liked">Most Liked</SelectItem>
+            </SelectContent>
+          </Select>
         </header>
 
         {isLoading ? (
