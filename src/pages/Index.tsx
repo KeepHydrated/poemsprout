@@ -123,6 +123,7 @@ const Index = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const currentGenerationId = useRef<number>(0);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -198,6 +199,15 @@ const Index = () => {
       return;
     }
 
+    // Cancel any ongoing generation
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+
+    // Create new AbortController for this generation
+    abortControllerRef.current = new AbortController();
+    const signal = abortControllerRef.current.signal;
+
     // Increment generation ID to mark previous generations as stale
     currentGenerationId.current += 1;
     const thisGenerationId = currentGenerationId.current;
@@ -210,6 +220,11 @@ const Index = () => {
     const poemTypeKeys = Object.keys(poemTypes);
     
     for (const poemType of poemTypeKeys) {
+      // Check if this generation was cancelled
+      if (signal.aborted) {
+        break;
+      }
+
       try {
         const { data, error } = await supabase.functions.invoke('generate-poem', {
           body: { 
@@ -218,6 +233,11 @@ const Index = () => {
           }
         });
 
+        // Check again after async call
+        if (signal.aborted) {
+          break;
+        }
+
         if (error) throw error;
 
         // Only update if this is still the current generation
@@ -225,6 +245,10 @@ const Index = () => {
           setGeneratedPoems(prev => ({ ...prev, [poemType]: data.poem }));
         }
       } catch (error: any) {
+        // Don't show error if generation was cancelled
+        if (signal.aborted) {
+          break;
+        }
         console.error(`Error generating ${poemType}:`, error);
       }
     }
@@ -232,6 +256,7 @@ const Index = () => {
     // Only set generating to false if this is still the current generation
     if (thisGenerationId === currentGenerationId.current) {
       setIsGenerating(false);
+      abortControllerRef.current = null;
     }
   };
 
@@ -399,7 +424,6 @@ const Index = () => {
                 type="submit" 
                 size="lg" 
                 className="w-full gap-2"
-                disabled={isGenerating}
               >
                 {isGenerating ? (
                   <>
