@@ -166,7 +166,8 @@ const MyPoems = () => {
           {/* Main Content */}
           <div className="flex-1 min-w-0">
             {!loading && poems.length > 0 && (
-              <div className="mb-6 flex justify-end">
+              <div className="mb-6 flex items-center justify-between">
+                <h2 className="text-2xl font-semibold text-foreground">Poems</h2>
                 <Select value={sortBy} onValueChange={(value: "newest" | "oldest" | "most-liked") => setSortBy(value)}>
                   <SelectTrigger className="w-[180px]">
                     <SelectValue placeholder="Sort by" />
