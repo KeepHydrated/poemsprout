@@ -218,12 +218,17 @@ const Likes = () => {
 
                   {/* Author info */}
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Avatar className="h-6 w-6">
-                      <AvatarFallback className="text-xs bg-muted">
-                        {poem.profiles?.display_name?.[0]?.toUpperCase() || "A"}
-                      </AvatarFallback>
-                    </Avatar>
-                    <span>{poem.profiles?.display_name || "Anonymous"}</span>
+                    <button
+                      onClick={() => navigate(`/profile/${poem.user_id}`)}
+                      className="flex items-center gap-2 hover:text-foreground transition-colors cursor-pointer"
+                    >
+                      <Avatar className="h-6 w-6">
+                        <AvatarFallback className="text-xs bg-muted">
+                          {poem.profiles?.display_name?.[0]?.toUpperCase() || "A"}
+                        </AvatarFallback>
+                      </Avatar>
+                      <span>{poem.profiles?.display_name || "Anonymous"}</span>
+                    </button>
                     <span>•</span>
                     <span>{poem.profiles?.points || 0} pts</span>
                   </div>
