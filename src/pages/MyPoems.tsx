@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Heart, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import type { User } from "@supabase/supabase-js";
@@ -23,6 +24,7 @@ const MyPoems = () => {
   const [likeCounts, setLikeCounts] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<{ display_name: string | null; avatar_url: string | null; points: number } | null>(null);
+  const [sortBy, setSortBy] = useState<"newest" | "oldest" | "most-liked">("newest");
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -95,6 +97,19 @@ const MyPoems = () => {
     setLoading(false);
   };
 
+  const sortedPoems = [...poems].sort((a, b) => {
+    switch (sortBy) {
+      case "newest":
+        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+      case "oldest":
+        return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+      case "most-liked":
+        return (likeCounts[b.id] || 0) - (likeCounts[a.id] || 0);
+      default:
+        return 0;
+    }
+  });
+
   const handleDelete = async (poemId: string) => {
     if (!confirm("Are you sure you want to delete this poem?")) return;
 
@@ -150,6 +165,20 @@ const MyPoems = () => {
 
           {/* Main Content */}
           <div className="flex-1 min-w-0">
+            {!loading && poems.length > 0 && (
+              <div className="mb-6 flex justify-end">
+                <Select value={sortBy} onValueChange={(value: "newest" | "oldest" | "most-liked") => setSortBy(value)}>
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="Sort by" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="newest">Newest First</SelectItem>
+                    <SelectItem value="oldest">Oldest First</SelectItem>
+                    <SelectItem value="most-liked">Most Liked</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
 
             {loading ? (
               <div className="text-center py-12">
@@ -164,7 +193,7 @@ const MyPoems = () => {
               </div>
             ) : (
               <div className="space-y-6">
-                {poems.map((poem) => (
+                {sortedPoems.map((poem) => (
                   <Card key={poem.id} className="overflow-hidden hover:shadow-lg transition-shadow">
                     <CardContent className="p-6">
                       <div className="flex justify-between items-start mb-4">
