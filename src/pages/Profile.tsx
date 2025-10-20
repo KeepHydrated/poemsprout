@@ -231,44 +231,6 @@ const Profile = () => {
                     </p>
                   </div>
                 </div>
-
-                {isOwnProfile && user && (
-                  <div className="mt-6 space-y-4 pt-6 border-t">
-                    <div className="space-y-2">
-                      <Label htmlFor="email" className="text-xs">Email</Label>
-                      <Input
-                        id="email"
-                        type="email"
-                        value={user.email || ""}
-                        disabled
-                        className="bg-muted h-8 text-sm"
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="displayName" className="text-xs">Display Name</Label>
-                      <Input
-                        id="displayName"
-                        type="text"
-                        value={displayName}
-                        onChange={(e) => setDisplayName(e.target.value)}
-                        placeholder="Enter your display name"
-                        className="h-8 text-sm"
-                      />
-                    </div>
-
-                    <Button onClick={handleSave} disabled={saving} size="sm" className="w-full">
-                      {saving ? (
-                        <>
-                          <Loader2 className="mr-2 h-3 w-3 animate-spin" />
-                          Saving...
-                        </>
-                      ) : (
-                        "Save Changes"
-                      )}
-                    </Button>
-                  </div>
-                )}
               </CardContent>
             </Card>
           </div>
