@@ -5,10 +5,22 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card, CardContent } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import type { User } from "@supabase/supabase-js";
-import { Edit, UserIcon, Settings as SettingsIcon } from "lucide-react";
+import { Edit, UserIcon, Settings as SettingsIcon, FileText, Trash2, Send } from "lucide-react";
+
+interface SavedPoem {
+  id: string;
+  content: string;
+  poem_type: string;
+  original_topic: string;
+  created_at: string;
+  updated_at: string;
+  user_id: string;
+}
 
 const Settings = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -17,6 +29,9 @@ const Settings = () => {
   const [points, setPoints] = useState(0);
   const [uploading, setUploading] = useState(false);
   const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const [drafts, setDrafts] = useState<SavedPoem[]>([]);
+  const [loadingDrafts, setLoadingDrafts] = useState(true);
+  const [sortBy, setSortBy] = useState<"newest" | "oldest">("newest");
   const fileInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -29,6 +44,7 @@ const Settings = () => {
       }
       setUser(session.user);
       loadProfile(session.user.id);
+      loadDrafts(session.user.id);
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
@@ -38,6 +54,7 @@ const Settings = () => {
       }
       setUser(session.user);
       loadProfile(session.user.id);
+      loadDrafts(session.user.id);
     });
 
     return () => subscription.unsubscribe();
@@ -54,6 +71,86 @@ const Settings = () => {
       setDisplayName(data.display_name || "");
       setAvatarUrl(data.avatar_url || "");
       setPoints(data.points || 0);
+    }
+  };
+
+  const loadDrafts = async (userId: string) => {
+    setLoadingDrafts(true);
+    
+    const { data: draftsData, error } = await supabase
+      .from('saved_poems')
+      .select('*')
+      .eq('user_id', userId)
+      .order('updated_at', { ascending: false });
+
+    if (!error && draftsData) {
+      setDrafts(draftsData);
+    }
+    
+    setLoadingDrafts(false);
+  };
+
+  const sortedDrafts = [...drafts].sort((a, b) => {
+    switch (sortBy) {
+      case "newest":
+        return new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime();
+      case "oldest":
+        return new Date(a.updated_at).getTime() - new Date(b.updated_at).getTime();
+      default:
+        return 0;
+    }
+  });
+
+  const handleDeleteDraft = async (draftId: string) => {
+    if (!confirm("Are you sure you want to delete this draft?")) return;
+
+    const { error } = await supabase
+      .from('saved_poems')
+      .delete()
+      .eq('id', draftId);
+
+    if (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete draft",
+        variant: "destructive",
+      });
+    } else {
+      toast({
+        title: "Success",
+        description: "Draft deleted successfully",
+      });
+      setDrafts(drafts.filter(d => d.id !== draftId));
+    }
+  };
+
+  const handlePublishDraft = async (draft: SavedPoem) => {
+    if (!user) return;
+
+    const { error } = await supabase
+      .from('published_poems')
+      .insert({
+        content: draft.content,
+        poem_type: draft.poem_type,
+        original_topic: draft.original_topic,
+        user_id: user.id,
+      });
+
+    if (error) {
+      toast({
+        title: "Error",
+        description: "Failed to publish poem",
+        variant: "destructive",
+      });
+    } else {
+      // Delete from drafts after publishing
+      await supabase.from('saved_poems').delete().eq('id', draft.id);
+      
+      toast({
+        title: "Success",
+        description: "Poem published successfully",
+      });
+      setDrafts(drafts.filter(d => d.id !== draft.id));
     }
   };
 
@@ -154,7 +251,7 @@ const Settings = () => {
         <h1 className="text-4xl font-bold text-foreground mb-8">Settings</h1>
         
         <Tabs defaultValue="profile" className="w-full">
-          <TabsList className="grid w-full max-w-md grid-cols-2 mb-8">
+          <TabsList className="grid w-full max-w-2xl grid-cols-3 mb-8">
             <TabsTrigger value="profile" className="text-base">
               <UserIcon className="mr-2 h-4 w-4" />
               Profile Info
@@ -162,6 +259,10 @@ const Settings = () => {
             <TabsTrigger value="account" className="text-base">
               <SettingsIcon className="mr-2 h-4 w-4" />
               Account Info
+            </TabsTrigger>
+            <TabsTrigger value="drafts" className="text-base">
+              <FileText className="mr-2 h-4 w-4" />
+              Drafts
             </TabsTrigger>
           </TabsList>
 
@@ -312,6 +413,88 @@ const Settings = () => {
                   </div>
                 </div>
               </div>
+            </div>
+          </TabsContent>
+
+          {/* Drafts Tab */}
+          <TabsContent value="drafts" className="space-y-6">
+            <div className="bg-card border rounded-2xl p-8 md:p-12">
+              {!loadingDrafts && drafts.length > 0 && (
+                <div className="mb-6 flex items-center justify-between">
+                  <h2 className="text-2xl font-semibold text-foreground">Your Drafts</h2>
+                  <Select value={sortBy} onValueChange={(value: "newest" | "oldest") => setSortBy(value)}>
+                    <SelectTrigger className="w-[180px]">
+                      <SelectValue placeholder="Sort by" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="newest">Newest First</SelectItem>
+                      <SelectItem value="oldest">Oldest First</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+
+              {loadingDrafts ? (
+                <div className="text-center py-12">
+                  <p className="text-muted-foreground">Loading your drafts...</p>
+                </div>
+              ) : drafts.length === 0 ? (
+                <div className="text-center py-12">
+                  <p className="text-muted-foreground mb-4">You don't have any saved drafts</p>
+                  <Button onClick={() => navigate("/")}>
+                    Create Your First Poem
+                  </Button>
+                </div>
+              ) : (
+                <div className="space-y-6">
+                  {sortedDrafts.map((draft) => (
+                    <Card key={draft.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+                      <CardContent className="p-6">
+                        <div className="flex justify-between items-start mb-4">
+                          <div>
+                            <h3 className="font-semibold text-lg text-foreground mb-1">
+                              {draft.poem_type}
+                            </h3>
+                            <p className="text-sm text-muted-foreground">
+                              {draft.original_topic}
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => handlePublishDraft(draft)}
+                              className="text-primary hover:text-primary"
+                              title="Publish poem"
+                            >
+                              <Send className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => handleDeleteDraft(draft.id)}
+                              className="text-destructive hover:text-destructive"
+                              title="Delete draft"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </div>
+                        
+                        <div className="bg-muted/30 rounded-lg p-4">
+                          <p className="whitespace-pre-wrap font-serif text-foreground">
+                            {draft.content}
+                          </p>
+                        </div>
+                        
+                        <p className="text-xs text-muted-foreground mt-3">
+                          Last updated {new Date(draft.updated_at).toLocaleDateString()}
+                        </p>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              )}
             </div>
           </TabsContent>
         </Tabs>
