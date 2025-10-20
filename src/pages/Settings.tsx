@@ -12,8 +12,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 const Settings = () => {
   const [user, setUser] = useState<User | null>(null);
   const [displayName, setDisplayName] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -73,51 +71,24 @@ const Settings = () => {
     }
   };
 
-  const handleChangePassword = async () => {
-    if (!newPassword || !confirmPassword) {
-      toast({
-        title: "Error",
-        description: "Please fill in all password fields",
-        variant: "destructive",
-      });
-      return;
-    }
+  const handleSendPasswordResetEmail = async () => {
+    if (!user?.email) return;
 
-    if (newPassword !== confirmPassword) {
-      toast({
-        title: "Error",
-        description: "Passwords do not match",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    if (newPassword.length < 6) {
-      toast({
-        title: "Error",
-        description: "Password must be at least 6 characters",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    const { error } = await supabase.auth.updateUser({
-      password: newPassword
+    const { error } = await supabase.auth.resetPasswordForEmail(user.email, {
+      redirectTo: `${window.location.origin}/settings`,
     });
 
     if (error) {
       toast({
         title: "Error",
-        description: "Failed to update password",
+        description: "Failed to send password reset email",
         variant: "destructive",
       });
     } else {
       toast({
-        title: "Success",
-        description: "Password updated successfully",
+        title: "Email Sent",
+        description: "Check your email for a password reset link",
       });
-      setNewPassword("");
-      setConfirmPassword("");
     }
   };
 
@@ -195,34 +166,16 @@ const Settings = () => {
               <CardTitle>Change Password</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="newPassword">New Password</Label>
-                <Input
-                  id="newPassword"
-                  type="password"
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  placeholder="Enter new password"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="confirmPassword">Confirm New Password</Label>
-                <Input
-                  id="confirmPassword"
-                  type="password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  placeholder="Confirm new password"
-                />
-              </div>
-
+              <p className="text-sm text-muted-foreground">
+                We'll send you an email with a secure link to reset your password.
+              </p>
               <Button 
-                onClick={handleChangePassword} 
+                onClick={handleSendPasswordResetEmail} 
                 className="w-full"
                 size="lg"
+                variant="outline"
               >
-                Update Password
+                Send Password Reset Email
               </Button>
             </CardContent>
           </Card>
