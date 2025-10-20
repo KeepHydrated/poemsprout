@@ -15,6 +15,7 @@ type PublishedPoem = {
   created_at: string;
   profiles: {
     display_name: string | null;
+    points: number;
   } | null;
   like_count?: number;
   user_liked?: boolean;
@@ -64,9 +65,9 @@ const Gallery = () => {
         const userIds = [...new Set(data.map(poem => poem.user_id))];
         const poemIds = data.map(poem => poem.id);
 
-        const { data: profilesData } = await supabase
+  const { data: profilesData } = await supabase
           .from("profiles")
-          .select("id, display_name")
+          .select("id, display_name, points")
           .in("id", userIds);
 
         // Get like counts
@@ -191,56 +192,50 @@ const Gallery = () => {
         ) : (
           <div className="grid gap-6">
             {poems.map((poem) => (
-              <Card key={poem.id} className="border-2 hover:shadow-lg transition-shadow">
-                <CardHeader>
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex-1">
-                      <CardDescription className="flex items-center gap-2 mb-2">
-                        <Avatar className="h-5 w-5">
-                          <AvatarFallback className="text-[10px]">
-                            {poem.profiles?.display_name?.[0]?.toUpperCase() || "A"}
-                          </AvatarFallback>
-                        </Avatar>
-                        <span>
-                          {poem.profiles?.display_name || "Anonymous"}
-                        </span>
-                        <span className="mx-2">•</span>
-                        <span>
-                          {new Date(poem.created_at).toLocaleDateString()}
-                        </span>
-                      </CardDescription>
-                      <p className="text-sm text-foreground/90 mb-1">
-                        {poem.original_topic && <span>{poem.original_topic} • </span>}
-                        {poem.poem_type}
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-1 shrink-0">
+              <Card key={poem.id} className="border hover:shadow-lg transition-shadow">
+                <CardHeader className="pb-3">
+                  <div className="flex items-center justify-between gap-2 mb-2">
+                    <span className="text-xs text-muted-foreground">
+                      {new Date(poem.created_at).toLocaleDateString()}
+                    </span>
+                    <div className="flex items-center gap-1">
                       {poem.like_count! > 0 && (
-                        <span className="text-sm text-muted-foreground">
+                        <span className="text-xs text-muted-foreground">
                           {poem.like_count}
                         </span>
                       )}
                       <Button
                         variant="ghost"
                         size="icon"
+                        className="h-8 w-8"
                         onClick={() => handleLike(poem.id)}
                       >
                         <Heart
-                          className={`h-5 w-5 ${poem.user_liked ? 'fill-current text-red-500' : ''}`}
+                          className={`h-4 w-4 ${poem.user_liked ? 'fill-current text-red-500' : ''}`}
                         />
                       </Button>
                     </div>
                   </div>
+                  <p className="text-xs text-foreground/80 mb-1">
+                    {poem.original_topic && <span>{poem.original_topic} • </span>}
+                    {poem.poem_type}
+                  </p>
                 </CardHeader>
-                <CardContent>
-                  {poem.original_topic && (
-                    <p className="text-sm text-muted-foreground mb-4 italic">
-                      About: {poem.original_topic}
-                    </p>
-                  )}
-                  <blockquote className="border-l-4 border-accent pl-4 whitespace-pre-wrap font-serif text-base text-foreground/90 leading-relaxed">
+                <CardContent className="pt-0">
+                  <blockquote className="border-l-2 border-accent pl-3 text-sm whitespace-pre-wrap font-serif text-foreground/80 leading-relaxed mb-3">
                     {poem.content}
                   </blockquote>
+                  <CardDescription className="flex items-center gap-1 text-xs">
+                    <Avatar className="h-4 w-4">
+                      <AvatarFallback className="text-[8px]">
+                        {poem.profiles?.display_name?.[0]?.toUpperCase() || "A"}
+                      </AvatarFallback>
+                    </Avatar>
+                    <span className="truncate">
+                      {poem.profiles?.display_name || "Anonymous"}
+                    </span>
+                    <span className="text-muted-foreground">• {poem.profiles?.points || 0} pts</span>
+                  </CardDescription>
                 </CardContent>
               </Card>
             ))}
