@@ -5,11 +5,12 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Heart, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import type { User } from "@supabase/supabase-js";
 
-interface Poem {
+interface PublishedPoem {
   id: string;
   content: string;
   poem_type: string;
@@ -18,13 +19,25 @@ interface Poem {
   user_id: string;
 }
 
+interface SavedPoem {
+  id: string;
+  content: string;
+  poem_type: string;
+  original_topic: string;
+  created_at: string;
+  updated_at: string;
+  user_id: string;
+}
+
 const MyPoems = () => {
   const [user, setUser] = useState<User | null>(null);
-  const [poems, setPoems] = useState<Poem[]>([]);
+  const [publishedPoems, setPublishedPoems] = useState<PublishedPoem[]>([]);
+  const [savedPoems, setSavedPoems] = useState<SavedPoem[]>([]);
   const [likeCounts, setLikeCounts] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<{ display_name: string | null; avatar_url: string | null; points: number } | null>(null);
   const [sortBy, setSortBy] = useState<"newest" | "oldest" | "most-liked">("newest");
+  const [activeTab, setActiveTab] = useState<"published" | "saved">("published");
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -35,7 +48,8 @@ const MyPoems = () => {
         return;
       }
       setUser(session.user);
-      loadMyPoems(session.user.id);
+      loadPublishedPoems(session.user.id);
+      loadSavedPoems(session.user.id);
       loadProfile(session.user.id);
     });
 
@@ -45,7 +59,8 @@ const MyPoems = () => {
         return;
       }
       setUser(session.user);
-      loadMyPoems(session.user.id);
+      loadPublishedPoems(session.user.id);
+      loadSavedPoems(session.user.id);
       loadProfile(session.user.id);
     });
 
@@ -64,7 +79,7 @@ const MyPoems = () => {
     }
   };
 
-  const loadMyPoems = async (userId: string) => {
+  const loadPublishedPoems = async (userId: string) => {
     setLoading(true);
     
     const { data: poemsData, error } = await supabase
@@ -74,7 +89,7 @@ const MyPoems = () => {
       .order('created_at', { ascending: false });
 
     if (!error && poemsData) {
-      setPoems(poemsData);
+      setPublishedPoems(poemsData);
       
       // Load like counts for all poems
       const poemIds = poemsData.map(p => p.id);
@@ -97,7 +112,19 @@ const MyPoems = () => {
     setLoading(false);
   };
 
-  const sortedPoems = [...poems].sort((a, b) => {
+  const loadSavedPoems = async (userId: string) => {
+    const { data, error } = await supabase
+      .from('saved_poems')
+      .select('*')
+      .eq('user_id', userId)
+      .order('updated_at', { ascending: false });
+
+    if (!error && data) {
+      setSavedPoems(data);
+    }
+  };
+
+  const sortedPublishedPoems = [...publishedPoems].sort((a, b) => {
     switch (sortBy) {
       case "newest":
         return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
@@ -110,7 +137,11 @@ const MyPoems = () => {
     }
   });
 
-  const handleDelete = async (poemId: string) => {
+  const sortedSavedPoems = [...savedPoems].sort((a, b) => {
+    return new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime();
+  });
+
+  const handleDeletePublished = async (poemId: string) => {
     if (!confirm("Are you sure you want to delete this poem?")) return;
 
     const { error } = await supabase
@@ -129,7 +160,30 @@ const MyPoems = () => {
         title: "Success",
         description: "Poem deleted successfully",
       });
-      setPoems(poems.filter(p => p.id !== poemId));
+      setPublishedPoems(publishedPoems.filter(p => p.id !== poemId));
+    }
+  };
+
+  const handleDeleteSaved = async (poemId: string) => {
+    if (!confirm("Are you sure you want to delete this draft?")) return;
+
+    const { error } = await supabase
+      .from('saved_poems')
+      .delete()
+      .eq('id', poemId);
+
+    if (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete draft",
+        variant: "destructive",
+      });
+    } else {
+      toast({
+        title: "Success",
+        description: "Draft deleted successfully",
+      });
+      setSavedPoems(savedPoems.filter(p => p.id !== poemId));
     }
   };
 
@@ -165,77 +219,138 @@ const MyPoems = () => {
 
           {/* Main Content */}
           <div className="flex-1 min-w-0">
-            {!loading && poems.length > 0 && (
-              <div className="mb-6 flex items-center justify-between">
-                <h2 className="text-2xl font-semibold text-foreground">Poems</h2>
-                <Select value={sortBy} onValueChange={(value: "newest" | "oldest" | "most-liked") => setSortBy(value)}>
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Sort by" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="newest">Newest First</SelectItem>
-                    <SelectItem value="oldest">Oldest First</SelectItem>
-                    <SelectItem value="most-liked">Most Liked</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
+            <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as "published" | "saved")} className="w-full">
+              <TabsList className="mb-6">
+                <TabsTrigger value="published">Published</TabsTrigger>
+                <TabsTrigger value="saved">Saved Drafts</TabsTrigger>
+              </TabsList>
 
-            {loading ? (
-              <div className="text-center py-12">
-                <p className="text-muted-foreground">Loading your poems...</p>
-              </div>
-            ) : poems.length === 0 ? (
-              <div className="text-center py-12">
-                <p className="text-muted-foreground mb-4">You haven't published any poems yet</p>
-                <Button onClick={() => navigate("/")}>
-                  Create Your First Poem
-                </Button>
-              </div>
-            ) : (
-              <div className="space-y-6">
-                {sortedPoems.map((poem) => (
-                  <Card key={poem.id} className="overflow-hidden hover:shadow-lg transition-shadow">
-                    <CardContent className="p-6">
-                      <div className="flex justify-between items-start mb-4">
-                        <div>
-                          <h3 className="font-semibold text-lg text-foreground mb-1">
-                            {poem.poem_type}
-                          </h3>
-                          <p className="text-sm text-muted-foreground">
-                            {poem.original_topic}
-                          </p>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <div className="flex items-center gap-1 text-muted-foreground">
-                            <Heart className="h-4 w-4" />
-                            <span className="text-sm">{likeCounts[poem.id] || 0}</span>
+              <TabsContent value="published">
+                {!loading && publishedPoems.length > 0 && (
+                  <div className="mb-6 flex items-center justify-between">
+                    <h2 className="text-2xl font-semibold text-foreground">Published Poems</h2>
+                    <Select value={sortBy} onValueChange={(value: "newest" | "oldest" | "most-liked") => setSortBy(value)}>
+                      <SelectTrigger className="w-[180px]">
+                        <SelectValue placeholder="Sort by" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="newest">Newest First</SelectItem>
+                        <SelectItem value="oldest">Oldest First</SelectItem>
+                        <SelectItem value="most-liked">Most Liked</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
+
+                {loading ? (
+                  <div className="text-center py-12">
+                    <p className="text-muted-foreground">Loading your poems...</p>
+                  </div>
+                ) : publishedPoems.length === 0 ? (
+                  <div className="text-center py-12">
+                    <p className="text-muted-foreground mb-4">You haven't published any poems yet</p>
+                    <Button onClick={() => navigate("/")}>
+                      Create Your First Poem
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="space-y-6">
+                    {sortedPublishedPoems.map((poem) => (
+                      <Card key={poem.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+                        <CardContent className="p-6">
+                          <div className="flex justify-between items-start mb-4">
+                            <div>
+                              <h3 className="font-semibold text-lg text-foreground mb-1">
+                                {poem.poem_type}
+                              </h3>
+                              <p className="text-sm text-muted-foreground">
+                                {poem.original_topic}
+                              </p>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <div className="flex items-center gap-1 text-muted-foreground">
+                                <Heart className="h-4 w-4" />
+                                <span className="text-sm">{likeCounts[poem.id] || 0}</span>
+                              </div>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => handleDeletePublished(poem.id)}
+                                className="text-destructive hover:text-destructive"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
                           </div>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => handleDelete(poem.id)}
-                            className="text-destructive hover:text-destructive"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </div>
-                      
-                      <div className="bg-muted/30 rounded-lg p-4">
-                        <p className="whitespace-pre-wrap font-serif text-foreground">
-                          {poem.content}
-                        </p>
-                      </div>
-                      
-                      <p className="text-xs text-muted-foreground mt-3">
-                        Published {new Date(poem.created_at).toLocaleDateString()}
-                      </p>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            )}
+                          
+                          <div className="bg-muted/30 rounded-lg p-4">
+                            <p className="whitespace-pre-wrap font-serif text-foreground">
+                              {poem.content}
+                            </p>
+                          </div>
+                          
+                          <p className="text-xs text-muted-foreground mt-3">
+                            Published {new Date(poem.created_at).toLocaleDateString()}
+                          </p>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                )}
+              </TabsContent>
+
+              <TabsContent value="saved">
+                <div className="mb-6">
+                  <h2 className="text-2xl font-semibold text-foreground">Saved Drafts</h2>
+                </div>
+
+                {savedPoems.length === 0 ? (
+                  <div className="text-center py-12">
+                    <p className="text-muted-foreground mb-4">You don't have any saved drafts</p>
+                    <Button onClick={() => navigate("/")}>
+                      Create a Poem
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="space-y-6">
+                    {sortedSavedPoems.map((poem) => (
+                      <Card key={poem.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+                        <CardContent className="p-6">
+                          <div className="flex justify-between items-start mb-4">
+                            <div>
+                              <h3 className="font-semibold text-lg text-foreground mb-1">
+                                {poem.poem_type}
+                              </h3>
+                              <p className="text-sm text-muted-foreground">
+                                {poem.original_topic}
+                              </p>
+                            </div>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => handleDeleteSaved(poem.id)}
+                              className="text-destructive hover:text-destructive"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                          
+                          <div className="bg-muted/30 rounded-lg p-4">
+                            <p className="whitespace-pre-wrap font-serif text-foreground">
+                              {poem.content}
+                            </p>
+                          </div>
+                          
+                          <p className="text-xs text-muted-foreground mt-3">
+                            Last updated {new Date(poem.updated_at).toLocaleDateString()}
+                          </p>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                )}
+              </TabsContent>
+            </Tabs>
           </div>
         </div>
       </div>
