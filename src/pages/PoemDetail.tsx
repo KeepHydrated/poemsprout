@@ -297,7 +297,7 @@ const PoemDetail = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-secondary/20">
-      <div className="container mx-auto px-4 py-16 max-w-4xl">
+      <div className="container mx-auto px-4 py-16 max-w-7xl">
         <Button
           variant="ghost"
           onClick={() => navigate(-1)}
@@ -307,7 +307,29 @@ const PoemDetail = () => {
           Back
         </Button>
 
-        <Card className="border-2 shadow-lg mb-8">
+        <div className="flex gap-8">
+          {/* Author Profile Sidebar */}
+          <div className="hidden lg:block w-64 flex-shrink-0">
+            <Card className="border-2 sticky top-24">
+              <CardContent className="pt-6 pb-6 text-center">
+                <Avatar className="h-32 w-32 mx-auto mb-4">
+                  <AvatarFallback className="text-4xl bg-primary/10">
+                    {poem.profiles?.display_name?.[0]?.toUpperCase() || "A"}
+                  </AvatarFallback>
+                </Avatar>
+                <h3 className="text-xl font-semibold text-foreground mb-1">
+                  {poem.profiles?.display_name || "Anonymous"}
+                </h3>
+                <p className="text-muted-foreground">
+                  {poem.profiles?.points || 0} points
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Main Content */}
+          <div className="flex-1">
+            <Card className="border-2 shadow-lg mb-8">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between gap-2 mb-2">
               <span className="text-sm text-muted-foreground">
@@ -414,6 +436,8 @@ const PoemDetail = () => {
                 </Card>
               ))
             )}
+          </div>
+        </div>
           </div>
         </div>
       </div>
