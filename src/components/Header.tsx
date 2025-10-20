@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { supabase } from "@/integrations/supabase/client";
-import { LogIn, LogOut, BookOpen, Heart, Settings } from "lucide-react";
+import { LogIn, LogOut, BookOpen, Heart, Settings, FileText } from "lucide-react";
 import type { User } from "@supabase/supabase-js";
 
 const Header = () => {
@@ -90,6 +90,14 @@ const Header = () => {
                     >
                       <Settings className="mr-2 h-4 w-4" />
                       <span>Settings</span>
+                    </DropdownMenuItem>
+                    
+                    <DropdownMenuItem
+                      className="cursor-pointer py-2.5"
+                      onClick={() => navigate("/my-poems")}
+                    >
+                      <FileText className="mr-2 h-4 w-4" />
+                      <span>My Poems</span>
                     </DropdownMenuItem>
                     
                     <DropdownMenuItem
