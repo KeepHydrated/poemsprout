@@ -309,7 +309,7 @@ const PoemDetail = () => {
 
         <div className="flex gap-8">
           {/* Author Profile Sidebar */}
-          <div className="hidden lg:block w-64 flex-shrink-0">
+          <div className="hidden lg:block w-64 flex-shrink-0 space-y-4">
             <Card className="border-2 sticky top-24">
               <CardContent className="pt-6 pb-6 text-center">
                 <Avatar className="h-32 w-32 mx-auto mb-4">
@@ -320,20 +320,21 @@ const PoemDetail = () => {
                 <h3 className="text-xl font-semibold text-foreground mb-1">
                   {poem.profiles?.display_name || "Anonymous"}
                 </h3>
-                <p className="text-muted-foreground mb-4">
+                <p className="text-muted-foreground">
                   {poem.profiles?.points || 0} points
                 </p>
-                <div className="border-t pt-4 space-y-2 text-left">
-                  <p className="text-sm text-muted-foreground">
-                    {new Date(poem.created_at).toLocaleDateString()}
-                  </p>
-                  <p className="text-sm text-foreground/80">
-                    {poem.original_topic && <span>{poem.original_topic} • </span>}
-                    {poem.poem_type}
-                  </p>
-                </div>
               </CardContent>
             </Card>
+            
+            <div className="space-y-2">
+              <p className="text-sm text-muted-foreground">
+                {new Date(poem.created_at).toLocaleDateString()}
+              </p>
+              <p className="text-sm text-foreground/80">
+                {poem.original_topic && <span>{poem.original_topic} • </span>}
+                {poem.poem_type}
+              </p>
+            </div>
           </div>
 
           {/* Main Content */}
