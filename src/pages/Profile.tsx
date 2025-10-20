@@ -299,17 +299,7 @@ const Profile = () => {
                         <span className="text-sm text-muted-foreground">
                           {formatDate(poem.created_at)}
                         </span>
-                        <div className="flex items-center gap-2">
-                          {isOwnProfile && (
-                            <button
-                              onClick={() => handleDeletePublished(poem.id)}
-                              className="text-muted-foreground hover:text-destructive transition-colors"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </button>
-                          )}
-                          <Heart className="h-5 w-5 text-muted-foreground" />
-                        </div>
+                        <Heart className="h-5 w-5 text-muted-foreground" />
                       </div>
 
                       <p className="text-sm text-foreground/80 mb-4">
