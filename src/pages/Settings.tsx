@@ -192,38 +192,36 @@ const Settings = () => {
             </div>
 
             <div className="flex flex-col items-start gap-4">
-              <Avatar className="h-32 w-32">
-                <AvatarImage src={avatarUrl} alt={displayName || user?.email || "User"} />
-                <AvatarFallback className="bg-primary/10 text-4xl">
-                  {displayName?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase() || "U"}
-                </AvatarFallback>
-              </Avatar>
+              <div className="relative">
+                <Avatar className="h-32 w-32">
+                  <AvatarImage src={avatarUrl} alt={displayName || user?.email || "User"} />
+                  <AvatarFallback className="bg-primary/10 text-4xl">
+                    {displayName?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase() || "U"}
+                  </AvatarFallback>
+                </Avatar>
+                {isEditingProfile && (
+                  <>
+                    <input
+                      type="file"
+                      ref={fileInputRef}
+                      onChange={handleAvatarUpload}
+                      accept="image/*"
+                      className="hidden"
+                    />
+                    <button
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={uploading}
+                      className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-full cursor-pointer hover:bg-black/50 transition-colors"
+                    >
+                      <Edit className="h-8 w-8 text-white" />
+                    </button>
+                  </>
+                )}
+              </div>
               <p className="text-sm text-muted-foreground">
                 JPG, PNG or GIF (max 5MB)
               </p>
             </div>
-
-            {isEditingProfile && (
-              <div className="space-y-4">
-                <input
-                  type="file"
-                  ref={fileInputRef}
-                  onChange={handleAvatarUpload}
-                  accept="image/*"
-                  className="hidden"
-                />
-                <Button
-                  onClick={() => fileInputRef.current?.click()}
-                  variant="outline"
-                  size="lg"
-                  className="w-full h-14"
-                  disabled={uploading}
-                >
-                  <Edit className="mr-2" />
-                  {uploading ? "Uploading..." : "Change Picture"}
-                </Button>
-              </div>
-            )}
 
             <div className="space-y-3">
               <Label className="text-lg font-semibold">Username</Label>
