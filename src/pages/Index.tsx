@@ -237,17 +237,23 @@ const Index = () => {
   };
 
   const handleRandomTopic = () => {
+    console.log('Current usedTopics:', usedTopics);
+    
     // Filter out recently used topics (last 5)
     const availableTopics = randomTopics.filter(topic => !usedTopics.includes(topic));
+    console.log('Available topics after filter:', availableTopics.length);
     
     // If we've used all topics, reset the used list but keep the last one
     const topicsPool = availableTopics.length > 0 ? availableTopics : randomTopics.filter(t => t !== usedTopics[usedTopics.length - 1]);
     
     const randomTopic = topicsPool[Math.floor(Math.random() * topicsPool.length)];
+    console.log('Selected topic:', randomTopic);
     setPoemTopic(randomTopic);
     
     // Update used topics, keep only last 5
-    setUsedTopics(prev => [...prev.slice(-4), randomTopic]);
+    const newUsedTopics = [...usedTopics.slice(-4), randomTopic];
+    console.log('New usedTopics:', newUsedTopics);
+    setUsedTopics(newUsedTopics);
   };
 
   const handlePublish = async () => {
