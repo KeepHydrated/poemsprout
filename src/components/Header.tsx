@@ -107,20 +107,20 @@ const Header = () => {
                     
                     <DropdownMenuSeparator />
                     
-                    <DropdownMenuItem 
-                      className="cursor-pointer py-2.5"
-                      onClick={() => navigate("/settings")}
-                    >
-                      <Settings className="mr-2 h-4 w-4" />
-                      <span>Settings</span>
-                    </DropdownMenuItem>
-                    
                     <DropdownMenuItem
                       className="cursor-pointer py-2.5"
                       onClick={() => navigate("/my-profile")}
                     >
                       <UserIcon className="mr-2 h-4 w-4" />
                       <span>Profile</span>
+                    </DropdownMenuItem>
+                    
+                    <DropdownMenuItem 
+                      className="cursor-pointer py-2.5"
+                      onClick={() => navigate("/settings")}
+                    >
+                      <Settings className="mr-2 h-4 w-4" />
+                      <span>Settings</span>
                     </DropdownMenuItem>
                     
                     <DropdownMenuSeparator />
