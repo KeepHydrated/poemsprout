@@ -231,7 +231,10 @@ const GallerySidebar = () => {
                   <blockquote className="border-l-2 border-accent pl-3 text-sm whitespace-pre-wrap font-serif text-foreground/80 leading-relaxed line-clamp-6 mb-3">
                     {poem.content}
                   </blockquote>
-                  <CardDescription className="flex items-center gap-1 text-xs">
+                  <button
+                    onClick={() => navigate(`/profile/${poem.user_id}`)}
+                    className="flex items-center gap-1 text-xs hover:underline cursor-pointer text-muted-foreground w-fit"
+                  >
                     <Avatar className="h-4 w-4">
                       <AvatarFallback className="text-[8px]">
                         {poem.profiles?.display_name?.[0]?.toUpperCase() || "A"}
@@ -241,7 +244,7 @@ const GallerySidebar = () => {
                       {poem.profiles?.display_name || "Anonymous"}
                     </span>
                     <span className="text-muted-foreground">• {poem.profiles?.points || 0} pts</span>
-                  </CardDescription>
+                  </button>
                 </CardContent>
               </Card>
             ))}
