@@ -3,15 +3,12 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import type { User } from "@supabase/supabase-js";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const Settings = () => {
   const [user, setUser] = useState<User | null>(null);
-  const [displayName, setDisplayName] = useState("");
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -22,7 +19,6 @@ const Settings = () => {
         return;
       }
       setUser(session.user);
-      loadProfile(session.user.id);
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
@@ -31,45 +27,10 @@ const Settings = () => {
         return;
       }
       setUser(session.user);
-      loadProfile(session.user.id);
     });
 
     return () => subscription.unsubscribe();
   }, [navigate]);
-
-  const loadProfile = async (userId: string) => {
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('display_name')
-      .eq('id', userId)
-      .single();
-
-    if (!error && data) {
-      setDisplayName(data.display_name || "");
-    }
-  };
-
-  const handleSaveProfile = async () => {
-    if (!user) return;
-
-    const { error } = await supabase
-      .from('profiles')
-      .update({ display_name: displayName })
-      .eq('id', user.id);
-
-    if (error) {
-      toast({
-        title: "Error",
-        description: "Failed to update profile",
-        variant: "destructive",
-      });
-    } else {
-      toast({
-        title: "Success",
-        description: "Profile updated successfully",
-      });
-    }
-  };
 
   const handleSendPasswordResetEmail = async () => {
     if (!user?.email) return;
@@ -96,89 +57,61 @@ const Settings = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-12 max-w-2xl">
-        <div className="space-y-8">
-          <div>
-            <h1 className="text-4xl font-serif font-bold text-foreground mb-2">
-              Settings
-            </h1>
-            <p className="text-muted-foreground">
-              Manage your account information
-            </p>
-          </div>
-
-          <div className="flex items-center gap-4">
-            <Avatar className="h-20 w-20">
-              <AvatarImage src={user?.user_metadata?.avatar_url} alt={user?.email || "User"} />
-              <AvatarFallback className="bg-primary/10 text-3xl">
-                {user?.email?.[0].toUpperCase() || "U"}
-              </AvatarFallback>
-            </Avatar>
+      <div className="container mx-auto px-4 py-12 max-w-4xl">
+        <div className="bg-card border rounded-2xl p-8 md:p-12">
+          <div className="space-y-8">
             <div>
-              <p className="font-semibold text-xl">
-                {displayName || user?.user_metadata?.display_name || "User"}
-              </p>
-              <p className="text-sm text-muted-foreground">
-                {user?.email}
+              <h1 className="text-4xl font-bold text-foreground mb-2">
+                Personal Information
+              </h1>
+              <p className="text-muted-foreground text-lg">
+                Update your personal details and contact information
               </p>
             </div>
-          </div>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Profile Information</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+            <div className="space-y-6">
+              <div className="space-y-3">
+                <Label htmlFor="email" className="text-lg font-semibold">
+                  Email
+                </Label>
                 <Input 
                   id="email" 
                   type="email" 
                   value={user?.email || ""} 
                   disabled 
-                  className="bg-muted"
+                  className="bg-muted text-lg h-14 text-muted-foreground"
                 />
+                <p className="text-muted-foreground text-sm">
+                  Email cannot be changed
+                </p>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="displayName">Display Name</Label>
-                <Input
-                  id="displayName"
-                  type="text"
-                  value={displayName}
-                  onChange={(e) => setDisplayName(e.target.value)}
-                  placeholder="Enter your display name"
-                />
+              <div className="space-y-3">
+                <Label htmlFor="password" className="text-lg font-semibold">
+                  Password
+                </Label>
+                <div className="flex items-center gap-4">
+                  <Input 
+                    id="password" 
+                    type="password" 
+                    value="............" 
+                    disabled 
+                    className="bg-muted flex-1 h-14"
+                  />
+                  <Button 
+                    onClick={handleSendPasswordResetEmail} 
+                    size="lg"
+                    className="h-14 px-8"
+                  >
+                    Change Password
+                  </Button>
+                </div>
+                <p className="text-muted-foreground text-sm">
+                  Click to receive a password reset link via email
+                </p>
               </div>
-
-              <Button 
-                onClick={handleSaveProfile} 
-                className="w-full"
-                size="lg"
-              >
-                Save Changes
-              </Button>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Change Password</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <p className="text-sm text-muted-foreground">
-                We'll send you an email with a secure link to reset your password.
-              </p>
-              <Button 
-                onClick={handleSendPasswordResetEmail} 
-                className="w-full"
-                size="lg"
-                variant="outline"
-              >
-                Send Password Reset Email
-              </Button>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
       </div>
     </div>
