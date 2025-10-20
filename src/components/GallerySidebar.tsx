@@ -234,6 +234,7 @@ const GallerySidebar = () => {
                     <p className="text-xs text-foreground/80 mb-1 mt-4">
                       {poem.original_topic && <span>{poem.original_topic} • </span>}
                       {poem.poem_type}
+                      <span className="text-muted-foreground"> • {new Date(poem.created_at).toLocaleDateString()}</span>
                     </p>
                   </div>
                 </CardHeader>
