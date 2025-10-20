@@ -115,6 +115,7 @@ const Index = () => {
   const [isSaveDialogOpen, setIsSaveDialogOpen] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [usedTopics, setUsedTopics] = useState<string[]>([]);
   const [user, setUser] = useState<any>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -228,8 +229,17 @@ const Index = () => {
   };
 
   const handleRandomTopic = () => {
-    const randomTopic = randomTopics[Math.floor(Math.random() * randomTopics.length)];
+    // Filter out recently used topics (last 5)
+    const availableTopics = randomTopics.filter(topic => !usedTopics.includes(topic));
+    
+    // If we've used all topics, reset the used list but keep the last one
+    const topicsPool = availableTopics.length > 0 ? availableTopics : randomTopics.filter(t => t !== usedTopics[usedTopics.length - 1]);
+    
+    const randomTopic = topicsPool[Math.floor(Math.random() * topicsPool.length)];
     setPoemTopic(randomTopic);
+    
+    // Update used topics, keep only last 5
+    setUsedTopics(prev => [...prev.slice(-4), randomTopic]);
   };
 
   const handlePublish = async () => {
