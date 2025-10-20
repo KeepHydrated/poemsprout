@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Heart, Trash2 } from "lucide-react";
+import { Heart, Trash2, Upload } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import type { User } from "@supabase/supabase-js";
 
@@ -187,6 +187,55 @@ const MyPoems = () => {
     }
   };
 
+  const handlePublishDraft = async (poem: SavedPoem) => {
+    if (!user) return;
+
+    // Insert into published_poems
+    const { error: publishError } = await supabase
+      .from('published_poems')
+      .insert({
+        user_id: user.id,
+        content: poem.content,
+        poem_type: poem.poem_type,
+        original_topic: poem.original_topic,
+      });
+
+    if (publishError) {
+      toast({
+        title: "Error",
+        description: "Failed to publish poem",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Delete from saved_poems
+    const { error: deleteError } = await supabase
+      .from('saved_poems')
+      .delete()
+      .eq('id', poem.id);
+
+    if (deleteError) {
+      toast({
+        title: "Warning",
+        description: "Poem published but failed to remove from drafts",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    toast({
+      title: "Success",
+      description: "Poem published successfully!",
+    });
+
+    // Refresh both lists
+    if (user) {
+      loadPublishedPoems(user.id);
+      setSavedPoems(savedPoems.filter(p => p.id !== poem.id));
+    }
+  };
+
   if (!user) return null;
 
   return (
@@ -332,14 +381,26 @@ const MyPoems = () => {
                                 {poem.original_topic}
                               </p>
                             </div>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => handleDeleteSaved(poem.id)}
-                              className="text-destructive hover:text-destructive"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
+                            <div className="flex items-center gap-2">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => handlePublishDraft(poem)}
+                                className="text-primary hover:text-primary"
+                                title="Publish poem"
+                              >
+                                <Upload className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => handleDeleteSaved(poem.id)}
+                                className="text-destructive hover:text-destructive"
+                                title="Delete draft"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
                           </div>
                           
                           <div className="bg-muted/30 rounded-lg p-4">
