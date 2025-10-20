@@ -296,22 +296,11 @@ const Profile = () => {
                         {poem.original_topic} • {poem.poem_type}
                       </p>
                       
-                      <blockquote className="border-l-2 border-accent pl-4 mb-4">
+                      <blockquote className="border-l-2 border-accent pl-4">
                         <p className="whitespace-pre-wrap font-serif text-foreground leading-relaxed">
                           {poem.content}
                         </p>
                       </blockquote>
-                      
-                      <div className="flex items-center gap-2">
-                        <Avatar className="h-5 w-5">
-                          <AvatarFallback className="text-xs">
-                            {displayName?.[0]?.toUpperCase() || "A"}
-                          </AvatarFallback>
-                        </Avatar>
-                        <span className="text-sm text-muted-foreground">
-                          {displayName || "Anonymous"} • {points} pts
-                        </span>
-                      </div>
                     </CardContent>
                   </Card>
                 ))}
