@@ -14,6 +14,7 @@ const Settings = () => {
   const [displayName, setDisplayName] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
   const [uploading, setUploading] = useState(false);
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -98,6 +99,29 @@ const Settings = () => {
     }
   };
 
+  const handleSaveProfile = async () => {
+    if (!user) return;
+
+    const { error } = await supabase
+      .from('profiles')
+      .update({ display_name: displayName })
+      .eq('id', user.id);
+
+    if (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update profile",
+        variant: "destructive",
+      });
+    } else {
+      toast({
+        title: "Success",
+        description: "Profile updated successfully",
+      });
+      setIsEditingProfile(false);
+    }
+  };
+
   const handleSendPasswordResetEmail = async () => {
     if (!user?.email) return;
 
@@ -136,23 +160,35 @@ const Settings = () => {
                   Upload and manage your profile picture
                 </p>
               </div>
-              <input
-                type="file"
-                ref={fileInputRef}
-                onChange={handleAvatarUpload}
-                accept="image/*"
-                className="hidden"
-              />
-              <Button
-                onClick={() => fileInputRef.current?.click()}
-                variant="outline"
-                size="lg"
-                className="h-14 px-8"
-                disabled={uploading}
-              >
-                <Edit className="mr-2" />
-                {uploading ? "Uploading..." : "Edit"}
-              </Button>
+              {!isEditingProfile ? (
+                <Button
+                  onClick={() => setIsEditingProfile(true)}
+                  variant="outline"
+                  size="lg"
+                  className="h-14 px-8"
+                >
+                  <Edit className="mr-2" />
+                  Edit
+                </Button>
+              ) : (
+                <div className="flex gap-2">
+                  <Button
+                    onClick={() => setIsEditingProfile(false)}
+                    variant="outline"
+                    size="lg"
+                    className="h-14 px-6"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={handleSaveProfile}
+                    size="lg"
+                    className="h-14 px-6"
+                  >
+                    Save
+                  </Button>
+                </div>
+              )}
             </div>
 
             <div className="flex flex-col items-start gap-4">
@@ -167,6 +203,28 @@ const Settings = () => {
               </p>
             </div>
 
+            {isEditingProfile && (
+              <div className="space-y-4">
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleAvatarUpload}
+                  accept="image/*"
+                  className="hidden"
+                />
+                <Button
+                  onClick={() => fileInputRef.current?.click()}
+                  variant="outline"
+                  size="lg"
+                  className="w-full h-14"
+                  disabled={uploading}
+                >
+                  <Edit className="mr-2" />
+                  {uploading ? "Uploading..." : "Change Picture"}
+                </Button>
+              </div>
+            )}
+
             <div className="space-y-3">
               <Label className="text-lg font-semibold">Username</Label>
               <Input
@@ -175,6 +233,7 @@ const Settings = () => {
                 onChange={(e) => setDisplayName(e.target.value)}
                 placeholder="Enter your username"
                 className="h-14 text-lg"
+                disabled={!isEditingProfile}
               />
             </div>
           </div>
