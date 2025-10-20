@@ -30,15 +30,25 @@ interface SavedPoem {
   user_id: string;
 }
 
+interface UserComment {
+  id: string;
+  content: string;
+  created_at: string;
+  poem_id: string;
+  poem_content?: string;
+  poem_type?: string;
+}
+
 const MyPoems = () => {
   const [user, setUser] = useState<User | null>(null);
   const [publishedPoems, setPublishedPoems] = useState<PublishedPoem[]>([]);
   const [savedPoems, setSavedPoems] = useState<SavedPoem[]>([]);
+  const [userComments, setUserComments] = useState<UserComment[]>([]);
   const [likeCounts, setLikeCounts] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<{ display_name: string | null; avatar_url: string | null; points: number } | null>(null);
   const [sortBy, setSortBy] = useState<"newest" | "oldest" | "most-liked">("newest");
-  const [activeTab, setActiveTab] = useState<"published" | "saved">("published");
+  const [activeTab, setActiveTab] = useState<"published" | "saved" | "comments">("published");
   const [isPublishDialogOpen, setIsPublishDialogOpen] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
   const [selectedDraft, setSelectedDraft] = useState<SavedPoem | null>(null);
@@ -54,6 +64,7 @@ const MyPoems = () => {
       setUser(session.user);
       loadPublishedPoems(session.user.id);
       loadSavedPoems(session.user.id);
+      loadUserComments(session.user.id);
       loadProfile(session.user.id);
     });
 
@@ -65,6 +76,7 @@ const MyPoems = () => {
       setUser(session.user);
       loadPublishedPoems(session.user.id);
       loadSavedPoems(session.user.id);
+      loadUserComments(session.user.id);
       loadProfile(session.user.id);
     });
 
@@ -125,6 +137,34 @@ const MyPoems = () => {
 
     if (!error && data) {
       setSavedPoems(data);
+    }
+  };
+
+  const loadUserComments = async (userId: string) => {
+    const { data, error } = await supabase
+      .from('poem_comments')
+      .select('id, content, created_at, poem_id')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false });
+
+    if (!error && data) {
+      // Fetch poem details for each comment
+      const commentsWithPoems = await Promise.all(
+        data.map(async (comment) => {
+          const { data: poemData } = await supabase
+            .from('published_poems')
+            .select('content, poem_type')
+            .eq('id', comment.poem_id)
+            .single();
+
+          return {
+            ...comment,
+            poem_content: poemData?.content,
+            poem_type: poemData?.poem_type,
+          };
+        })
+      );
+      setUserComments(commentsWithPoems);
     }
   };
 
@@ -285,10 +325,11 @@ const MyPoems = () => {
 
           {/* Main Content */}
           <div className="flex-1 min-w-0">
-            <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as "published" | "saved")} className="w-full">
+            <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as "published" | "saved" | "comments")} className="w-full">
               <TabsList className="mb-6">
                 <TabsTrigger value="published">Published</TabsTrigger>
                 <TabsTrigger value="saved">Saved Drafts</TabsTrigger>
+                <TabsTrigger value="comments">Comments</TabsTrigger>
               </TabsList>
 
               <TabsContent value="published">
@@ -426,6 +467,55 @@ const MyPoems = () => {
                               {poem.content}
                             </p>
                           </blockquote>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                )}
+              </TabsContent>
+
+              <TabsContent value="comments">
+                <div className="mb-6">
+                  <h2 className="text-2xl font-semibold text-foreground">Your Comments</h2>
+                </div>
+
+                {userComments.length === 0 ? (
+                  <div className="text-center py-12">
+                    <p className="text-muted-foreground mb-4">You haven't left any comments yet</p>
+                    <Button onClick={() => navigate("/gallery")}>
+                      Browse Poems
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="space-y-6">
+                    {userComments.map((comment) => (
+                      <Card 
+                        key={comment.id} 
+                        className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
+                        onClick={() => navigate(`/poem/${comment.poem_id}`)}
+                      >
+                        <CardContent className="p-6">
+                          <div className="flex items-start justify-between mb-4">
+                            <p className="text-xs text-muted-foreground">
+                              {new Date(comment.created_at).toLocaleDateString()} • {comment.poem_type || "Poem"}
+                            </p>
+                          </div>
+                          
+                          <div className="mb-4">
+                            <p className="text-sm font-medium text-foreground mb-2">Your comment:</p>
+                            <p className="text-foreground bg-muted/50 p-3 rounded-md">
+                              {comment.content}
+                            </p>
+                          </div>
+
+                          {comment.poem_content && (
+                            <div className="border-l-2 border-accent pl-4">
+                              <p className="text-xs text-muted-foreground mb-2">On poem:</p>
+                              <p className="whitespace-pre-wrap font-serif text-sm text-muted-foreground line-clamp-3">
+                                {comment.poem_content}
+                              </p>
+                            </div>
+                          )}
                         </CardContent>
                       </Card>
                     ))}
