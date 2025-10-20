@@ -41,7 +41,7 @@ serve(async (req) => {
             },
             { 
               role: 'user', 
-              content: `Give me one random famous song, poem, novel, or play. Include the artist or author name. Examples: "Bohemian Rhapsody" by Queen, "The Raven" by Edgar Allan Poe, "Pride and Prejudice" by Jane Austen, "Romeo and Juliet" by Shakespeare${avoidList}` 
+              content: `Give me one random topic. 80% of the time, choose a famous song, poem, novel, or play (include the artist or author name). 20% of the time, generate a completely random whimsical scenario. Examples of famous works: "Bohemian Rhapsody" by Queen, "The Raven" by Edgar Allan Poe, "Pride and Prejudice" by Jane Austen, "Romeo and Juliet" by Shakespeare. Examples of random scenarios: "green lizards eating pizza", "dancing robots in a library", "cats teaching yoga"${avoidList}` 
             }
           ],
         }),
