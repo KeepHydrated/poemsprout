@@ -11,7 +11,6 @@ import Gallery from "./pages/Gallery";
 import Profile from "./pages/Profile";
 import Likes from "./pages/Likes";
 import MyProfile from "./pages/MyProfile";
-import Drafts from "./pages/Drafts";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 
@@ -32,7 +31,6 @@ const App = () => (
           <Route path="/profile" element={<Profile />} />
           <Route path="/likes" element={<Likes />} />
           <Route path="/my-profile" element={<MyProfile />} />
-          <Route path="/drafts" element={<Drafts />} />
           <Route path="/settings" element={<Settings />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
