@@ -215,6 +215,13 @@ const MyPoems = () => {
                 </div>
               </CardContent>
             </Card>
+            <Button 
+              variant="outline" 
+              className="w-full mt-4"
+              onClick={() => navigate(`/profile/${user?.id}`)}
+            >
+              View Live Profile
+            </Button>
           </div>
 
           {/* Main Content */}
