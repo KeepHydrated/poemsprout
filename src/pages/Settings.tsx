@@ -247,27 +247,30 @@ const Settings = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-12 max-w-5xl">
+      <div className="container mx-auto px-4 py-12 max-w-7xl">
         <h1 className="text-4xl font-bold text-foreground mb-8">Settings</h1>
         
-        <Tabs defaultValue="profile" className="w-full">
-          <TabsList className="grid w-full max-w-2xl grid-cols-3 mb-8">
-            <TabsTrigger value="profile" className="text-base">
-              <UserIcon className="mr-2 h-4 w-4" />
-              Profile Info
-            </TabsTrigger>
-            <TabsTrigger value="account" className="text-base">
-              <SettingsIcon className="mr-2 h-4 w-4" />
-              Account Info
-            </TabsTrigger>
-            <TabsTrigger value="drafts" className="text-base">
-              <FileText className="mr-2 h-4 w-4" />
-              Drafts
-            </TabsTrigger>
-          </TabsList>
+        <div className="flex gap-8">
+          {/* Vertical Tabs Sidebar */}
+          <Tabs defaultValue="profile" orientation="vertical" className="flex gap-8 w-full">
+            <TabsList className="flex flex-col h-fit w-64 bg-card border rounded-lg p-2">
+              <TabsTrigger value="profile" className="w-full justify-start text-base py-3 px-4">
+                <UserIcon className="mr-2 h-4 w-4" />
+                Profile Info
+              </TabsTrigger>
+              <TabsTrigger value="account" className="w-full justify-start text-base py-3 px-4">
+                <SettingsIcon className="mr-2 h-4 w-4" />
+                Account Info
+              </TabsTrigger>
+              <TabsTrigger value="drafts" className="w-full justify-start text-base py-3 px-4">
+                <FileText className="mr-2 h-4 w-4" />
+                Drafts
+              </TabsTrigger>
+            </TabsList>
 
-          {/* Profile Info Tab */}
-          <TabsContent value="profile" className="space-y-6">
+            <div className="flex-1">
+              {/* Profile Info Tab */}
+              <TabsContent value="profile" className="mt-0 space-y-6">
             <div className="bg-card border rounded-2xl p-8 md:p-12">
               <div className="space-y-6">
                 <div className="flex justify-between items-start">
@@ -352,13 +355,13 @@ const Settings = () => {
                     className="h-14 text-lg"
                     disabled={!isEditingProfile}
                   />
+                  </div>
                 </div>
               </div>
-            </div>
-          </TabsContent>
+              </TabsContent>
 
-          {/* Account Info Tab */}
-          <TabsContent value="account" className="space-y-6">
+              {/* Account Info Tab */}
+              <TabsContent value="account" className="mt-0 space-y-6">
             <div className="bg-card border rounded-2xl p-8 md:p-12">
               <div className="space-y-8">
                 <div>
@@ -411,13 +414,13 @@ const Settings = () => {
                       Click to receive a password reset link via email
                     </p>
                   </div>
+                  </div>
                 </div>
               </div>
-            </div>
-          </TabsContent>
+              </TabsContent>
 
-          {/* Drafts Tab */}
-          <TabsContent value="drafts" className="space-y-6">
+              {/* Drafts Tab */}
+              <TabsContent value="drafts" className="mt-0 space-y-6">
             <div className="bg-card border rounded-2xl p-8 md:p-12">
               {!loadingDrafts && drafts.length > 0 && (
                 <div className="mb-6 flex items-center justify-between">
@@ -495,9 +498,11 @@ const Settings = () => {
                   ))}
                 </div>
               )}
+              </div>
+              </TabsContent>
             </div>
-          </TabsContent>
-        </Tabs>
+          </Tabs>
+        </div>
       </div>
     </div>
   );
