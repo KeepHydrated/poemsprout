@@ -48,7 +48,26 @@ serve(async (req) => {
       });
 
       if (!topicResponse.ok) {
-        throw new Error('Failed to generate topic');
+        const errorText = await topicResponse.text();
+        console.error('Topic generation error:', topicResponse.status, errorText);
+        
+        if (topicResponse.status === 429) {
+          return new Response(
+            JSON.stringify({ error: 'Rate limit exceeded. Please try again later.' }),
+            { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+        if (topicResponse.status === 402) {
+          return new Response(
+            JSON.stringify({ error: 'Payment required. Please add credits to your workspace.' }),
+            { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+        
+        return new Response(
+          JSON.stringify({ error: 'Failed to generate random topic. Please try again.' }),
+          { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
       }
 
       const topicData = await topicResponse.json();
