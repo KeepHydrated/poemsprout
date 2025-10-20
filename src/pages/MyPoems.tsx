@@ -151,12 +151,9 @@ const MyPoems = () => {
           {/* Main Content */}
           <div className="flex-1 min-w-0">
             <div className="mb-8">
-              <h1 className="text-4xl font-serif font-bold text-foreground mb-2">
+              <h1 className="text-4xl font-serif font-bold text-foreground">
                 My Poems
               </h1>
-              <p className="text-muted-foreground text-lg">
-                All the poems you've published
-              </p>
             </div>
 
             {loading ? (
