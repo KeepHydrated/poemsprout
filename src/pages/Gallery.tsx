@@ -168,6 +168,11 @@ const Gallery = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-secondary/20">
       <div className="container mx-auto px-4 py-16 max-w-4xl">
+        <header className="mb-12">
+          <p className="text-lg text-muted-foreground">
+            Explore poems shared by our community
+          </p>
+        </header>
 
         {isLoading ? (
           <div className="text-center py-12">
