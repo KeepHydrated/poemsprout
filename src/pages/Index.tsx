@@ -396,7 +396,7 @@ const Index = () => {
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <label htmlFor="topic-input" className="block text-sm font-medium text-foreground">
+                  <label htmlFor="topic-input" className="hidden md:block text-sm font-medium text-foreground">
                     What would you like to write a poem about?
                   </label>
                   <Button
