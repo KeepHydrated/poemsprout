@@ -211,6 +211,11 @@ const Gallery = () => {
                           {new Date(poem.created_at).toLocaleDateString()}
                         </span>
                       </CardDescription>
+                      {poem.original_topic && (
+                        <p className="text-sm text-muted-foreground mb-1">
+                          {poem.original_topic}
+                        </p>
+                      )}
                       <p className="text-sm text-muted-foreground mb-1">
                         {poem.poem_type}
                       </p>
