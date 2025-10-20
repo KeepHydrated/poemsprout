@@ -47,7 +47,7 @@ const Header = () => {
             onClick={() => navigate("/")}
             className="text-2xl font-serif font-bold text-foreground hover:text-primary transition-colors shrink-0"
           >
-            Poetry Forms
+            Poem Sprout
           </button>
 
           {/* Search Bar */}
