@@ -1,14 +1,16 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { supabase } from "@/integrations/supabase/client";
-import { LogIn, LogOut, User as UserIcon, Settings, File, Heart } from "lucide-react";
+import { LogIn, LogOut, User as UserIcon, Settings, Heart, Search } from "lucide-react";
 import type { User } from "@supabase/supabase-js";
 
 const Header = () => {
   const [user, setUser] = useState<User | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -28,20 +30,41 @@ const Header = () => {
     await supabase.auth.signOut();
   };
 
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/gallery?search=${encodeURIComponent(searchQuery.trim())}`);
+    }
+  };
+
   const isActive = (path: string) => location.pathname === path;
 
   return (
     <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
       <div className="container mx-auto px-4 py-4">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-4">
           <button
             onClick={() => navigate("/")}
-            className="text-2xl font-serif font-bold text-foreground hover:text-primary transition-colors"
+            className="text-2xl font-serif font-bold text-foreground hover:text-primary transition-colors shrink-0"
           >
             Poetry Forms
           </button>
 
-          <div className="flex items-center gap-2">
+          {/* Search Bar */}
+          <form onSubmit={handleSearch} className="flex-1 max-w-md mx-4 hidden md:block">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                type="text"
+                placeholder="Search poems..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+          </form>
+
+          <div className="flex items-center gap-2 shrink-0">
             {user ? (
               <div className="flex items-center gap-3">
                 <Button

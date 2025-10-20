@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -34,6 +34,8 @@ const Gallery = () => {
   const [user, setUser] = useState<any>(null);
   const [sortBy, setSortBy] = useState<"newest" | "oldest" | "most-liked">("newest");
   const [filterType, setFilterType] = useState<string>("all");
+  const [searchParams] = useSearchParams();
+  const searchQuery = searchParams.get("search") || "";
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -191,6 +193,13 @@ const Gallery = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-secondary/20">
       <div className="container mx-auto px-4 py-16 max-w-4xl">
+        {searchQuery && (
+          <div className="mb-6 text-center">
+            <p className="text-muted-foreground">
+              Showing results for: <span className="font-semibold text-foreground">"{searchQuery}"</span>
+            </p>
+          </div>
+        )}
         <header className="mb-12 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <p className="text-lg text-muted-foreground">
             Explore poems shared by our community
@@ -239,7 +248,18 @@ const Gallery = () => {
         ) : (
           <div className="grid gap-6">
             {poems
-              .filter(poem => filterType === "all" || poem.poem_type === filterType)
+              .filter(poem => {
+                // Filter by type
+                const matchesType = filterType === "all" || poem.poem_type === filterType;
+                
+                // Filter by search query
+                const matchesSearch = !searchQuery || 
+                  poem.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                  poem.original_topic?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                  poem.poem_type.toLowerCase().includes(searchQuery.toLowerCase());
+                
+                return matchesType && matchesSearch;
+              })
               .map((poem) => (
               <Card key={poem.id} className="border hover:shadow-lg transition-shadow">
                 <CardHeader className="pb-3">
