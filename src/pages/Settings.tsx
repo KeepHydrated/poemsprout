@@ -123,64 +123,66 @@ const Settings = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-12 max-w-4xl">
+      <div className="container mx-auto px-4 py-12 max-w-4xl space-y-6">
+        {/* Profile Picture Card */}
         <div className="bg-card border rounded-2xl p-8 md:p-12">
-          <div className="space-y-8">
-            {/* Profile Picture Section */}
-            <div className="space-y-6 pb-8 border-b">
-              <div>
-                <h2 className="text-3xl font-bold text-foreground mb-2">
-                  Profile Picture
-                </h2>
-                <p className="text-muted-foreground text-lg">
-                  Upload and manage your profile picture
-                </p>
-              </div>
-
-              <div className="flex flex-col items-start gap-4">
-                <Avatar className="h-32 w-32">
-                  <AvatarImage src={avatarUrl} alt={displayName || user?.email || "User"} />
-                  <AvatarFallback className="bg-primary/10 text-4xl">
-                    {displayName?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase() || "U"}
-                  </AvatarFallback>
-                </Avatar>
-                <p className="text-sm text-muted-foreground">
-                  JPG, PNG or GIF (max 5MB)
-                </p>
-              </div>
-
-              <div className="space-y-3">
-                <Label className="text-lg font-semibold">Username</Label>
-                <div className="space-y-4">
-                  <Input
-                    type="text"
-                    value={displayName}
-                    onChange={(e) => setDisplayName(e.target.value)}
-                    placeholder="Enter your username"
-                    className="h-14 text-lg"
-                  />
-                  <input
-                    type="file"
-                    ref={fileInputRef}
-                    onChange={handleAvatarUpload}
-                    accept="image/*"
-                    className="hidden"
-                  />
-                  <Button
-                    onClick={() => fileInputRef.current?.click()}
-                    variant="outline"
-                    size="lg"
-                    className="w-full h-14"
-                    disabled={uploading}
-                  >
-                    <Edit className="mr-2" />
-                    {uploading ? "Uploading..." : "Edit"}
-                  </Button>
-                </div>
-              </div>
+          <div className="space-y-6">
+            <div>
+              <h2 className="text-3xl font-bold text-foreground mb-2">
+                Profile Picture
+              </h2>
+              <p className="text-muted-foreground text-lg">
+                Upload and manage your profile picture
+              </p>
             </div>
 
-            {/* Personal Information Section */}
+            <div className="flex flex-col items-start gap-4">
+              <Avatar className="h-32 w-32">
+                <AvatarImage src={avatarUrl} alt={displayName || user?.email || "User"} />
+                <AvatarFallback className="bg-primary/10 text-4xl">
+                  {displayName?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase() || "U"}
+                </AvatarFallback>
+              </Avatar>
+              <p className="text-sm text-muted-foreground">
+                JPG, PNG or GIF (max 5MB)
+              </p>
+            </div>
+
+            <div className="space-y-3">
+              <Label className="text-lg font-semibold">Username</Label>
+              <div className="space-y-4">
+                <Input
+                  type="text"
+                  value={displayName}
+                  onChange={(e) => setDisplayName(e.target.value)}
+                  placeholder="Enter your username"
+                  className="h-14 text-lg"
+                />
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleAvatarUpload}
+                  accept="image/*"
+                  className="hidden"
+                />
+                <Button
+                  onClick={() => fileInputRef.current?.click()}
+                  variant="outline"
+                  size="lg"
+                  className="w-full h-14"
+                  disabled={uploading}
+                >
+                  <Edit className="mr-2" />
+                  {uploading ? "Uploading..." : "Edit"}
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Personal Information Card */}
+        <div className="bg-card border rounded-2xl p-8 md:p-12">
+          <div className="space-y-8">
             <div>
               <h1 className="text-4xl font-bold text-foreground mb-2">
                 Personal Information
