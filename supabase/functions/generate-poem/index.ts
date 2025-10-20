@@ -11,11 +11,51 @@ serve(async (req) => {
   }
 
   try {
-    const { topic, poemType } = await req.json();
+    const { topic, poemType, generateTopic } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     
     if (!LOVABLE_API_KEY) {
       throw new Error('LOVABLE_API_KEY is not configured');
+    }
+
+    // Handle random topic generation
+    if (generateTopic) {
+      console.log('Generating random topic');
+      
+      const topicResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${LOVABLE_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'google/gemini-2.5-flash',
+          messages: [
+            { 
+              role: 'system', 
+              content: 'You are a creative topic generator. Generate unique, interesting topics for poetry. Topics can be about famous songs, movies, books, emotions, nature, life experiences, historical events, or any creative subject. Return ONLY the topic, nothing else.' 
+            },
+            { 
+              role: 'user', 
+              content: 'Generate one random, creative topic for a poem. Be specific and evocative. Examples: "The Beatles\' \'Here Comes the Sun\'", "The first snowfall of winter", "Lost cities of ancient civilizations", "The moment when silence speaks louder than words"' 
+            }
+          ],
+        }),
+      });
+
+      if (!topicResponse.ok) {
+        throw new Error('Failed to generate topic');
+      }
+
+      const topicData = await topicResponse.json();
+      const generatedTopic = topicData.choices[0].message.content.trim();
+
+      console.log('Generated topic:', generatedTopic);
+
+      return new Response(
+        JSON.stringify({ topic: generatedTopic }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
     console.log('Generating poem about:', topic, 'type:', poemType);

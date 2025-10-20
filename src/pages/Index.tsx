@@ -115,10 +115,6 @@ const Index = () => {
   const [isSaveDialogOpen, setIsSaveDialogOpen] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const [usedTopics, setUsedTopics] = useState<string[]>(() => {
-    const saved = localStorage.getItem('usedTopics');
-    return saved ? JSON.parse(saved) : [];
-  });
   const [user, setUser] = useState<any>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -135,11 +131,6 @@ const Index = () => {
 
     return () => subscription.unsubscribe();
   }, []);
-
-  // Save used topics to localStorage whenever they change
-  useEffect(() => {
-    localStorage.setItem('usedTopics', JSON.stringify(usedTopics));
-  }, [usedTopics]);
 
 
   const currentPoem = poemTypes[selectedPoem];
@@ -236,24 +227,31 @@ const Index = () => {
     }
   };
 
-  const handleRandomTopic = () => {
-    console.log('Current usedTopics:', JSON.stringify(usedTopics));
-    
-    // Filter out recently used topics (last 5)
-    const availableTopics = randomTopics.filter(topic => !usedTopics.includes(topic));
-    console.log('Available topics after filter:', availableTopics.length, 'out of', randomTopics.length);
-    
-    // If we've used all topics, reset the used list but keep the last one
-    const topicsPool = availableTopics.length > 0 ? availableTopics : randomTopics.filter(t => t !== usedTopics[usedTopics.length - 1]);
-    
-    const randomTopic = topicsPool[Math.floor(Math.random() * topicsPool.length)];
-    console.log('Selected topic:', randomTopic);
-    setPoemTopic(randomTopic);
-    
-    // Update used topics, keep only last 5
-    const newUsedTopics = [...usedTopics.slice(-4), randomTopic];
-    console.log('New usedTopics will be:', JSON.stringify(newUsedTopics));
-    setUsedTopics(newUsedTopics);
+  const handleRandomTopic = async () => {
+    try {
+      const { data, error } = await supabase.functions.invoke('generate-poem', {
+        body: { 
+          generateTopic: true
+        }
+      });
+
+      if (error) throw error;
+
+      if (data?.topic) {
+        setPoemTopic(data.topic);
+        toast({
+          title: "Random topic generated!",
+          description: data.topic,
+        });
+      }
+    } catch (error) {
+      console.error('Error generating random topic:', error);
+      toast({
+        title: "Error",
+        description: "Failed to generate random topic. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handlePublish = async () => {
