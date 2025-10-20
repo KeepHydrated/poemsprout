@@ -194,7 +194,7 @@ const Gallery = () => {
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-secondary/20">
       <div className="container mx-auto px-4 py-16 max-w-4xl">
         {searchQuery && (
-          <div className="mb-6 text-center">
+          <div className="mb-6">
             <p className="text-muted-foreground">
               Showing results for: <span className="font-semibold text-foreground">"{searchQuery}"</span>
             </p>
