@@ -342,23 +342,11 @@ const MyPoems = () => {
                             </div>
                           </div>
                           
-                          <blockquote className="border-l-2 border-accent pl-4 mb-4">
+                          <blockquote className="border-l-2 border-accent pl-4">
                             <p className="whitespace-pre-wrap font-serif text-foreground leading-relaxed">
                               {poem.content}
                             </p>
                           </blockquote>
-                          
-                          <div className="flex items-center gap-2">
-                            <Avatar className="h-5 w-5">
-                              <AvatarImage src={profile?.avatar_url || undefined} />
-                              <AvatarFallback className="text-xs">
-                                {profile?.display_name?.[0]?.toUpperCase() || "U"}
-                              </AvatarFallback>
-                            </Avatar>
-                            <span className="text-sm text-muted-foreground">
-                              {profile?.display_name || "Anonymous"} • {profile?.points || 0} pts
-                            </span>
-                          </div>
                         </CardContent>
                       </Card>
                     ))}
@@ -433,23 +421,11 @@ const MyPoems = () => {
                             </div>
                           </div>
                           
-                          <blockquote className="border-l-2 border-accent pl-4 mb-4">
+                          <blockquote className="border-l-2 border-accent pl-4">
                             <p className="whitespace-pre-wrap font-serif text-foreground leading-relaxed">
                               {poem.content}
                             </p>
                           </blockquote>
-                          
-                          <div className="flex items-center gap-2">
-                            <Avatar className="h-5 w-5">
-                              <AvatarImage src={profile?.avatar_url || undefined} />
-                              <AvatarFallback className="text-xs">
-                                {profile?.display_name?.[0]?.toUpperCase() || "U"}
-                              </AvatarFallback>
-                            </Avatar>
-                            <span className="text-sm text-muted-foreground">
-                              {profile?.display_name || "Anonymous"} • {profile?.points || 0} pts
-                            </span>
-                          </div>
                         </CardContent>
                       </Card>
                     ))}
