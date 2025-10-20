@@ -356,20 +356,9 @@ const PoemDetail = () => {
             </p>
           </CardHeader>
           <CardContent>
-            <blockquote className="border-l-4 border-accent pl-4 text-base whitespace-pre-wrap font-serif text-foreground/90 leading-relaxed mb-4">
+            <blockquote className="border-l-4 border-accent pl-4 text-base whitespace-pre-wrap font-serif text-foreground/90 leading-relaxed">
               {poem.content}
             </blockquote>
-            <CardDescription className="flex items-center gap-2 text-sm">
-              <Avatar className="h-6 w-6">
-                <AvatarFallback className="text-xs">
-                  {poem.profiles?.display_name?.[0]?.toUpperCase() || "A"}
-                </AvatarFallback>
-              </Avatar>
-              <span className="truncate">
-                {poem.profiles?.display_name || "Anonymous"}
-              </span>
-              <span className="text-muted-foreground">• {poem.profiles?.points || 0} pts</span>
-            </CardDescription>
           </CardContent>
         </Card>
 
