@@ -200,9 +200,9 @@ const GallerySidebar = () => {
             {poems.map((poem) => (
               <Card key={poem.id} className="border hover:shadow-md transition-shadow">
                 <CardHeader className="pb-3">
-                  <div className="flex-1 min-w-0">
-                    <CardDescription className="flex items-center gap-1 text-xs mb-2 justify-between">
-                      <div className="flex items-center gap-1">
+                  <div className="flex items-start justify-between gap-2 mb-2">
+                    <div className="flex-1 min-w-0">
+                      <CardDescription className="flex items-center gap-1 text-xs mb-2">
                         <Avatar className="h-4 w-4">
                           <AvatarFallback className="text-[8px]">
                             {poem.profiles?.display_name?.[0]?.toUpperCase() || "A"}
@@ -212,8 +212,13 @@ const GallerySidebar = () => {
                           {poem.profiles?.display_name || "Anonymous"}
                         </span>
                         <span className="text-muted-foreground">• {poem.profiles?.points || 0} pts</span>
-                      </div>
-                      <div className="flex items-center gap-1 shrink-0">
+                      </CardDescription>
+                    </div>
+                    <div className="flex flex-col items-end gap-1 shrink-0">
+                      <span className="text-xs text-muted-foreground">
+                        {new Date(poem.created_at).toLocaleDateString()}
+                      </span>
+                      <div className="flex items-center gap-1">
                         {poem.like_count! > 0 && (
                           <span className="text-xs text-muted-foreground">
                             {poem.like_count}
@@ -230,13 +235,12 @@ const GallerySidebar = () => {
                           />
                         </Button>
                       </div>
-                    </CardDescription>
-                    <p className="text-xs text-foreground/80 mb-1 mt-4">
-                      {poem.original_topic && <span>{poem.original_topic} • </span>}
-                      {poem.poem_type}
-                      <span className="text-muted-foreground"> • {new Date(poem.created_at).toLocaleDateString()}</span>
-                    </p>
+                    </div>
                   </div>
+                  <p className="text-xs text-foreground/80 mb-1">
+                    {poem.original_topic && <span>{poem.original_topic} • </span>}
+                    {poem.poem_type}
+                  </p>
                 </CardHeader>
                 <CardContent className="pt-0">
                   <blockquote className="border-l-2 border-accent pl-3 text-sm whitespace-pre-wrap font-serif text-foreground/80 leading-relaxed line-clamp-6">
