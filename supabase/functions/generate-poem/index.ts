@@ -33,11 +33,11 @@ serve(async (req) => {
           messages: [
             { 
               role: 'system', 
-              content: 'You are a creative topic generator. Generate unique, interesting topics for poetry. Topics can be about famous songs, movies, books, emotions, nature, life experiences, historical events, or any creative subject. Return ONLY the topic, nothing else.' 
+              content: 'You are a creative topic generator specializing in literature, music, and poetry. Generate unique topics primarily based on famous songs, classic and contemporary poems, novels, plays, and other literary works. Return ONLY the topic, nothing else.' 
             },
             { 
               role: 'user', 
-              content: 'Generate one random, creative topic for a poem. Be specific and evocative. Examples: "The Beatles\' \'Here Comes the Sun\'", "The first snowfall of winter", "Lost cities of ancient civilizations", "The moment when silence speaks louder than words"' 
+              content: 'Generate one random topic for a poem. Choose from: famous songs (like "Bohemian Rhapsody" by Queen or "Hallelujah" by Leonard Cohen), classic poems (like "The Raven" by Edgar Allan Poe or "Still I Rise" by Maya Angelou), novels (like "Pride and Prejudice" or "The Great Gatsby"), plays (like "Romeo and Juliet"), or iconic musical albums. Be specific with artist/author names. Format: "Title" by Artist/Author OR just the work title if very famous.' 
             }
           ],
         }),
