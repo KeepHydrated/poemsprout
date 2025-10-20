@@ -215,7 +215,7 @@ const Gallery = () => {
                         {poem.original_topic && <span>{poem.original_topic} • </span>}
                         {poem.poem_type}
                       </p>
-                      <CardTitle className="text-2xl font-serif mb-2">
+                      <CardTitle className="text-lg font-serif mb-2">
                         {poem.title}
                       </CardTitle>
                     </div>

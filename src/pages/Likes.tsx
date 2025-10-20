@@ -186,7 +186,7 @@ const Likes = () => {
                         {poem.original_topic && <span>{poem.original_topic} • </span>}
                         {poem.poem_type}
                       </p>
-                      <CardTitle className="text-2xl mb-2">{poem.title}</CardTitle>
+                      <CardTitle className="text-lg mb-2">{poem.title}</CardTitle>
                     </div>
                     <Button
                       variant="ghost"
