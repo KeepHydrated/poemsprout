@@ -254,11 +254,6 @@ const Index = () => {
           const updated = [data.topic, ...prev.slice(0, 14)]; // Keep last 15
           return updated;
         });
-        
-        toast({
-          title: "Random topic generated!",
-          description: data.topic,
-        });
       }
     } catch (error) {
       console.error('Error generating random topic:', error);
