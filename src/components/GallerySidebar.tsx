@@ -59,7 +59,7 @@ const GallerySidebar = () => {
           user_id
         `)
         .order("created_at", { ascending: false })
-        .limit(10);
+        .limit(50); // Fetch more to find top poems
 
       if (error) throw error;
 
@@ -108,7 +108,9 @@ const GallerySidebar = () => {
           user_liked: userLikesSet.has(poem.id),
         }));
 
-        setPoems(poemsWithProfiles);
+        // Sort by most liked (hot/trending) and take top 10
+        poemsWithProfiles.sort((a, b) => (b.like_count || 0) - (a.like_count || 0));
+        setPoems(poemsWithProfiles.slice(0, 10));
       } else {
         setPoems([]);
       }
@@ -171,7 +173,7 @@ const GallerySidebar = () => {
   return (
     <div className="h-full flex flex-col">
       <div className="flex items-center justify-between mb-4 px-1">
-        <h2 className="text-2xl font-serif font-bold">Community Poems</h2>
+        <h2 className="text-2xl font-serif font-bold">Top Poems</h2>
         <Button
           variant="ghost"
           size="sm"
