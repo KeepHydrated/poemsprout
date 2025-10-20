@@ -32,6 +32,7 @@ const Profile = () => {
   const [likeCounts, setLikeCounts] = useState<Record<string, number>>({});
   const [loadingPoems, setLoadingPoems] = useState(false);
   const [sortBy, setSortBy] = useState<"newest" | "oldest" | "most-liked">("newest");
+  const [filterType, setFilterType] = useState<string>("all");
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -126,7 +127,11 @@ const Profile = () => {
     setLoadingPoems(false);
   };
 
-  const sortedPoems = [...publishedPoems].sort((a, b) => {
+  const filteredPoems = filterType === "all" 
+    ? publishedPoems 
+    : publishedPoems.filter(poem => poem.poem_type === filterType);
+
+  const sortedPoems = [...filteredPoems].sort((a, b) => {
     switch (sortBy) {
       case "newest":
         return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
@@ -138,6 +143,8 @@ const Profile = () => {
         return 0;
     }
   });
+
+  const uniquePoemTypes = Array.from(new Set(publishedPoems.map(p => p.poem_type)));
 
   const handleDeletePublished = async (poemId: string) => {
     if (!confirm("Are you sure you want to delete this poem?")) return;
@@ -240,16 +247,29 @@ const Profile = () => {
             {!loadingPoems && publishedPoems.length > 0 && (
               <div className="mb-6 flex items-center justify-between">
                 <h2 className="text-2xl font-semibold text-foreground">Poems</h2>
-                <Select value={sortBy} onValueChange={(value: "newest" | "oldest" | "most-liked") => setSortBy(value)}>
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Sort by" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="newest">Newest First</SelectItem>
-                    <SelectItem value="oldest">Oldest First</SelectItem>
-                    <SelectItem value="most-liked">Most Liked</SelectItem>
-                  </SelectContent>
-                </Select>
+                <div className="flex items-center gap-3">
+                  <Select value={filterType} onValueChange={setFilterType}>
+                    <SelectTrigger className="w-[180px]">
+                      <SelectValue placeholder="All Types" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Types</SelectItem>
+                      {uniquePoemTypes.map(type => (
+                        <SelectItem key={type} value={type}>{type}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Select value={sortBy} onValueChange={(value: "newest" | "oldest" | "most-liked") => setSortBy(value)}>
+                    <SelectTrigger className="w-[180px]">
+                      <SelectValue placeholder="Sort by" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="newest">Newest First</SelectItem>
+                      <SelectItem value="oldest">Oldest First</SelectItem>
+                      <SelectItem value="most-liked">Most Liked</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
             )}
 
