@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { User, Heart } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 type PublishedPoem = {
   id: string;
@@ -200,7 +201,11 @@ const Gallery = () => {
                         {poem.title}
                       </CardTitle>
                       <CardDescription className="flex items-center gap-2">
-                        <User className="h-4 w-4" />
+                        <Avatar className="h-5 w-5">
+                          <AvatarFallback className="text-[10px]">
+                            {poem.profiles?.display_name?.[0]?.toUpperCase() || "A"}
+                          </AvatarFallback>
+                        </Avatar>
                         <span>
                           {poem.profiles?.display_name || "Anonymous"}
                         </span>

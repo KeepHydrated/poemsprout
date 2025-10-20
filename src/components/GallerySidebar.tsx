@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { User, Heart, ExternalLink } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 type PublishedPoem = {
   id: string;
@@ -206,7 +207,11 @@ const GallerySidebar = () => {
                         {poem.title}
                       </CardTitle>
                       <CardDescription className="flex items-center gap-1 text-xs mt-1">
-                        <User className="h-3 w-3" />
+                        <Avatar className="h-4 w-4">
+                          <AvatarFallback className="text-[8px]">
+                            {poem.profiles?.display_name?.[0]?.toUpperCase() || "A"}
+                          </AvatarFallback>
+                        </Avatar>
                         <span className="truncate">
                           {poem.profiles?.display_name || "Anonymous"}
                         </span>

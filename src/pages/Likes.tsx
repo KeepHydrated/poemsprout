@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Heart, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 type LikedPoem = {
   id: string;
@@ -173,6 +174,11 @@ const Likes = () => {
                     <div className="flex-1">
                       <CardTitle className="text-2xl mb-2">{poem.title}</CardTitle>
                       <CardDescription className="flex items-center gap-2">
+                        <Avatar className="h-5 w-5">
+                          <AvatarFallback className="text-[10px]">
+                            {poem.profiles?.display_name?.[0]?.toUpperCase() || "A"}
+                          </AvatarFallback>
+                        </Avatar>
                         <span>By {poem.profiles?.display_name || "Anonymous"}</span>
                         <span>•</span>
                         <span>{poem.poem_type}</span>
