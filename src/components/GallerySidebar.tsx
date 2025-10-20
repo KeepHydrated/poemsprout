@@ -200,7 +200,7 @@ const GallerySidebar = () => {
             {poems.map((poem) => (
               <Card key={poem.id} className="border hover:shadow-md transition-shadow">
                 <CardHeader className="pb-3">
-                  <div className="flex items-center justify-end gap-1 mb-2">
+                  <div className="flex items-center justify-between gap-1 mb-2">
                     <span className="text-xs text-muted-foreground">
                       {new Date(poem.created_at).toLocaleDateString()}
                     </span>
