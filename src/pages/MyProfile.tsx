@@ -325,9 +325,9 @@ const MyPoems = () => {
                       <Card key={poem.id} className="overflow-hidden hover:shadow-lg transition-shadow">
                         <CardContent className="p-6">
                           <div className="flex items-start justify-between mb-4">
-                            <span className="text-sm text-muted-foreground">
-                              {new Date(poem.created_at).toLocaleDateString()}
-                            </span>
+                            <p className="text-sm text-foreground/80">
+                              {poem.original_topic} • {poem.poem_type}
+                            </p>
                             <div className="flex items-center gap-3">
                               <button
                                 onClick={() => handleDeletePublished(poem.id)}
@@ -341,10 +341,6 @@ const MyPoems = () => {
                               </div>
                             </div>
                           </div>
-
-                          <p className="text-sm text-foreground/80 mb-4">
-                            {poem.original_topic} • {poem.poem_type}
-                          </p>
                           
                           <blockquote className="border-l-2 border-accent pl-4 mb-4">
                             <p className="whitespace-pre-wrap font-serif text-foreground leading-relaxed">
@@ -388,9 +384,9 @@ const MyPoems = () => {
                       <Card key={poem.id} className="overflow-hidden hover:shadow-lg transition-shadow">
                         <CardContent className="p-6">
                           <div className="flex items-start justify-between mb-4">
-                            <span className="text-sm text-muted-foreground">
-                              {new Date(poem.updated_at).toLocaleDateString()}
-                            </span>
+                            <p className="text-sm text-foreground/80">
+                              {poem.original_topic} • {poem.poem_type}
+                            </p>
                             <div className="flex items-center gap-2">
                               <Dialog open={isPublishDialogOpen} onOpenChange={setIsPublishDialogOpen}>
                                 <DialogTrigger asChild>
@@ -436,10 +432,6 @@ const MyPoems = () => {
                               </button>
                             </div>
                           </div>
-
-                          <p className="text-sm text-foreground/80 mb-4">
-                            {poem.original_topic} • {poem.poem_type}
-                          </p>
                           
                           <blockquote className="border-l-2 border-accent pl-4 mb-4">
                             <p className="whitespace-pre-wrap font-serif text-foreground leading-relaxed">
