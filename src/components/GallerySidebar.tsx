@@ -211,7 +211,7 @@ const GallerySidebar = () => {
                           {poem.profiles?.display_name || "Anonymous"}
                         </span>
                       </CardDescription>
-                      <p className="text-xs text-foreground/80 mb-1">
+                      <p className="text-xs text-foreground/80 mb-1 mt-2">
                         {poem.original_topic && <span>{poem.original_topic} • </span>}
                         {poem.poem_type}
                       </p>
