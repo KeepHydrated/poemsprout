@@ -237,11 +237,11 @@ const Index = () => {
   };
 
   const handleRandomTopic = () => {
-    console.log('Current usedTopics:', usedTopics);
+    console.log('Current usedTopics:', JSON.stringify(usedTopics));
     
     // Filter out recently used topics (last 5)
     const availableTopics = randomTopics.filter(topic => !usedTopics.includes(topic));
-    console.log('Available topics after filter:', availableTopics.length);
+    console.log('Available topics after filter:', availableTopics.length, 'out of', randomTopics.length);
     
     // If we've used all topics, reset the used list but keep the last one
     const topicsPool = availableTopics.length > 0 ? availableTopics : randomTopics.filter(t => t !== usedTopics[usedTopics.length - 1]);
@@ -252,7 +252,7 @@ const Index = () => {
     
     // Update used topics, keep only last 5
     const newUsedTopics = [...usedTopics.slice(-4), randomTopic];
-    console.log('New usedTopics:', newUsedTopics);
+    console.log('New usedTopics will be:', JSON.stringify(newUsedTopics));
     setUsedTopics(newUsedTopics);
   };
 
