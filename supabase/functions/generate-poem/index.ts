@@ -11,7 +11,7 @@ serve(async (req) => {
   }
 
   try {
-    const { topic, poemType, generateTopic } = await req.json();
+    const { topic, poemType, generateTopic, recentTopics } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     
     if (!LOVABLE_API_KEY) {
@@ -20,7 +20,11 @@ serve(async (req) => {
 
     // Handle random topic generation
     if (generateTopic) {
-      console.log('Generating random topic');
+      console.log('Generating random topic, avoiding:', recentTopics?.slice(0, 5));
+      
+      const avoidList = recentTopics && recentTopics.length > 0 
+        ? `\n\nDo NOT suggest any of these recently used topics: ${recentTopics.slice(0, 15).join(', ')}`
+        : '';
       
       const topicResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
         method: 'POST',
@@ -37,7 +41,7 @@ serve(async (req) => {
             },
             { 
               role: 'user', 
-              content: 'Give me one random famous song, poem, novel, or play. Include the artist or author name. Examples: "Bohemian Rhapsody" by Queen, "The Raven" by Edgar Allan Poe, "Pride and Prejudice" by Jane Austen, "Romeo and Juliet" by Shakespeare' 
+              content: `Give me one random famous song, poem, novel, or play. Include the artist or author name. Examples: "Bohemian Rhapsody" by Queen, "The Raven" by Edgar Allan Poe, "Pride and Prejudice" by Jane Austen, "Romeo and Juliet" by Shakespeare${avoidList}` 
             }
           ],
         }),

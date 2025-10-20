@@ -115,6 +115,10 @@ const Index = () => {
   const [isSaveDialogOpen, setIsSaveDialogOpen] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [recentTopics, setRecentTopics] = useState<string[]>(() => {
+    const saved = localStorage.getItem('recentTopics');
+    return saved ? JSON.parse(saved) : [];
+  });
   const [user, setUser] = useState<any>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -131,6 +135,10 @@ const Index = () => {
 
     return () => subscription.unsubscribe();
   }, []);
+
+  useEffect(() => {
+    localStorage.setItem('recentTopics', JSON.stringify(recentTopics));
+  }, [recentTopics]);
 
 
   const currentPoem = poemTypes[selectedPoem];
@@ -231,7 +239,8 @@ const Index = () => {
     try {
       const { data, error } = await supabase.functions.invoke('generate-poem', {
         body: { 
-          generateTopic: true
+          generateTopic: true,
+          recentTopics: recentTopics
         }
       });
 
@@ -239,6 +248,13 @@ const Index = () => {
 
       if (data?.topic) {
         setPoemTopic(data.topic);
+        
+        // Track this topic
+        setRecentTopics(prev => {
+          const updated = [data.topic, ...prev.slice(0, 14)]; // Keep last 15
+          return updated;
+        });
+        
         toast({
           title: "Random topic generated!",
           description: data.topic,
