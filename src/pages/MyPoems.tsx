@@ -150,11 +150,6 @@ const MyPoems = () => {
 
           {/* Main Content */}
           <div className="flex-1 min-w-0">
-            <div className="mb-8">
-              <h1 className="text-4xl font-serif font-bold text-foreground">
-                My Poems
-              </h1>
-            </div>
 
             {loading ? (
               <div className="text-center py-12">
