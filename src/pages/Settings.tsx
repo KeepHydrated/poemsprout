@@ -161,10 +161,6 @@ const Settings = () => {
                 <UserIcon className="mr-2 h-4 w-4" />
                 Profile Info
               </TabsTrigger>
-              <TabsTrigger value="account" className="w-full justify-start text-base py-3 px-4">
-                <SettingsIcon className="mr-2 h-4 w-4" />
-                Account Info
-              </TabsTrigger>
             </TabsList>
 
             <div className="flex-1">
@@ -257,11 +253,8 @@ const Settings = () => {
                   </div>
                 </div>
               </div>
-              </TabsContent>
 
-              {/* Account Info Tab */}
-              <TabsContent value="account" className="mt-0 space-y-6">
-            <div className="bg-card border rounded-2xl p-8 md:p-12">
+              <div className="bg-card border rounded-2xl p-8 md:p-12 mt-6">
               <div className="space-y-8">
                 <div>
                   <h1 className="text-4xl font-bold text-foreground mb-2">
