@@ -1,14 +1,20 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import type { User } from "@supabase/supabase-js";
+import { Edit } from "lucide-react";
 
 const Settings = () => {
   const [user, setUser] = useState<User | null>(null);
+  const [displayName, setDisplayName] = useState("");
+  const [avatarUrl, setAvatarUrl] = useState("");
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -19,6 +25,7 @@ const Settings = () => {
         return;
       }
       setUser(session.user);
+      loadProfile(session.user.id);
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
@@ -27,10 +34,69 @@ const Settings = () => {
         return;
       }
       setUser(session.user);
+      loadProfile(session.user.id);
     });
 
     return () => subscription.unsubscribe();
   }, [navigate]);
+
+  const loadProfile = async (userId: string) => {
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('display_name, avatar_url')
+      .eq('id', userId)
+      .single();
+
+    if (!error && data) {
+      setDisplayName(data.display_name || "");
+      setAvatarUrl(data.avatar_url || "");
+    }
+  };
+
+  const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    try {
+      setUploading(true);
+      
+      if (!event.target.files || event.target.files.length === 0) {
+        return;
+      }
+
+      const file = event.target.files[0];
+      const fileExt = file.name.split('.').pop();
+      const filePath = `${user?.id}/${Math.random()}.${fileExt}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(filePath);
+
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({ avatar_url: publicUrl })
+        .eq('id', user?.id);
+
+      if (updateError) throw updateError;
+
+      setAvatarUrl(publicUrl);
+      toast({
+        title: "Success",
+        description: "Profile picture updated successfully",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const handleSendPasswordResetEmail = async () => {
     if (!user?.email) return;
@@ -60,6 +126,61 @@ const Settings = () => {
       <div className="container mx-auto px-4 py-12 max-w-4xl">
         <div className="bg-card border rounded-2xl p-8 md:p-12">
           <div className="space-y-8">
+            {/* Profile Picture Section */}
+            <div className="space-y-6 pb-8 border-b">
+              <div>
+                <h2 className="text-3xl font-bold text-foreground mb-2">
+                  Profile Picture
+                </h2>
+                <p className="text-muted-foreground text-lg">
+                  Upload and manage your profile picture
+                </p>
+              </div>
+
+              <div className="flex flex-col items-start gap-4">
+                <Avatar className="h-32 w-32">
+                  <AvatarImage src={avatarUrl} alt={displayName || user?.email || "User"} />
+                  <AvatarFallback className="bg-primary/10 text-4xl">
+                    {displayName?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase() || "U"}
+                  </AvatarFallback>
+                </Avatar>
+                <p className="text-sm text-muted-foreground">
+                  JPG, PNG or GIF (max 5MB)
+                </p>
+              </div>
+
+              <div className="space-y-3">
+                <Label className="text-lg font-semibold">Username</Label>
+                <div className="space-y-4">
+                  <Input
+                    type="text"
+                    value={displayName}
+                    onChange={(e) => setDisplayName(e.target.value)}
+                    placeholder="Enter your username"
+                    className="h-14 text-lg"
+                  />
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleAvatarUpload}
+                    accept="image/*"
+                    className="hidden"
+                  />
+                  <Button
+                    onClick={() => fileInputRef.current?.click()}
+                    variant="outline"
+                    size="lg"
+                    className="w-full h-14"
+                    disabled={uploading}
+                  >
+                    <Edit className="mr-2" />
+                    {uploading ? "Uploading..." : "Edit"}
+                  </Button>
+                </div>
+              </div>
+            </div>
+
+            {/* Personal Information Section */}
             <div>
               <h1 className="text-4xl font-bold text-foreground mb-2">
                 Personal Information
