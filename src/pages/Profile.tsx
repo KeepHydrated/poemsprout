@@ -275,42 +275,43 @@ const Profile = () => {
                 {sortedPoems.map((poem) => (
                   <Card key={poem.id} className="overflow-hidden hover:shadow-lg transition-shadow">
                     <CardContent className="p-6">
-                      <div className="flex justify-between items-start mb-4">
-                        <div>
-                          <h3 className="font-semibold text-lg text-foreground mb-1">
-                            {poem.poem_type}
-                          </h3>
-                          <p className="text-sm text-muted-foreground">
-                            {poem.original_topic}
-                          </p>
-                        </div>
+                      <div className="flex items-start justify-between mb-4">
+                        <span className="text-sm text-muted-foreground">
+                          {formatDate(poem.created_at)}
+                        </span>
                         <div className="flex items-center gap-2">
-                          <div className="flex items-center gap-1 text-muted-foreground">
-                            <Heart className="h-4 w-4" />
-                            <span className="text-sm">{likeCounts[poem.id] || 0}</span>
-                          </div>
                           {isOwnProfile && (
-                            <Button
-                              variant="ghost"
-                              size="icon"
+                            <button
                               onClick={() => handleDeletePublished(poem.id)}
-                              className="text-destructive hover:text-destructive"
+                              className="text-muted-foreground hover:text-destructive transition-colors"
                             >
                               <Trash2 className="h-4 w-4" />
-                            </Button>
+                            </button>
                           )}
+                          <Heart className="h-5 w-5 text-muted-foreground" />
                         </div>
                       </div>
+
+                      <p className="text-sm text-foreground/80 mb-4">
+                        {poem.original_topic} • {poem.poem_type}
+                      </p>
                       
-                      <div className="bg-muted/30 rounded-lg p-4">
-                        <p className="whitespace-pre-wrap font-serif text-foreground">
+                      <blockquote className="border-l-2 border-accent pl-4 mb-4">
+                        <p className="whitespace-pre-wrap font-serif text-foreground leading-relaxed">
                           {poem.content}
                         </p>
-                      </div>
+                      </blockquote>
                       
-                      <p className="text-xs text-muted-foreground mt-3">
-                        Published {formatDate(poem.created_at)}
-                      </p>
+                      <div className="flex items-center gap-2">
+                        <Avatar className="h-5 w-5">
+                          <AvatarFallback className="text-xs">
+                            {displayName?.[0]?.toUpperCase() || "A"}
+                          </AvatarFallback>
+                        </Avatar>
+                        <span className="text-sm text-muted-foreground">
+                          {displayName || "Anonymous"} • {points} pts
+                        </span>
+                      </div>
                     </CardContent>
                   </Card>
                 ))}
