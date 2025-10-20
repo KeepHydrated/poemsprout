@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Heart, Send, Trash2 } from "lucide-react";
+import { Heart, Send, Trash2, ChevronUp, ChevronDown, MessageSquare, Check, Rocket, TrendingUp, Clock, ChevronDown as ChevronDownIcon } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
@@ -46,6 +46,8 @@ const PoemDetail = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
+  const [sortBy, setSortBy] = useState<"best" | "top" | "new">("best");
+  const [sortOpen, setSortOpen] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -370,137 +372,256 @@ const PoemDetail = () => {
             </Card>
 
         <div className="space-y-6">
-          <h2 className="text-2xl font-semibold text-foreground">
-            Comments ({comments.length})
-          </h2>
-
+          <h2 className="text-2xl font-bold">Comments</h2>
+          
           {user && (
-            <form onSubmit={handleSubmitComment} className="space-y-3">
-              {replyingTo && (
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <span>Replying to comment</span>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setReplyingTo(null)}
-                    className="h-6 px-2"
-                  >
-                    Cancel
-                  </Button>
+            <Card className="border p-4">
+              <div className="flex items-start gap-3">
+                <Avatar className="h-8 w-8">
+                  <AvatarFallback>
+                    {user?.email?.[0]?.toUpperCase() || "U"}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="flex-1 space-y-3">
+                  <Textarea
+                    value={newComment}
+                    onChange={(e) => setNewComment(e.target.value)}
+                    placeholder={replyingTo ? "Write a reply..." : "What are your thoughts?"}
+                    className="min-h-[120px] resize-none"
+                  />
+                  <div className="flex justify-end gap-2">
+                    {replyingTo && (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        onClick={() => setReplyingTo(null)}
+                      >
+                        Cancel
+                      </Button>
+                    )}
+                    <Button onClick={handleSubmitComment} disabled={isSubmitting || !newComment.trim()}>
+                      {replyingTo ? "Reply" : "Comment"}
+                    </Button>
+                  </div>
                 </div>
-              )}
-              <Textarea
-                value={newComment}
-                onChange={(e) => setNewComment(e.target.value)}
-                placeholder={replyingTo ? "Write your reply..." : "Share your thoughts..."}
-                className="min-h-[100px]"
-              />
-              <Button type="submit" disabled={isSubmitting}>
-                <Send className="mr-2 h-4 w-4" />
-                {replyingTo ? "Post Reply" : "Post Comment"}
-              </Button>
-            </form>
+              </div>
+            </Card>
           )}
 
-          <div className="space-y-4">
+          <div className="pt-2 flex items-center gap-4">
+            <span className="text-sm text-muted-foreground font-medium">
+              {comments.reduce((total, comment) => total + 1 + (comment.replies?.length || 0), 0)} {comments.length === 1 ? "Comment" : "Comments"}
+            </span>
+            
+            <div className="relative">
+              <Button
+                variant="outline"
+                onClick={() => setSortOpen(!sortOpen)}
+              >
+                {sortBy === "best" && <Rocket className="w-4 h-4 mr-2" />}
+                {sortBy === "top" && <TrendingUp className="w-4 h-4 mr-2" />}
+                {sortBy === "new" && <Clock className="w-4 h-4 mr-2" />}
+                Sort by: {sortBy === "best" ? "Best" : sortBy === "top" ? "Top" : "New"}
+                <ChevronDownIcon className="w-4 h-4 ml-1" />
+              </Button>
+              
+              {sortOpen && (
+                <div className="absolute left-0 top-full mt-2 w-48 rounded-md border bg-popover p-1 text-popover-foreground shadow-md z-50">
+                  {[
+                    { value: "best" as const, label: "Best", icon: Rocket },
+                    { value: "top" as const, label: "Top", icon: TrendingUp },
+                    { value: "new" as const, label: "New", icon: Clock }
+                  ].map((option) => (
+                    <div
+                      key={option.value}
+                      onClick={() => {
+                        setSortBy(option.value);
+                        setSortOpen(false);
+                      }}
+                      className="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground"
+                    >
+                      <option.icon className="w-5 h-5 mr-3" />
+                      <span className="flex-1">{option.label}</span>
+                      {sortBy === option.value && <Check className="w-4 h-4 text-primary" />}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="space-y-2 bg-card rounded-lg border">
             {comments.length === 0 ? (
-              <Card>
-                <CardContent className="py-8 text-center">
-                  <p className="text-muted-foreground">
-                    No comments yet. Be the first to share your thoughts!
-                  </p>
-                </CardContent>
-              </Card>
+              <div className="py-8 text-center">
+                <p className="text-muted-foreground">
+                  No comments yet. Be the first to share your thoughts!
+                </p>
+              </div>
             ) : (
               comments.map((comment) => (
-                <div key={comment.id} className="space-y-2">
-                  <Card>
-                    <CardContent className="pt-4">
-                      <div className="flex items-start justify-between mb-2">
-                        <div className="flex items-center gap-2">
-                          <Avatar className="h-6 w-6">
-                            <AvatarFallback className="text-xs">
-                              {comment.profiles?.display_name?.[0]?.toUpperCase() || "A"}
-                            </AvatarFallback>
-                          </Avatar>
-                          <span className="text-sm font-medium">
-                            {comment.profiles?.display_name || "Anonymous"}
-                          </span>
-                          <span className="text-xs text-muted-foreground">
-                            {new Date(comment.created_at).toLocaleDateString()}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          {user && (
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-8 px-2"
-                              onClick={() => setReplyingTo(comment.id)}
-                            >
-                              Reply
-                            </Button>
-                          )}
-                          {user?.id === comment.user_id && (
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-8 w-8"
-                              onClick={() => handleDeleteComment(comment.id)}
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          )}
-                        </div>
-                      </div>
-                      <p className="text-sm text-foreground/90">{comment.content}</p>
-                    </CardContent>
-                  </Card>
-                  
-                  {/* Replies */}
-                  {comment.replies && comment.replies.length > 0 && (
-                    <div className="ml-8 space-y-2">
-                      {comment.replies.map((reply) => (
-                        <Card key={reply.id} className="bg-muted/30">
-                          <CardContent className="pt-4">
-                            <div className="flex items-start justify-between mb-2">
-                              <div className="flex items-center gap-2">
-                                <Avatar className="h-5 w-5">
-                                  <AvatarFallback className="text-xs">
-                                    {reply.profiles?.display_name?.[0]?.toUpperCase() || "A"}
-                                  </AvatarFallback>
-                                </Avatar>
-                                <span className="text-sm font-medium">
-                                  {reply.profiles?.display_name || "Anonymous"}
-                                </span>
-                                <span className="text-xs text-muted-foreground">
-                                  {new Date(reply.created_at).toLocaleDateString()}
-                                </span>
-                              </div>
-                              {user?.id === reply.user_id && (
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  className="h-7 w-7"
-                                  onClick={() => handleDeleteComment(reply.id)}
-                                >
-                                  <Trash2 className="h-3 w-3" />
-                                </Button>
-                              )}
-                            </div>
-                            <p className="text-sm text-foreground/90">{reply.content}</p>
-                          </CardContent>
-                        </Card>
-                      ))}
-                    </div>
-                  )}
+                <div key={comment.id} className="border-b last:border-b-0 px-4">
+                  <CommentItem
+                    comment={comment}
+                    user={user}
+                    onReply={setReplyingTo}
+                    onDelete={handleDeleteComment}
+                    depth={0}
+                  />
                 </div>
               ))
             )}
           </div>
         </div>
           </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+type CommentItemProps = {
+  comment: Comment;
+  user: any;
+  onReply: (id: string) => void;
+  onDelete: (id: string) => void;
+  depth?: number;
+};
+
+const CommentItem = ({ comment, user, onReply, onDelete, depth = 0 }: CommentItemProps) => {
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [votes, setVotes] = useState(0);
+  const [voteState, setVoteState] = useState<"up" | "down" | null>(null);
+
+  const handleVote = (type: "up" | "down") => {
+    if (voteState === type) {
+      setVotes(0);
+      setVoteState(null);
+    } else if (voteState === null) {
+      setVotes(type === "up" ? 1 : -1);
+      setVoteState(type);
+    } else {
+      setVotes(type === "up" ? 2 : -2);
+      setVoteState(type);
+    }
+  };
+
+  const getTimeAgo = (date: string) => {
+    const now = new Date();
+    const commentDate = new Date(date);
+    const diffMs = now.getTime() - commentDate.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+
+    if (diffMins < 60) return `${diffMins}m ago`;
+    if (diffHours < 24) return `${diffHours}h ago`;
+    return `${diffDays}d ago`;
+  };
+
+  const authorName = comment.profiles?.display_name || "Anonymous";
+  const avatarSeed = authorName.replace(/\s+/g, '');
+
+  return (
+    <div className="py-2">
+      <div className="flex gap-2">
+        <div className="flex flex-col items-center gap-1 pt-1">
+          <button
+            onClick={() => handleVote("up")}
+            className={`p-1 rounded hover:bg-primary/10 transition-colors ${
+              voteState === "up" ? "text-primary" : "text-muted-foreground"
+            }`}
+            aria-label="Upvote"
+          >
+            <ChevronUp className="w-5 h-5" />
+          </button>
+          <span
+            className={`text-xs font-bold min-w-[24px] text-center ${
+              voteState === "up"
+                ? "text-primary"
+                : voteState === "down"
+                ? "text-destructive"
+                : "text-foreground"
+            }`}
+          >
+            {votes}
+          </span>
+          <button
+            onClick={() => handleVote("down")}
+            className={`p-1 rounded hover:bg-destructive/10 transition-colors ${
+              voteState === "down" ? "text-destructive" : "text-muted-foreground"
+            }`}
+            aria-label="Downvote"
+          >
+            <ChevronDown className="w-5 h-5" />
+          </button>
+        </div>
+
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 mb-1">
+            <div className="relative flex h-6 w-6 shrink-0 overflow-hidden rounded-full">
+              <img
+                src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${avatarSeed}`}
+                alt={authorName}
+                className="aspect-square h-full w-full"
+              />
+            </div>
+            <span className="font-medium text-sm">{authorName}</span>
+            <span className="text-xs text-muted-foreground">•</span>
+            <span className="text-xs text-muted-foreground">{getTimeAgo(comment.created_at)}</span>
+            {comment.replies && comment.replies.length > 0 && (
+              <>
+                <span className="text-xs text-muted-foreground">•</span>
+                <button
+                  onClick={() => setIsCollapsed(!isCollapsed)}
+                  className="text-xs text-primary hover:underline"
+                >
+                  [{isCollapsed ? "+" : "−"}]
+                </button>
+              </>
+            )}
+          </div>
+
+          {!isCollapsed && (
+            <>
+              <p className="text-sm mb-2 whitespace-pre-wrap break-words">{comment.content}</p>
+              
+              <div className="flex items-center gap-3 mb-2">
+                {user && (
+                  <button
+                    onClick={() => onReply(comment.id)}
+                    className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    <MessageSquare className="w-3 h-3" />
+                    Reply
+                  </button>
+                )}
+                {user?.id === comment.user_id && (
+                  <button
+                    onClick={() => onDelete(comment.id)}
+                    className="flex items-center gap-1 text-xs text-destructive hover:text-destructive/80 transition-colors"
+                  >
+                    <Trash2 className="w-3 h-3" />
+                    Delete
+                  </button>
+                )}
+              </div>
+
+              {comment.replies && comment.replies.length > 0 && depth < 8 && (
+                <div className="mt-2 space-y-2 border-l-2 border-border pl-4">
+                  {comment.replies.map((reply) => (
+                    <CommentItem
+                      key={reply.id}
+                      comment={reply}
+                      user={user}
+                      onReply={onReply}
+                      onDelete={onDelete}
+                      depth={depth + 1}
+                    />
+                  ))}
+                </div>
+              )}
+            </>
+          )}
         </div>
       </div>
     </div>
