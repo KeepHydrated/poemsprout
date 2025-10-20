@@ -222,7 +222,16 @@ const GallerySidebar = () => {
                       </Button>
                     </div>
                   </div>
-                  <CardDescription className="flex items-center gap-1 text-xs mb-2">
+                  <p className="text-xs text-foreground/80 mb-1">
+                    {poem.original_topic && <span>{poem.original_topic} • </span>}
+                    {poem.poem_type}
+                  </p>
+                </CardHeader>
+                <CardContent className="pt-0">
+                  <blockquote className="border-l-2 border-accent pl-3 text-sm whitespace-pre-wrap font-serif text-foreground/80 leading-relaxed line-clamp-6 mb-3">
+                    {poem.content}
+                  </blockquote>
+                  <CardDescription className="flex items-center gap-1 text-xs">
                     <Avatar className="h-4 w-4">
                       <AvatarFallback className="text-[8px]">
                         {poem.profiles?.display_name?.[0]?.toUpperCase() || "A"}
@@ -233,15 +242,6 @@ const GallerySidebar = () => {
                     </span>
                     <span className="text-muted-foreground">• {poem.profiles?.points || 0} pts</span>
                   </CardDescription>
-                  <p className="text-xs text-foreground/80 mb-1">
-                    {poem.original_topic && <span>{poem.original_topic} • </span>}
-                    {poem.poem_type}
-                  </p>
-                </CardHeader>
-                <CardContent className="pt-0">
-                  <blockquote className="border-l-2 border-accent pl-3 text-sm whitespace-pre-wrap font-serif text-foreground/80 leading-relaxed line-clamp-6">
-                    {poem.content}
-                  </blockquote>
                 </CardContent>
               </Card>
             ))}
