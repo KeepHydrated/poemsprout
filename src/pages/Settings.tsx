@@ -157,7 +157,7 @@ const Settings = () => {
             <div className="space-y-4">
               <div className="flex justify-between items-start">
                 <div>
-                  <h2 className="text-2xl font-bold text-foreground mb-1">
+                  <h2 className="text-sm font-semibold text-foreground mb-1">
                     Profile Picture
                   </h2>
                   <p className="text-muted-foreground text-sm">
@@ -244,7 +244,7 @@ const Settings = () => {
           <div className="bg-card border rounded-xl p-4 md:p-6">
             <div className="space-y-4">
               <div>
-                <h1 className="text-2xl font-bold text-foreground mb-1">
+                <h1 className="text-sm font-semibold text-foreground mb-1">
                   Personal Information
                 </h1>
                 <p className="text-muted-foreground text-sm">
