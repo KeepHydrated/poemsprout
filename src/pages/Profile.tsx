@@ -33,7 +33,6 @@ const Profile = () => {
   const [loadingPoems, setLoadingPoems] = useState(false);
   const [sortBy, setSortBy] = useState<"newest" | "oldest" | "most-liked">("newest");
   const [filterType, setFilterType] = useState<string>("all");
-  const [currentPoemIndex, setCurrentPoemIndex] = useState(0);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -147,15 +146,24 @@ const Profile = () => {
 
   const uniquePoemTypes = Array.from(new Set(publishedPoems.map(p => p.poem_type)));
 
-  // Auto-scroll effect
+  // Vertical auto-scroll effect
   useEffect(() => {
     if (sortedPoems.length === 0) return;
     
+    const scrollContainer = document.getElementById('poems-container');
+    if (!scrollContainer) return;
+
+    const scrollStep = 1; // pixels per interval
+    const scrollInterval = 50; // milliseconds
+
     const interval = setInterval(() => {
-      setCurrentPoemIndex((prevIndex) => 
-        (prevIndex + 1) % sortedPoems.length
-      );
-    }, 5000); // Change poem every 5 seconds
+      if (scrollContainer.scrollTop + scrollContainer.clientHeight >= scrollContainer.scrollHeight) {
+        // Reset to top when reaching bottom
+        scrollContainer.scrollTop = 0;
+      } else {
+        scrollContainer.scrollTop += scrollStep;
+      }
+    }, scrollInterval);
 
     return () => clearInterval(interval);
   }, [sortedPoems.length]);
@@ -305,73 +313,49 @@ const Profile = () => {
                 )}
               </div>
             ) : (
-              <div className="relative overflow-hidden">
-                <div 
-                  className="transition-all duration-500 ease-in-out"
-                  style={{
-                    transform: `translateX(-${currentPoemIndex * 100}%)`,
-                  }}
-                >
-                  <div className="flex">
-                    {sortedPoems.map((poem, index) => (
-                      <div key={poem.id} className="w-full flex-shrink-0 px-2">
-                        <Card className="overflow-hidden hover:shadow-lg transition-shadow animate-fade-in">
-                          <CardContent className="p-6">
-                            <div className="flex items-start justify-between mb-4">
-                              <span className="text-sm text-muted-foreground">
-                                {formatDate(poem.created_at)}
-                              </span>
-                              <div className="flex items-center gap-2">
-                                <Heart className="h-5 w-5 text-muted-foreground" />
-                                <span className="text-sm text-muted-foreground">
-                                  {likeCounts[poem.id] || 0}
-                                </span>
-                              </div>
-                            </div>
-
-                            <p className="text-sm text-foreground/80 mb-4">
-                              {poem.original_topic} • {poem.poem_type}
-                            </p>
-                            
-                            <blockquote className="border-l-2 border-accent pl-4">
-                              <p className="whitespace-pre-wrap font-serif text-foreground leading-relaxed">
-                                {poem.content}
-                              </p>
-                            </blockquote>
-
-                            {isOwnProfile && (
-                              <div className="mt-4 flex justify-end">
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => handleDeletePublished(poem.id)}
-                                >
-                                  <Trash2 className="h-4 w-4" />
-                                </Button>
-                              </div>
-                            )}
-                          </CardContent>
-                        </Card>
+              <div 
+                id="poems-container"
+                className="space-y-6 max-h-[600px] overflow-y-auto scroll-smooth pr-2"
+              >
+                {sortedPoems.map((poem) => (
+                  <Card key={poem.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+                    <CardContent className="p-6">
+                      <div className="flex items-start justify-between mb-4">
+                        <span className="text-sm text-muted-foreground">
+                          {formatDate(poem.created_at)}
+                        </span>
+                        <div className="flex items-center gap-2">
+                          <Heart className="h-5 w-5 text-muted-foreground" />
+                          <span className="text-sm text-muted-foreground">
+                            {likeCounts[poem.id] || 0}
+                          </span>
+                        </div>
                       </div>
-                    ))}
-                  </div>
-                </div>
-                
-                {/* Navigation dots */}
-                <div className="flex justify-center gap-2 mt-6">
-                  {sortedPoems.map((_, index) => (
-                    <button
-                      key={index}
-                      onClick={() => setCurrentPoemIndex(index)}
-                      className={`h-2 rounded-full transition-all ${
-                        index === currentPoemIndex 
-                          ? 'w-8 bg-primary' 
-                          : 'w-2 bg-muted-foreground/30'
-                      }`}
-                      aria-label={`Go to poem ${index + 1}`}
-                    />
-                  ))}
-                </div>
+
+                      <p className="text-sm text-foreground/80 mb-4">
+                        {poem.original_topic} • {poem.poem_type}
+                      </p>
+                      
+                      <blockquote className="border-l-2 border-accent pl-4">
+                        <p className="whitespace-pre-wrap font-serif text-foreground leading-relaxed">
+                          {poem.content}
+                        </p>
+                      </blockquote>
+
+                      {isOwnProfile && (
+                        <div className="mt-4 flex justify-end">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleDeletePublished(poem.id)}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                ))}
               </div>
             )}
           </div>
