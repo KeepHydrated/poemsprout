@@ -467,6 +467,9 @@ const Index = () => {
 
           <Card className="border-2 shadow-lg rounded-t-none border-t-0">
             <CardHeader className="pb-4">
+              <CardDescription className="text-base">
+                {currentPoem.lines}
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
