@@ -151,8 +151,8 @@ const Settings = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8 max-w-7xl">
-        <div className="max-w-3xl mx-auto space-y-4">
+      <div className="container px-4 py-8 max-w-7xl">
+        <div className="max-w-3xl space-y-4">
           <div className="bg-card border rounded-xl p-4 md:p-6">
             <div className="space-y-4">
               <div className="flex justify-between items-start">
