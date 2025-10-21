@@ -19,6 +19,7 @@ const Settings = () => {
   const [uploading, setUploading] = useState(false);
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const profileCardRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -43,6 +44,22 @@ const Settings = () => {
 
     return () => subscription.unsubscribe();
   }, [navigate]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (profileCardRef.current && !profileCardRef.current.contains(event.target as Node)) {
+        setIsEditingProfile(false);
+      }
+    };
+
+    if (isEditingProfile) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isEditingProfile]);
 
   const loadProfile = async (userId: string) => {
     const { data, error } = await supabase
@@ -153,7 +170,7 @@ const Settings = () => {
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8 max-w-7xl">
         <div className="max-w-3xl mx-auto space-y-4">
-          <div className="bg-card border rounded-xl p-4 md:p-6">
+          <div className="bg-card border rounded-xl p-4 md:p-6" ref={profileCardRef}>
             <div className="space-y-4">
               <div className="flex justify-between items-start">
                 <div>
