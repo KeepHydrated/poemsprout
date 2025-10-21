@@ -151,16 +151,16 @@ const Settings = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-12 max-w-7xl">
-        <div className="max-w-4xl mx-auto space-y-6">
-          <div className="bg-card border rounded-2xl p-8 md:p-12">
-            <div className="space-y-6">
+      <div className="container mx-auto px-4 py-8 max-w-7xl">
+        <div className="max-w-3xl mx-auto space-y-4">
+          <div className="bg-card border rounded-xl p-4 md:p-6">
+            <div className="space-y-4">
               <div className="flex justify-between items-start">
                 <div>
-                  <h2 className="text-3xl font-bold text-foreground mb-2">
+                  <h2 className="text-2xl font-bold text-foreground mb-1">
                     Profile Picture
                   </h2>
-                  <p className="text-muted-foreground text-lg">
+                  <p className="text-muted-foreground text-sm">
                     Upload and manage your profile picture • <span className="font-semibold text-primary">{points} points</span>
                   </p>
                 </div>
@@ -168,10 +168,10 @@ const Settings = () => {
                   <Button
                     onClick={() => setIsEditingProfile(true)}
                     variant="outline"
-                    size="lg"
-                    className="h-14 px-8"
+                    size="sm"
+                    className="h-9 px-4"
                   >
-                    <Edit className="mr-2" />
+                    <Edit className="mr-2 h-4 w-4" />
                     Edit
                   </Button>
                 ) : (
@@ -179,15 +179,15 @@ const Settings = () => {
                     <Button
                       onClick={() => setIsEditingProfile(false)}
                       variant="outline"
-                      size="lg"
-                      className="h-14 px-6"
+                      size="sm"
+                      className="h-9 px-4"
                     >
                       Cancel
                     </Button>
                     <Button
                       onClick={handleSaveProfile}
-                      size="lg"
-                      className="h-14 px-6"
+                      size="sm"
+                      className="h-9 px-4"
                     >
                       Save
                     </Button>
@@ -195,11 +195,11 @@ const Settings = () => {
                 )}
               </div>
 
-              <div className="flex flex-col items-start gap-4">
+              <div className="flex flex-col items-start gap-3">
                 <div className="relative">
-                  <Avatar className="h-32 w-32">
+                  <Avatar className="h-24 w-24">
                     <AvatarImage src={avatarUrl} alt={displayName || user?.email || "User"} />
-                    <AvatarFallback className="bg-primary/10 text-4xl">
+                    <AvatarFallback className="bg-primary/10 text-3xl">
                       {displayName?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase() || "U"}
                     </AvatarFallback>
                   </Avatar>
@@ -217,44 +217,44 @@ const Settings = () => {
                         disabled={uploading}
                         className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-full cursor-pointer hover:bg-black/50 transition-colors"
                       >
-                        <Edit className="h-8 w-8 text-white" />
+                        <Edit className="h-6 w-6 text-white" />
                       </button>
                     </>
                   )}
                 </div>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-xs text-muted-foreground">
                   JPG, PNG or GIF (max 5MB)
                 </p>
               </div>
 
-              <div className="space-y-3">
-                <Label className="text-lg font-semibold">Username</Label>
+              <div className="space-y-2">
+                <Label className="text-sm font-semibold">Username</Label>
                 <Input
                   type="text"
                   value={displayName}
                   onChange={(e) => setDisplayName(e.target.value)}
                   placeholder="Enter your username"
-                  className="h-14 text-lg"
+                  className="h-10"
                   disabled={!isEditingProfile}
                 />
               </div>
             </div>
           </div>
 
-          <div className="bg-card border rounded-2xl p-8 md:p-12">
-            <div className="space-y-8">
+          <div className="bg-card border rounded-xl p-4 md:p-6">
+            <div className="space-y-4">
               <div>
-                <h1 className="text-4xl font-bold text-foreground mb-2">
+                <h1 className="text-2xl font-bold text-foreground mb-1">
                   Personal Information
                 </h1>
-                <p className="text-muted-foreground text-lg">
+                <p className="text-muted-foreground text-sm">
                   Update your personal details and contact information
                 </p>
               </div>
 
-              <div className="space-y-6">
-                <div className="space-y-3">
-                  <Label htmlFor="email" className="text-lg font-semibold">
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="email" className="text-sm font-semibold">
                     Email
                   </Label>
                   <Input 
@@ -262,34 +262,34 @@ const Settings = () => {
                     type="email" 
                     value={user?.email || ""} 
                     disabled 
-                    className="bg-muted text-lg h-14 text-muted-foreground"
+                    className="bg-muted h-10 text-muted-foreground"
                   />
-                  <p className="text-muted-foreground text-sm">
+                  <p className="text-muted-foreground text-xs">
                     Email cannot be changed
                   </p>
                 </div>
 
-                <div className="space-y-3">
-                  <Label htmlFor="password" className="text-lg font-semibold">
+                <div className="space-y-2">
+                  <Label htmlFor="password" className="text-sm font-semibold">
                     Password
                   </Label>
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-3">
                     <Input 
                       id="password" 
                       type="password" 
                       value="............" 
                       disabled 
-                      className="bg-muted flex-1 h-14"
+                      className="bg-muted flex-1 h-10"
                     />
                     <Button 
                       onClick={handleSendPasswordResetEmail} 
-                      size="lg"
-                      className="h-14 px-8"
+                      size="sm"
+                      className="h-10 px-4"
                     >
                       Change Password
                     </Button>
                   </div>
-                  <p className="text-muted-foreground text-sm">
+                  <p className="text-muted-foreground text-xs">
                     Click to receive a password reset link via email
                   </p>
                 </div>
