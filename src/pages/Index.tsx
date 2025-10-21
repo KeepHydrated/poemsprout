@@ -410,32 +410,21 @@ const Index = () => {
                     Random Topic
                   </Button>
                 </div>
-              <Input
-                id="topic-input"
-                type="text"
-                value={poemTopic}
-                onChange={(e) => setPoemTopic(e.target.value)}
-                placeholder="Enter a topic, theme, or inspiration..."
-                className="border-2"
-              />
-            </div>
+                <Input
+                  id="topic-input"
+                  type="text"
+                  value={poemTopic}
+                  onChange={(e) => setPoemTopic(e.target.value)}
+                  placeholder="Enter a topic, theme, or inspiration..."
+                  className="border-2"
+                />
+              </div>
 
-            <Button
-              type="button"
-              variant="secondary"
-              size="lg"
-              onClick={handleRandomTopic}
-              className="w-full gap-2"
-            >
-              <Shuffle className="h-5 w-5" />
-              Get Random Topic
-            </Button>
-
-            <Button 
-              type="submit" 
-              size="lg" 
-              className="w-full gap-2"
-            >
+              <Button 
+                type="submit" 
+                size="lg" 
+                className="w-full gap-2"
+              >
                 {isGenerating ? (
                   <>
                     <Loader2 className="h-5 w-5 animate-spin" />
