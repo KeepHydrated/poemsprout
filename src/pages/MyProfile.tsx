@@ -185,6 +185,69 @@ const MyPoems = () => {
     return new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime();
   });
 
+  // Vertical auto-scroll effect for published poems
+  useEffect(() => {
+    if (activeTab !== 'published' || sortedPublishedPoems.length === 0) return;
+    
+    const scrollContainer = document.getElementById('published-poems-container');
+    if (!scrollContainer) return;
+
+    const scrollStep = 1;
+    const scrollInterval = 50;
+
+    const interval = setInterval(() => {
+      if (scrollContainer.scrollTop + scrollContainer.clientHeight >= scrollContainer.scrollHeight) {
+        scrollContainer.scrollTop = 0;
+      } else {
+        scrollContainer.scrollTop += scrollStep;
+      }
+    }, scrollInterval);
+
+    return () => clearInterval(interval);
+  }, [activeTab, sortedPublishedPoems.length]);
+
+  // Vertical auto-scroll effect for saved poems
+  useEffect(() => {
+    if (activeTab !== 'saved' || sortedSavedPoems.length === 0) return;
+    
+    const scrollContainer = document.getElementById('saved-poems-container');
+    if (!scrollContainer) return;
+
+    const scrollStep = 1;
+    const scrollInterval = 50;
+
+    const interval = setInterval(() => {
+      if (scrollContainer.scrollTop + scrollContainer.clientHeight >= scrollContainer.scrollHeight) {
+        scrollContainer.scrollTop = 0;
+      } else {
+        scrollContainer.scrollTop += scrollStep;
+      }
+    }, scrollInterval);
+
+    return () => clearInterval(interval);
+  }, [activeTab, sortedSavedPoems.length]);
+
+  // Vertical auto-scroll effect for comments
+  useEffect(() => {
+    if (activeTab !== 'comments' || userComments.length === 0) return;
+    
+    const scrollContainer = document.getElementById('comments-container');
+    if (!scrollContainer) return;
+
+    const scrollStep = 1;
+    const scrollInterval = 50;
+
+    const interval = setInterval(() => {
+      if (scrollContainer.scrollTop + scrollContainer.clientHeight >= scrollContainer.scrollHeight) {
+        scrollContainer.scrollTop = 0;
+      } else {
+        scrollContainer.scrollTop += scrollStep;
+      }
+    }, scrollInterval);
+
+    return () => clearInterval(interval);
+  }, [activeTab, userComments.length]);
+
   const handleDeletePublished = async (poemId: string) => {
     if (!confirm("Are you sure you want to delete this poem?")) return;
 
@@ -361,7 +424,10 @@ const MyPoems = () => {
                     </Button>
                   </div>
                 ) : (
-                  <div className="space-y-6">
+                  <div 
+                    id="published-poems-container"
+                    className="space-y-6 max-h-[600px] overflow-y-auto scroll-smooth pr-2"
+                  >
                     {sortedPublishedPoems.map((poem) => (
                       <Card key={poem.id} className="overflow-hidden hover:shadow-lg transition-shadow">
                         <CardContent className="p-6">
@@ -408,7 +474,10 @@ const MyPoems = () => {
                     </Button>
                   </div>
                 ) : (
-                  <div className="space-y-6">
+                  <div 
+                    id="saved-poems-container"
+                    className="space-y-6 max-h-[600px] overflow-y-auto scroll-smooth pr-2"
+                  >
                     {sortedSavedPoems.map((poem) => (
                       <Card key={poem.id} className="overflow-hidden hover:shadow-lg transition-shadow">
                         <CardContent className="p-6">
@@ -487,7 +556,10 @@ const MyPoems = () => {
                     </Button>
                   </div>
                 ) : (
-                  <div className="space-y-6">
+                  <div 
+                    id="comments-container"
+                    className="space-y-6 max-h-[600px] overflow-y-auto scroll-smooth pr-2"
+                  >
                     {userComments.map((comment) => (
                       <Card 
                         key={comment.id} 
