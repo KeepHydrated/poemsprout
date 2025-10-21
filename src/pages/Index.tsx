@@ -389,7 +389,7 @@ const Index = () => {
       <div className="container mx-auto px-4 py-8">
         <div className="flex gap-8 max-w-7xl mx-auto">
           {/* Main Content */}
-          <div className="flex-1 max-w-4xl">
+          <div className="flex-1 max-w-3xl">
 
         <Card className="border-2 shadow-lg">
           <CardContent className="space-y-6 pt-6">
