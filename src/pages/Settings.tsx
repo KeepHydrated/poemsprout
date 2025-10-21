@@ -157,10 +157,8 @@ const Settings = () => {
             <div className="space-y-4">
               <div className="flex justify-between items-start">
                 <div>
-                  <h2 className="text-sm font-semibold text-foreground mb-1">
-                    Profile Picture
-                  </h2>
-                  <p className="text-muted-foreground text-sm">
+                  <Label className="text-sm font-semibold">Profile Picture</Label>
+                  <p className="text-muted-foreground text-sm mt-1">
                     Upload and manage your profile picture • <span className="font-semibold text-primary">{points} points</span>
                   </p>
                 </div>
