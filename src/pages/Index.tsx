@@ -394,45 +394,52 @@ const Index = () => {
         <Card className="border-2 shadow-lg">
           <CardContent className="space-y-6 pt-6">
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <div className="flex gap-2">
-                  <Input
-                    id="topic-input"
-                    type="text"
-                    value={poemTopic}
-                    onChange={(e) => setPoemTopic(e.target.value)}
-                    placeholder="Enter a topic, theme, or inspiration..."
-                    className="border-2 flex-1"
-                  />
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={handleRandomTopic}
-                    className="gap-2 whitespace-nowrap"
-                  >
-                    <Shuffle className="h-4 w-4" />
-                    Random Topic
-                  </Button>
-                </div>
-              </div>
+              <Input
+                id="topic-input"
+                type="text"
+                value={poemTopic}
+                onChange={(e) => setPoemTopic(e.target.value)}
+                placeholder="Enter a topic, theme, or inspiration..."
+                className="border-2"
+              />
 
-              <Button 
-                type="submit" 
-                size="lg" 
-                className="w-full gap-2"
-              >
-                {isGenerating ? (
-                  <>
-                    <Loader2 className="h-5 w-5 animate-spin" />
-                    Generating...
-                  </>
-                ) : (
-                  <>
-                    <Sparkles className="h-5 w-5" />
-                    Generate Poem
-                  </>
-                )}
-              </Button>
+              <div className="flex gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleRandomTopic}
+                  className="gap-2 whitespace-nowrap md:hidden flex-1"
+                >
+                  <Shuffle className="h-4 w-4" />
+                  Random Topic
+                </Button>
+                <Button 
+                  type="submit" 
+                  size="lg" 
+                  className="flex-1 md:w-full gap-2"
+                >
+                  {isGenerating ? (
+                    <>
+                      <Loader2 className="h-5 w-5 animate-spin" />
+                      Generating...
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="h-5 w-5" />
+                      Generate Poem
+                    </>
+                  )}
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleRandomTopic}
+                  className="gap-2 whitespace-nowrap hidden md:flex"
+                >
+                  <Shuffle className="h-4 w-4" />
+                  Random Topic
+                </Button>
+              </div>
             </form>
           </CardContent>
         </Card>
