@@ -354,10 +354,10 @@ const MyPoems = () => {
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-12 max-w-6xl">
-        <div className="flex gap-8">
+        <div className="flex flex-col md:flex-row gap-8">
           {/* Sidebar */}
-          <div className="w-64 flex-shrink-0">
-            <Card className="sticky top-4">
+          <div className="w-full md:w-64 flex-shrink-0">
+            <Card className="md:sticky md:top-4">
               <CardContent className="p-6">
                 <div className="flex flex-col items-center text-center space-y-4">
                   <Avatar className="h-24 w-24">
