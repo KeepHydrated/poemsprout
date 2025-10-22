@@ -232,7 +232,11 @@ const Likes = () => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {sortedPoems.map((poem) => (
-              <Card key={poem.id} className="border hover:shadow-lg transition-shadow">
+              <Card 
+                key={poem.id} 
+                className="border hover:shadow-lg transition-shadow cursor-pointer"
+                onClick={() => navigate(`/poem/${poem.id}`)}
+              >
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between gap-2 mb-2">
                     <span className="text-xs text-muted-foreground">
@@ -248,7 +252,10 @@ const Likes = () => {
                         variant="ghost"
                         size="icon"
                         className="h-8 w-8"
-                        onClick={() => handleUnlike(poem.like_id)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleUnlike(poem.like_id);
+                        }}
                       >
                         <Heart className="h-4 w-4 fill-current text-red-500" />
                       </Button>
