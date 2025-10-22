@@ -170,42 +170,42 @@ const Settings = () => {
         <div className="max-w-3xl mx-auto space-y-4">
           <div className="bg-card border rounded-xl p-4 md:p-6" ref={profileCardRef}>
             <div className="space-y-4">
-              <div className="flex justify-between items-start">
-                <div>
-                  <Label className="text-sm font-semibold">Profile Picture</Label>
-                  <p className="text-muted-foreground text-sm mt-1">
-                    Upload and manage your profile picture
-                  </p>
-                </div>
+              <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-3">
                 {!isEditingProfile ? (
                   <Button
                     onClick={() => setIsEditingProfile(true)}
                     variant="outline"
                     size="sm"
-                    className="h-9 px-4"
+                    className="h-9 px-4 w-full md:w-auto md:order-2"
                   >
                     <Edit className="mr-2 h-4 w-4" />
                     Edit
                   </Button>
                 ) : (
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 w-full md:w-auto md:order-2">
                     <Button
                       onClick={() => setIsEditingProfile(false)}
                       variant="outline"
                       size="sm"
-                      className="h-9 px-4"
+                      className="h-9 px-4 flex-1 md:flex-none"
                     >
                       Cancel
                     </Button>
                     <Button
                       onClick={handleSaveProfile}
                       size="sm"
-                      className="h-9 px-4"
+                      className="h-9 px-4 flex-1 md:flex-none"
                     >
                       Save
                     </Button>
                   </div>
                 )}
+                <div className="md:order-1">
+                  <Label className="text-sm font-semibold">Profile Picture</Label>
+                  <p className="text-muted-foreground text-sm mt-1">
+                    Upload and manage your profile picture
+                  </p>
+                </div>
               </div>
 
               <div className="flex flex-col items-start gap-3">
