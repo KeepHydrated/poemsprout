@@ -426,7 +426,8 @@ const Index = () => {
                   ) : (
                     <>
                       <Sparkles className="h-5 w-5" />
-                      Generate Poem
+                      <span className="md:hidden">Generate</span>
+                      <span className="hidden md:inline">Generate Poem</span>
                     </>
                   )}
                 </Button>
