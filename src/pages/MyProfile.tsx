@@ -552,7 +552,7 @@ const MyPoems = () => {
 
               <TabsContent value="comments">
                 <div className="mb-6">
-                  <h2 className="text-2xl font-semibold text-foreground">Your Comments</h2>
+                  <h2 className="text-2xl font-semibold text-foreground hidden md:block">Your Comments</h2>
                 </div>
 
                 {userComments.length === 0 ? (
