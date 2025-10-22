@@ -318,7 +318,11 @@ const Profile = () => {
                 className="space-y-6 max-h-[600px] overflow-y-auto scroll-smooth pr-2"
               >
                 {sortedPoems.map((poem) => (
-                  <Card key={poem.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+                  <Card 
+                    key={poem.id} 
+                    className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
+                    onClick={() => navigate(`/poem/${poem.id}`)}
+                  >
                     <CardContent className="p-6">
                       <div className="flex items-start justify-between mb-4">
                         <span className="text-sm text-muted-foreground">
@@ -347,7 +351,10 @@ const Profile = () => {
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => handleDeletePublished(poem.id)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeletePublished(poem.id);
+                            }}
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
