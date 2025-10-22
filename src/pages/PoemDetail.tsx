@@ -385,7 +385,7 @@ const PoemDetail = () => {
                     value={newComment}
                     onChange={(e) => setNewComment(e.target.value)}
                     placeholder={replyingTo ? "Write a reply..." : "What are your thoughts?"}
-                    className="min-h-[120px] resize-none"
+                    className="min-h-[80px] resize-none"
                   />
                   <div className="flex justify-end gap-2">
                     {replyingTo && (
