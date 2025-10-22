@@ -470,7 +470,7 @@ const MyPoems = () => {
 
               <TabsContent value="saved">
                 <div className="mb-6">
-                  <h2 className="text-2xl font-semibold text-foreground">Saved Drafts</h2>
+                  <h2 className="text-2xl font-semibold text-foreground hidden md:block">Saved Drafts</h2>
                 </div>
 
                 {savedPoems.length === 0 ? (
