@@ -489,7 +489,6 @@ const Index = () => {
                         {currentGeneratedPoem}
                       </p>
                     </div>
-                    <p className="text-sm text-muted-foreground">{currentPoem.lines}</p>
                     {user && (
                       <div className="flex gap-2">
                         <Dialog open={isSaveDialogOpen} onOpenChange={setIsSaveDialogOpen}>
@@ -561,14 +560,13 @@ const Index = () => {
                     )}
                   </div>
                 ) : (
-                  <div className="space-y-2">
-                    <blockquote className="border-l-4 border-accent pl-4 py-2 text-foreground/70 italic">
-                      {currentPoem.example}
-                    </blockquote>
-                    <p className="text-sm text-muted-foreground">{currentPoem.lines}</p>
-                  </div>
+                  <blockquote className="border-l-4 border-accent pl-4 py-2 text-foreground/70 italic">
+                    {currentPoem.example}
+                  </blockquote>
                 )}
               </div>
+
+              <p className="text-sm text-muted-foreground">{currentPoem.lines}</p>
 
               <div>
                 <h3 className="font-semibold text-lg text-foreground mb-2">Description</h3>
