@@ -562,11 +562,7 @@ const Index = () => {
                       </div>
                     )}
                   </div>
-                ) : (
-                  <blockquote className="border-l-4 border-accent pl-4 py-2 text-foreground/70 italic">
-                    {currentPoem.example}
-                  </blockquote>
-                )}
+                ) : null}
               </div>
 
               <div>
