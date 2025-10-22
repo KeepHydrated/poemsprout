@@ -404,8 +404,8 @@ const MyPoems = () => {
                         <SelectValue placeholder="Sort by" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="newest">Newest First</SelectItem>
-                        <SelectItem value="oldest">Oldest First</SelectItem>
+                        <SelectItem value="newest">Newest</SelectItem>
+                        <SelectItem value="oldest">Oldest</SelectItem>
                         <SelectItem value="most-liked">Most Liked</SelectItem>
                       </SelectContent>
                     </Select>
