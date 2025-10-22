@@ -189,8 +189,8 @@ const Likes = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-secondary/20">
-      <div className="container mx-auto px-4 py-16 max-w-4xl">
-        <header className="mb-12 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+      <div className="container mx-auto px-4 py-6 md:py-16 max-w-4xl">
+        <header className="mb-6 md:mb-12 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <p className="text-lg text-muted-foreground">
             All the poems you've hearted
           </p>
