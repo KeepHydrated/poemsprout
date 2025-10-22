@@ -398,7 +398,7 @@ const MyPoems = () => {
               <TabsContent value="published">
                 {!loading && publishedPoems.length > 0 && (
                   <div className="mb-6 flex items-center justify-between">
-                    <h2 className="text-2xl font-semibold text-foreground">Published Poems</h2>
+                    <h2 className="text-2xl font-semibold text-foreground hidden md:block">Published Poems</h2>
                     <Select value={sortBy} onValueChange={(value: "newest" | "oldest" | "most-liked") => setSortBy(value)}>
                       <SelectTrigger className="w-[180px]">
                         <SelectValue placeholder="Sort by" />
