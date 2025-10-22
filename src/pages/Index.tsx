@@ -477,13 +477,12 @@ const Index = () => {
                           size="sm"
                           onClick={() => generatePoemForType(selectedPoem, submittedTopic, true)}
                           disabled={isRegenerating}
-                          className="gap-2 absolute top-2 right-2"
+                          className="absolute top-2 right-2"
                         >
                           <RefreshCw className={`h-4 w-4 ${isRegenerating ? 'animate-spin' : ''}`} />
-                          Regenerate
                         </Button>
                       )}
-                      <p className="text-foreground whitespace-pre-line leading-relaxed pr-32">
+                      <p className="text-foreground whitespace-pre-line leading-relaxed pr-12">
                         {currentGeneratedPoem}
                       </p>
                     </div>
