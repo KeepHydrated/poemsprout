@@ -197,7 +197,7 @@ const Likes = () => {
           {likedPoems.length > 0 && (
             <div className="flex items-center gap-3">
               <Select value={filterType} onValueChange={setFilterType}>
-                <SelectTrigger className="w-[180px]">
+                <SelectTrigger className="w-[140px] md:w-[180px]">
                   <SelectValue placeholder="All Types" />
                 </SelectTrigger>
                 <SelectContent>
@@ -208,7 +208,7 @@ const Likes = () => {
                 </SelectContent>
               </Select>
               <Select value={sortBy} onValueChange={(value: "newest" | "oldest" | "most-liked") => setSortBy(value)}>
-                <SelectTrigger className="w-[180px]">
+                <SelectTrigger className="w-[140px] md:w-[180px]">
                   <SelectValue placeholder="Sort by" />
                 </SelectTrigger>
                 <SelectContent>
