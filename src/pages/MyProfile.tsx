@@ -429,7 +429,11 @@ const MyPoems = () => {
                     className="space-y-6 max-h-[600px] overflow-y-auto scroll-smooth pr-2"
                   >
                     {sortedPublishedPoems.map((poem) => (
-                      <Card key={poem.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+                      <Card 
+                        key={poem.id} 
+                        className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
+                        onClick={() => navigate(`/poem/${poem.id}`)}
+                      >
                         <CardContent className="p-6">
                           <div className="flex items-start justify-between mb-4">
                             <p className="text-sm text-foreground/80">
@@ -437,7 +441,10 @@ const MyPoems = () => {
                             </p>
                             <div className="flex items-center gap-3">
                               <button
-                                onClick={() => handleDeletePublished(poem.id)}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleDeletePublished(poem.id);
+                                }}
                                 className="text-muted-foreground hover:text-destructive transition-colors"
                               >
                                 <Trash2 className="h-4 w-4" />
