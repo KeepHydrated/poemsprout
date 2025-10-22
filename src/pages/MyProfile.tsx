@@ -389,11 +389,13 @@ const MyPoems = () => {
           {/* Main Content */}
           <div className="flex-1 min-w-0">
             <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as "published" | "saved" | "comments")} className="w-full">
-              <TabsList className="mb-6">
-                <TabsTrigger value="published">Published</TabsTrigger>
-                <TabsTrigger value="saved">Saved Drafts</TabsTrigger>
-                <TabsTrigger value="comments">Comments</TabsTrigger>
-              </TabsList>
+              <div className="flex justify-center md:justify-start mb-6">
+                <TabsList>
+                  <TabsTrigger value="published">Published</TabsTrigger>
+                  <TabsTrigger value="saved">Saved Drafts</TabsTrigger>
+                  <TabsTrigger value="comments">Comments</TabsTrigger>
+                </TabsList>
+              </div>
 
               <TabsContent value="published">
                 {!loading && publishedPoems.length > 0 && (
