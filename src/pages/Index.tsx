@@ -437,23 +437,36 @@ const Index = () => {
 
         <div className="mt-8">
           <div className="border-2 rounded-t-lg bg-card p-4">
-            <Select value={selectedPoem} onValueChange={setSelectedPoem}>
-              <SelectTrigger 
-                id="poem-type-select"
-                className="w-full text-base h-12 border-2 bg-card hover:border-accent transition-all"
-              >
-                <SelectValue placeholder="Choose a poetry form" />
-              </SelectTrigger>
-              <SelectContent className="bg-popover border-2">
-                <SelectItem value="sonnet" className="text-base cursor-pointer">Sonnet</SelectItem>
-                <SelectItem value="haiku" className="text-base cursor-pointer">Haiku</SelectItem>
-                <SelectItem value="limerick" className="text-base cursor-pointer">Limerick</SelectItem>
-                <SelectItem value="villanelle" className="text-base cursor-pointer">Villanelle</SelectItem>
-                <SelectItem value="ode" className="text-base cursor-pointer">Ode</SelectItem>
-                <SelectItem value="ballad" className="text-base cursor-pointer">Ballad</SelectItem>
-                <SelectItem value="epic" className="text-base cursor-pointer">Epic</SelectItem>
-              </SelectContent>
-            </Select>
+            <div className="flex gap-2 items-center">
+              <Select value={selectedPoem} onValueChange={setSelectedPoem}>
+                <SelectTrigger 
+                  id="poem-type-select"
+                  className="flex-1 text-base h-12 border-2 bg-card hover:border-accent transition-all"
+                >
+                  <SelectValue placeholder="Choose a poetry form" />
+                </SelectTrigger>
+                <SelectContent className="bg-popover border-2">
+                  <SelectItem value="sonnet" className="text-base cursor-pointer">Sonnet</SelectItem>
+                  <SelectItem value="haiku" className="text-base cursor-pointer">Haiku</SelectItem>
+                  <SelectItem value="limerick" className="text-base cursor-pointer">Limerick</SelectItem>
+                  <SelectItem value="villanelle" className="text-base cursor-pointer">Villanelle</SelectItem>
+                  <SelectItem value="ode" className="text-base cursor-pointer">Ode</SelectItem>
+                  <SelectItem value="ballad" className="text-base cursor-pointer">Ballad</SelectItem>
+                  <SelectItem value="epic" className="text-base cursor-pointer">Epic</SelectItem>
+                </SelectContent>
+              </Select>
+              {currentGeneratedPoem && submittedTopic && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => generatePoemForType(selectedPoem, submittedTopic, true)}
+                  disabled={isRegenerating}
+                  className="md:hidden h-12 px-3"
+                >
+                  <RefreshCw className={`h-4 w-4 ${isRegenerating ? 'animate-spin' : ''}`} />
+                </Button>
+              )}
+            </div>
           </div>
 
           <Card className="border-2 shadow-lg rounded-t-none border-t-0">
@@ -468,7 +481,7 @@ const Index = () => {
                           size="sm"
                           onClick={() => generatePoemForType(selectedPoem, submittedTopic, true)}
                           disabled={isRegenerating}
-                          className="absolute top-2 right-2"
+                          className="absolute top-2 right-2 hidden md:flex"
                         >
                           <RefreshCw className={`h-4 w-4 ${isRegenerating ? 'animate-spin' : ''}`} />
                         </Button>
