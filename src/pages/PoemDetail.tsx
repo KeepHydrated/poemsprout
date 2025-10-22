@@ -343,8 +343,9 @@ const PoemDetail = () => {
 
         <div className="flex gap-8">
           {/* Author Profile Sidebar */}
-          <div className="hidden lg:block w-64 flex-shrink-0 space-y-4">
-            <Card className="border-2 sticky top-24">
+          <div className="hidden lg:block w-64 flex-shrink-0">
+            <div className="sticky top-20 space-y-4">
+            <Card className="border-2">
               <CardContent className="pt-6 pb-6 text-center">
                 <Avatar className="h-32 w-32 mx-auto mb-4">
                   <AvatarFallback className="text-4xl bg-primary/10">
@@ -384,6 +385,7 @@ const PoemDetail = () => {
                   {poem.like_count} {poem.like_count === 1 ? 'like' : 'likes'}
                 </span>
               </div>
+            </div>
             </div>
           </div>
 
