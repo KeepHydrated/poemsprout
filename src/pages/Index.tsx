@@ -562,7 +562,9 @@ const Index = () => {
                       </div>
                     )}
                   </div>
-                ) : null}
+                ) : (
+                  <div className="border-l-4 border-accent pl-4 py-2 h-12"></div>
+                )}
               </div>
 
               <div>
