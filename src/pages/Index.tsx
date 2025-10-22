@@ -404,6 +404,15 @@ const Index = () => {
               />
 
               <div className="flex gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleRandomTopic}
+                  className="gap-2 whitespace-nowrap flex-1 md:flex-none"
+                >
+                  <Shuffle className="h-4 w-4" />
+                  Random Topic
+                </Button>
                 <Button 
                   type="submit" 
                   size="lg" 
@@ -420,15 +429,6 @@ const Index = () => {
                       Generate Poem
                     </>
                   )}
-                </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={handleRandomTopic}
-                  className="gap-2 whitespace-nowrap flex-1 md:flex-none"
-                >
-                  <Shuffle className="h-4 w-4" />
-                  Random Topic
                 </Button>
               </div>
             </form>
