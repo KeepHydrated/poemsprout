@@ -241,6 +241,29 @@ const Profile = () => {
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-12 max-w-6xl">
         <div className="flex flex-col gap-8">
+          {/* Profile Card */}
+          <div className="w-full flex justify-center">
+            <Card className="w-full max-w-md">
+              <CardContent className="p-6">
+                <div className="flex flex-col items-center text-center space-y-4">
+                  <Avatar className="h-24 w-24">
+                    <AvatarFallback className="text-2xl">
+                      {displayName?.[0]?.toUpperCase() || "A"}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <h3 className="font-semibold text-lg">
+                      {displayName || "Anonymous"}
+                    </h3>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      {points} points
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
           {/* Main Content */}
           <div className="w-full">
             {!loadingPoems && publishedPoems.length > 0 && (
@@ -342,29 +365,6 @@ const Profile = () => {
                 ))}
               </div>
             )}
-          </div>
-
-          {/* Profile Card */}
-          <div className="w-full flex justify-center">
-            <Card className="w-full max-w-md">
-              <CardContent className="p-6">
-                <div className="flex flex-col items-center text-center space-y-4">
-                  <Avatar className="h-24 w-24">
-                    <AvatarFallback className="text-2xl">
-                      {displayName?.[0]?.toUpperCase() || "A"}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <h3 className="font-semibold text-lg">
-                      {displayName || "Anonymous"}
-                    </h3>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      {points} points
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
           </div>
         </div>
       </div>
