@@ -468,8 +468,7 @@ const Index = () => {
           <Card className="border-2 shadow-lg rounded-t-none border-t-0">
             <CardContent className="space-y-4 pt-6">
               <div>
-                <div className="flex items-center justify-between mb-2">
-                  <p className="text-sm text-muted-foreground">{currentPoem.lines}</p>
+                <div className="flex items-center justify-end mb-2">
                   {submittedTopic && currentGeneratedPoem && (
                     <Button
                       variant="outline"
@@ -490,6 +489,7 @@ const Index = () => {
                         {currentGeneratedPoem}
                       </p>
                     </div>
+                    <p className="text-sm text-muted-foreground">{currentPoem.lines}</p>
                     {user && (
                       <div className="flex gap-2">
                         <Dialog open={isSaveDialogOpen} onOpenChange={setIsSaveDialogOpen}>
