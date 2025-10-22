@@ -476,7 +476,7 @@ const Index = () => {
               <div>
                 {currentGeneratedPoem ? (
                   <div className="space-y-4">
-                    <div className="bg-accent/10 p-6 rounded-lg border-2 border-accent relative">
+                    <div className="bg-accent/10 p-4 md:p-6 rounded-lg border-2 border-accent relative">
                       {submittedTopic && (
                         <Button
                           variant="outline"
