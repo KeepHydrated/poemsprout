@@ -403,13 +403,13 @@ const Index = () => {
                 className="border-2"
               />
 
-              <div className="flex gap-2 justify-center md:justify-start">
+              <div className="grid grid-cols-2 gap-2 md:flex md:justify-start">
                 <Button
                   type="button"
                   variant="outline"
                   size="lg"
                   onClick={handleRandomTopic}
-                  className="gap-2 whitespace-nowrap text-xs md:text-base flex-1 md:flex-none"
+                  className="gap-2 whitespace-nowrap text-xs md:text-base w-full md:w-auto"
                 >
                   <Shuffle className="h-4 w-4" />
                   Random Topic
@@ -417,7 +417,7 @@ const Index = () => {
                 <Button 
                   type="submit" 
                   size="lg" 
-                  className="gap-2 text-xs md:text-base flex-1 md:flex-none"
+                  className="gap-2 text-xs md:text-base w-full md:w-auto"
                 >
                   {isGenerating ? (
                     <>
