@@ -443,9 +443,6 @@ const Index = () => {
 
         <div className="mt-8">
           <div className="border-2 rounded-t-lg bg-card p-4">
-            <label htmlFor="poem-type-select" className="block text-sm font-medium text-foreground mb-2">
-              Select a poem type to learn more
-            </label>
             <Select value={selectedPoem} onValueChange={setSelectedPoem}>
               <SelectTrigger 
                 id="poem-type-select"
