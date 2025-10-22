@@ -466,15 +466,13 @@ const Index = () => {
           </div>
 
           <Card className="border-2 shadow-lg rounded-t-none border-t-0">
-            <CardHeader className="pb-4">
-              <CardDescription className="text-base">
-                {currentPoem.lines}
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-4 pt-6">
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <h3 className="font-semibold text-lg text-foreground">Example</h3>
+                  <div>
+                    <h3 className="font-semibold text-lg text-foreground">Example</h3>
+                    <p className="text-sm text-muted-foreground">{currentPoem.lines}</p>
+                  </div>
                   {submittedTopic && currentGeneratedPoem && (
                     <Button
                       variant="outline"
