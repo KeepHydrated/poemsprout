@@ -407,6 +407,7 @@ const Index = () => {
                 <Button
                   type="button"
                   variant="outline"
+                  size="lg"
                   onClick={handleRandomTopic}
                   className="gap-2 whitespace-nowrap text-xs md:text-base flex-1 md:flex-none"
                 >
