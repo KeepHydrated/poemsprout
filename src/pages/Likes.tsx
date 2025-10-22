@@ -230,7 +230,7 @@ const Likes = () => {
             </CardContent>
           </Card>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-h-[calc(100vh-200px)] overflow-y-auto md:max-h-none md:overflow-visible pr-2">
             {sortedPoems.map((poem) => (
               <Card 
                 key={poem.id} 
