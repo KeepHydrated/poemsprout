@@ -473,22 +473,6 @@ const Index = () => {
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <h3 className="font-semibold text-lg text-foreground mb-2">Description</h3>
-                <p className="text-foreground/80 leading-relaxed">
-                  {currentPoem.description}
-                </p>
-              </div>
-
-              <div>
-                <h3 className="font-semibold text-lg text-foreground mb-2">Structure</h3>
-                <div className="bg-muted/50 p-4 rounded-lg">
-                  <code className="text-sm text-foreground/90">
-                    {currentPoem.structure}
-                  </code>
-                </div>
-              </div>
-
-              <div>
                 <div className="flex items-center justify-between mb-2">
                   <h3 className="font-semibold text-lg text-foreground">Example</h3>
                   {submittedTopic && currentGeneratedPoem && (
@@ -586,6 +570,22 @@ const Index = () => {
                     {currentPoem.example}
                   </blockquote>
                 )}
+              </div>
+
+              <div>
+                <h3 className="font-semibold text-lg text-foreground mb-2">Description</h3>
+                <p className="text-foreground/80 leading-relaxed">
+                  {currentPoem.description}
+                </p>
+              </div>
+
+              <div>
+                <h3 className="font-semibold text-lg text-foreground mb-2">Structure</h3>
+                <div className="bg-muted/50 p-4 rounded-lg">
+                  <code className="text-sm text-foreground/90">
+                    {currentPoem.structure}
+                  </code>
+                </div>
               </div>
             </CardContent>
           </Card>
