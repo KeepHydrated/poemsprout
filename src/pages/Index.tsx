@@ -395,29 +395,25 @@ const Index = () => {
           <CardContent className="space-y-6 pt-6">
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <div className="flex items-center justify-between mb-2">
-                  <label htmlFor="topic-input" className="hidden md:block text-sm font-medium text-foreground">
-                    What would you like to write a poem about?
-                  </label>
+                <div className="flex gap-2">
+                  <Input
+                    id="topic-input"
+                    type="text"
+                    value={poemTopic}
+                    onChange={(e) => setPoemTopic(e.target.value)}
+                    placeholder="Enter a topic, theme, or inspiration..."
+                    className="border-2 flex-1"
+                  />
                   <Button
                     type="button"
                     variant="outline"
-                    size="sm"
                     onClick={handleRandomTopic}
-                    className="gap-2"
+                    className="gap-2 whitespace-nowrap"
                   >
                     <Shuffle className="h-4 w-4" />
                     Random Topic
                   </Button>
                 </div>
-                <Input
-                  id="topic-input"
-                  type="text"
-                  value={poemTopic}
-                  onChange={(e) => setPoemTopic(e.target.value)}
-                  placeholder="Enter a topic, theme, or inspiration..."
-                  className="border-2"
-                />
               </div>
 
               <Button 
