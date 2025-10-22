@@ -560,7 +560,7 @@ const Index = () => {
                 )}
               </div>
 
-              <p className="text-sm text-muted-foreground">{currentPoem.lines}</p>
+              <p className="text-sm text-muted-foreground"><span className="font-medium">Length:</span> {currentPoem.lines}</p>
 
               <div>
                 <h3 className="font-semibold text-lg text-foreground mb-2">Description</h3>
