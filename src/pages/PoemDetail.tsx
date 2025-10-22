@@ -314,7 +314,33 @@ const PoemDetail = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-secondary/20">
-      <div className="container mx-auto px-4 py-16 max-w-7xl">
+      <div className="container mx-auto px-4 py-8 max-w-7xl">
+        {/* Mobile Sticky Header */}
+        <div className="lg:hidden sticky top-16 z-10 bg-background/95 backdrop-blur-sm border-b pb-4 mb-4">
+          <p className="text-sm text-muted-foreground mb-2">
+            {new Date(poem.created_at).toLocaleDateString()}
+          </p>
+          <p className="text-base text-foreground/80 mb-3">
+            {poem.original_topic && <span>{poem.original_topic} • </span>}
+            {poem.poem_type}
+          </p>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleLike}
+              className="h-8 w-8"
+            >
+              <Heart
+                className={`h-5 w-5 ${poem.user_liked ? 'fill-current text-red-500' : ''}`}
+              />
+            </Button>
+            <span className="text-sm text-muted-foreground">
+              {poem.like_count} {poem.like_count === 1 ? 'like' : 'likes'}
+            </span>
+          </div>
+        </div>
+
         <div className="flex gap-8">
           {/* Author Profile Sidebar */}
           <div className="hidden lg:block w-64 flex-shrink-0 space-y-4">
