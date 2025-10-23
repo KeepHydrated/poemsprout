@@ -5,7 +5,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { User, Heart, ExternalLink } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 type PublishedPoem = {
@@ -50,7 +49,7 @@ const GallerySidebar = () => {
   useEffect(() => {
     if (poems.length === 0) return;
     
-    const scrollContainer = document.querySelector('[data-radix-scroll-area-viewport]');
+    const scrollContainer = document.getElementById('top-poems-scroll');
     if (!scrollContainer) return;
 
     const scrollStep = 1;
@@ -205,7 +204,7 @@ const GallerySidebar = () => {
         </Button>
       </div>
 
-      <ScrollArea className="flex-1 pr-4">
+      <div className="flex-1 overflow-hidden">
         {isLoading ? (
           <div className="text-center py-8">
             <p className="text-muted-foreground">Loading poems...</p>
@@ -219,7 +218,7 @@ const GallerySidebar = () => {
             </CardContent>
           </Card>
         ) : (
-          <div className="space-y-4">
+          <div id="top-poems-scroll" className="space-y-4 max-h-[600px] overflow-y-auto scroll-smooth pr-2">
             {poems.map((poem) => (
               <Card 
                 key={poem.id} 
@@ -283,7 +282,7 @@ const GallerySidebar = () => {
             ))}
           </div>
         )}
-      </ScrollArea>
+      </div>
     </div>
   );
 };
