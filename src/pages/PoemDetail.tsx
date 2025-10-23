@@ -325,7 +325,7 @@ const PoemDetail = () => {
               {poem.original_topic}
             </p>
           )}
-          <p className="text-base text-foreground/80 mb-3">
+          <p className="text-base text-foreground/80 font-semibold mb-3">
             {poem.poem_type}
           </p>
           <div className="flex items-center gap-2">
@@ -358,7 +358,7 @@ const PoemDetail = () => {
                   {poem.original_topic}
                 </p>
               )}
-              <p className="text-base text-foreground/80">
+              <p className="text-base text-foreground/80 font-semibold">
                 {poem.poem_type}
               </p>
               
