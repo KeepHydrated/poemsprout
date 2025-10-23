@@ -463,7 +463,7 @@ const PoemDetail = () => {
 
 
         {/* Desktop Layout - Side by Side */}
-        <div className="hidden md:flex gap-12 mb-8 items-start">
+        <div className="hidden md:flex gap-16 mb-8 items-start">
           {/* Left: Header Info */}
           <div className="w-80 flex-shrink-0">
             <div className="space-y-4 pt-6">
