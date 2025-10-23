@@ -347,10 +347,10 @@ const PoemDetail = () => {
         </div>
 
         {/* Desktop Layout - Side by Side */}
-        <div className="hidden lg:flex gap-8 mb-8">
+        <div className="hidden lg:flex gap-8 mb-8 items-start">
           {/* Left: Header Info */}
           <div className="w-64 flex-shrink-0">
-            <div className="sticky top-20 space-y-4">
+            <div className="space-y-4">
               <p className="text-sm text-muted-foreground">
                 {new Date(poem.created_at).toLocaleDateString()}
               </p>
