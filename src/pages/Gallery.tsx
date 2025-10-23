@@ -301,7 +301,7 @@ const Gallery = () => {
                     </div>
                   </div>
                   <p className="text-xs text-foreground/80 mb-1">
-                    {poem.original_topic && <span>{poem.original_topic} • </span>}
+                    {poem.original_topic && <>{poem.original_topic} • </>}
                     {poem.poem_type}
                   </p>
                 </CardHeader>

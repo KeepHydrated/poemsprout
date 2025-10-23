@@ -373,12 +373,8 @@ const PoemDetail = () => {
           <p className="text-sm text-muted-foreground mb-2">
             {new Date(poem.created_at).toLocaleDateString()}
           </p>
-          {poem.original_topic && (
-            <p className="text-base text-foreground/80 mb-2">
-              {poem.original_topic}
-            </p>
-          )}
-          <p className="text-base text-foreground/80 font-semibold mb-3">
+          <p className="text-base text-foreground/80 mb-3">
+            {poem.original_topic && <>{poem.original_topic} • </>}
             {poem.poem_type}
           </p>
           
@@ -431,12 +427,8 @@ const PoemDetail = () => {
                       </div>
                     </div>
                     <div>
-                      {otherPoem.original_topic && (
-                        <p className="text-xs text-foreground/80 mb-1">
-                          {otherPoem.original_topic}
-                        </p>
-                      )}
-                      <p className="text-xs text-foreground/80 font-semibold">
+                      <p className="text-xs text-foreground/80">
+                        {otherPoem.original_topic && <>{otherPoem.original_topic} • </>}
                         {otherPoem.poem_type}
                       </p>
                     </div>
@@ -461,12 +453,8 @@ const PoemDetail = () => {
               <p className="text-sm text-muted-foreground">
                 {new Date(poem.created_at).toLocaleDateString()}
               </p>
-              {poem.original_topic && (
-                <p className="text-base text-foreground/80">
-                  {poem.original_topic}
-                </p>
-              )}
-              <p className="text-base text-foreground/80 font-semibold">
+              <p className="text-base text-foreground/80">
+                {poem.original_topic && <>{poem.original_topic} • </>}
                 {poem.poem_type}
               </p>
               
@@ -519,12 +507,8 @@ const PoemDetail = () => {
                           </div>
                         </div>
                         <div>
-                          {otherPoem.original_topic && (
-                            <p className="text-xs text-foreground/80 mb-1">
-                              {otherPoem.original_topic}
-                            </p>
-                          )}
-                          <p className="text-xs text-foreground/80 font-semibold">
+                          <p className="text-xs text-foreground/80">
+                            {otherPoem.original_topic && <>{otherPoem.original_topic} • </>}
                             {otherPoem.poem_type}
                           </p>
                         </div>
