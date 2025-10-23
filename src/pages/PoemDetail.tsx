@@ -463,7 +463,7 @@ const PoemDetail = () => {
 
 
         {/* Desktop Layout - Side by Side */}
-        <div className="hidden md:flex gap-8 mb-8 items-start">
+        <div className="hidden md:flex gap-12 mb-8 items-start">
           {/* Left: Header Info */}
           <div className="w-80 flex-shrink-0">
             <div className="space-y-4 pt-6">
@@ -608,7 +608,7 @@ const PoemDetail = () => {
         </div>
 
         {/* Comments Section - Aligned with poem on desktop */}
-        <div className="hidden md:flex gap-8">
+        <div className="hidden md:flex gap-12">
           {/* Left spacer to match sidebar width */}
           <div className="w-80 flex-shrink-0"></div>
           
