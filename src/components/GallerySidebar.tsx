@@ -200,8 +200,7 @@ const GallerySidebar = () => {
         ) : (
           <div 
             ref={scrollContainerRef}
-            className="space-y-4 h-[600px] overflow-y-scroll pr-2 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-muted [&::-webkit-scrollbar-thumb]:bg-muted-foreground/20 [&::-webkit-scrollbar-thumb]:rounded-full"
-            style={{ scrollbarWidth: 'thin', scrollbarColor: 'hsl(var(--muted-foreground) / 0.2) hsl(var(--muted))' }}
+            className="custom-scrollbar space-y-4 h-[600px] overflow-y-scroll"
           >
             {poems.map((poem) => (
               <Card 
