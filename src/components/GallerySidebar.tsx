@@ -46,6 +46,27 @@ const GallerySidebar = () => {
     fetchPoems();
   }, [user]);
 
+  // Vertical auto-scroll effect
+  useEffect(() => {
+    if (poems.length === 0) return;
+    
+    const scrollContainer = document.querySelector('[data-radix-scroll-area-viewport]');
+    if (!scrollContainer) return;
+
+    const scrollStep = 1;
+    const scrollInterval = 50;
+
+    const interval = setInterval(() => {
+      if (scrollContainer.scrollTop + scrollContainer.clientHeight >= scrollContainer.scrollHeight) {
+        scrollContainer.scrollTop = 0;
+      } else {
+        scrollContainer.scrollTop += scrollStep;
+      }
+    }, scrollInterval);
+
+    return () => clearInterval(interval);
+  }, [poems.length]);
+
   const fetchPoems = async () => {
     try {
       const { data, error } = await supabase
