@@ -581,6 +581,111 @@ const PoemDetail = () => {
                 </div>
               </CardContent>
             </Card>
+
+            {/* Comments Section - Desktop */}
+            <div className="space-y-6 mt-8">
+              {user && (
+                <Card className="border p-4">
+                  <div className="flex items-start gap-3">
+                    <Avatar className="h-8 w-8">
+                      <AvatarFallback>
+                        {user?.email?.[0]?.toUpperCase() || "U"}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1 space-y-3">
+                      <Textarea
+                        value={newComment}
+                        onChange={(e) => setNewComment(e.target.value)}
+                        placeholder={replyingTo ? "Write a reply..." : "What are your thoughts?"}
+                        className="min-h-[80px] resize-none"
+                      />
+                      <div className="flex justify-end gap-2">
+                        {replyingTo && (
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            onClick={() => setReplyingTo(null)}
+                          >
+                            Cancel
+                          </Button>
+                        )}
+                        <Button onClick={handleSubmitComment} disabled={isSubmitting || !newComment.trim()}>
+                          {replyingTo ? "Reply" : "Comment"}
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </Card>
+              )}
+
+              <div className="pt-2 flex items-center gap-4">
+                <span className="text-sm text-muted-foreground font-medium">
+                  {comments.reduce((total, comment) => total + 1 + (comment.replies?.length || 0), 0)} {comments.length === 1 ? "Comment" : "Comments"}
+                </span>
+                
+                <div className="relative">
+                  <Button
+                    variant="outline"
+                    onClick={() => setSortOpen(!sortOpen)}
+                  >
+                    {sortBy === "best" && <Rocket className="w-4 h-4 mr-2" />}
+                    {sortBy === "top" && <TrendingUp className="w-4 h-4 mr-2" />}
+                    {sortBy === "new" && <Clock className="w-4 h-4 mr-2" />}
+                    Sort by: {sortBy === "best" ? "Best" : sortBy === "top" ? "Top" : "New"}
+                    <ChevronDownIcon className="w-4 h-4 ml-1" />
+                  </Button>
+                  
+                  {sortOpen && (
+                    <div className="absolute left-0 top-full mt-2 w-48 rounded-md border bg-popover p-1 text-popover-foreground shadow-md z-50">
+                      {[
+                        { value: "best" as const, label: "Best", icon: Rocket },
+                        { value: "top" as const, label: "Top", icon: TrendingUp },
+                        { value: "new" as const, label: "New", icon: Clock }
+                      ].map((option) => (
+                        <div
+                          key={option.value}
+                          onClick={() => {
+                            setSortBy(option.value);
+                            setSortOpen(false);
+                          }}
+                          className="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground"
+                        >
+                          <option.icon className="w-5 h-5 mr-3" />
+                          <span className="flex-1">{option.label}</span>
+                          {sortBy === option.value && <Check className="w-4 h-4 text-primary" />}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <ScrollArea className="h-[500px] bg-card rounded-lg border">
+                <div className="space-y-2">
+                  {comments.length === 0 ? (
+                    <div className="py-8 text-center">
+                      <p className="text-muted-foreground">
+                        No comments yet. Be the first to share your thoughts!
+                      </p>
+                    </div>
+                  ) : (
+                    comments.map((comment) => (
+                      <div key={comment.id} className="border-b last:border-b-0 px-4">
+                        <CommentItem
+                          comment={comment}
+                          user={user}
+                          onReply={setReplyingTo}
+                          onDelete={handleDeleteComment}
+                          onRefresh={fetchComments}
+                          poemId={id!}
+                          depth={0}
+                        />
+                      </div>
+                    ))
+                  )}
+                </div>
+              </ScrollArea>
+            </div>
           </div>
         </div>
 
@@ -607,117 +712,6 @@ const PoemDetail = () => {
           </Card>
         </div>
 
-        {/* Comments Section - Aligned with poem on desktop */}
-        <div className="hidden md:flex gap-12">
-          {/* Left spacer to match sidebar width */}
-          <div className="w-80 flex-shrink-0"></div>
-          
-          {/* Right: Comments - matches poem width */}
-          <div className="flex-1 space-y-6">
-          {user && (
-            <Card className="border p-4">
-              <div className="flex items-start gap-3">
-                <Avatar className="h-8 w-8">
-                  <AvatarFallback>
-                    {user?.email?.[0]?.toUpperCase() || "U"}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="flex-1 space-y-3">
-                  <Textarea
-                    value={newComment}
-                    onChange={(e) => setNewComment(e.target.value)}
-                    placeholder={replyingTo ? "Write a reply..." : "What are your thoughts?"}
-                    className="min-h-[80px] resize-none"
-                  />
-                  <div className="flex justify-end gap-2">
-                    {replyingTo && (
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        onClick={() => setReplyingTo(null)}
-                      >
-                        Cancel
-                      </Button>
-                    )}
-                    <Button onClick={handleSubmitComment} disabled={isSubmitting || !newComment.trim()}>
-                      {replyingTo ? "Reply" : "Comment"}
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </Card>
-          )}
-
-          <div className="pt-2 flex items-center gap-4">
-            <span className="text-sm text-muted-foreground font-medium">
-              {comments.reduce((total, comment) => total + 1 + (comment.replies?.length || 0), 0)} {comments.length === 1 ? "Comment" : "Comments"}
-            </span>
-            
-            <div className="relative">
-              <Button
-                variant="outline"
-                onClick={() => setSortOpen(!sortOpen)}
-              >
-                {sortBy === "best" && <Rocket className="w-4 h-4 mr-2" />}
-                {sortBy === "top" && <TrendingUp className="w-4 h-4 mr-2" />}
-                {sortBy === "new" && <Clock className="w-4 h-4 mr-2" />}
-                Sort by: {sortBy === "best" ? "Best" : sortBy === "top" ? "Top" : "New"}
-                <ChevronDownIcon className="w-4 h-4 ml-1" />
-              </Button>
-              
-              {sortOpen && (
-                <div className="absolute left-0 top-full mt-2 w-48 rounded-md border bg-popover p-1 text-popover-foreground shadow-md z-50">
-                  {[
-                    { value: "best" as const, label: "Best", icon: Rocket },
-                    { value: "top" as const, label: "Top", icon: TrendingUp },
-                    { value: "new" as const, label: "New", icon: Clock }
-                  ].map((option) => (
-                    <div
-                      key={option.value}
-                      onClick={() => {
-                        setSortBy(option.value);
-                        setSortOpen(false);
-                      }}
-                      className="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground"
-                    >
-                      <option.icon className="w-5 h-5 mr-3" />
-                      <span className="flex-1">{option.label}</span>
-                      {sortBy === option.value && <Check className="w-4 h-4 text-primary" />}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-
-          <ScrollArea className="h-[500px] bg-card rounded-lg border">
-            <div className="space-y-2">
-              {comments.length === 0 ? (
-                <div className="py-8 text-center">
-                  <p className="text-muted-foreground">
-                    No comments yet. Be the first to share your thoughts!
-                  </p>
-                </div>
-              ) : (
-                comments.map((comment) => (
-                  <div key={comment.id} className="border-b last:border-b-0 px-4">
-                    <CommentItem
-                      comment={comment}
-                      user={user}
-                      onReply={setReplyingTo}
-                      onDelete={handleDeleteComment}
-                      onRefresh={fetchComments}
-                      poemId={id!}
-                      depth={0}
-                    />
-                  </div>
-                ))
-              )}
-            </div>
-          </ScrollArea>
-          </div>
-        </div>
-        
         {/* Comments Section - Mobile full width */}
         <div className="md:hidden space-y-6">
           {user && (
