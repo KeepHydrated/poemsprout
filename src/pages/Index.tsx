@@ -593,7 +593,7 @@ const Index = () => {
           </div>
 
           {/* Gallery Sidebar */}
-          <div className="hidden md:block w-96 shrink-0">
+          <div className="hidden lg:block w-96 shrink-0">
             <div className="sticky top-24 max-h-[calc(100vh-8rem)]">
               <GallerySidebar />
             </div>
