@@ -33,6 +33,7 @@ type Comment = {
   parent_comment_id: string | null;
   profiles: {
     display_name: string | null;
+    avatar_url: string | null;
   } | null;
   replies?: Comment[];
 };
@@ -191,7 +192,7 @@ const PoemDetail = () => {
         const userIds = [...new Set(commentsData.map(c => c.user_id))];
         const { data: profilesData } = await supabase
           .from("profiles")
-          .select("id, display_name")
+          .select("id, display_name, avatar_url")
           .in("id", userIds);
 
         const profilesMap = new Map(
@@ -909,7 +910,7 @@ const CommentItem = ({ comment, user, onReply, onDelete, onRefresh, poemId, dept
           <div className="flex items-center gap-2 mb-1">
             <div className="relative flex h-6 w-6 shrink-0 overflow-hidden rounded-full">
               <img
-                src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${avatarSeed}`}
+                src={comment.profiles?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${avatarSeed}`}
                 alt={authorName}
                 className="aspect-square h-full w-full"
               />
