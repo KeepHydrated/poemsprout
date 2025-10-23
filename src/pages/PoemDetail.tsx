@@ -411,7 +411,7 @@ const PoemDetail = () => {
 
           {/* Other poems by this author - Mobile */}
           {otherPoems.length > 0 && (
-            <div className="mt-16 space-y-3">
+            <div className="mt-16 pt-6 space-y-3 border-t border-border">
               <h3 className="text-sm font-semibold text-foreground">More by this author</h3>
               {otherPoems.map((otherPoem) => (
                 <Card
@@ -509,7 +509,7 @@ const PoemDetail = () => {
 
               {/* Other poems by this author */}
               {otherPoems.length > 0 && (
-                <div className="mt-24 space-y-3">
+                <div className="mt-24 pt-8 space-y-3 border-t border-border">
                   <h3 className="text-sm font-semibold text-foreground">More by this author</h3>
                   {otherPoems.map((otherPoem) => (
                     <Card
