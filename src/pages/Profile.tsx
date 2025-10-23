@@ -269,7 +269,7 @@ const Profile = () => {
             {!loadingPoems && publishedPoems.length > 0 && (
               <div className="mb-6 flex items-center justify-between">
                 <h2 className="hidden md:block text-2xl font-semibold text-foreground">Poems</h2>
-                <div className="flex items-center gap-3 w-full">
+                <div className="flex items-center gap-3 w-full md:w-auto md:ml-auto">
                   <Select value={filterType} onValueChange={setFilterType}>
                     <SelectTrigger className="flex-1 md:flex-none md:w-[180px]">
                       <SelectValue placeholder="All Types" />
