@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Heart, Send, Trash2, ChevronUp, ChevronDown, MessageSquare, Check, Rocket, TrendingUp, Clock, ChevronDown as ChevronDownIcon } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 type PublishedPoem = {
   id: string;
@@ -480,29 +481,31 @@ const PoemDetail = () => {
             </div>
           </div>
 
-          <div className="space-y-2 bg-card rounded-lg border">
-            {comments.length === 0 ? (
-              <div className="py-8 text-center">
-                <p className="text-muted-foreground">
-                  No comments yet. Be the first to share your thoughts!
-                </p>
-              </div>
-            ) : (
-              comments.map((comment) => (
-                <div key={comment.id} className="border-b last:border-b-0 px-4">
-                  <CommentItem
-                    comment={comment}
-                    user={user}
-                    onReply={setReplyingTo}
-                    onDelete={handleDeleteComment}
-                    onRefresh={fetchComments}
-                    poemId={id!}
-                    depth={0}
-                  />
+          <ScrollArea className="h-[500px] bg-card rounded-lg border">
+            <div className="space-y-2">
+              {comments.length === 0 ? (
+                <div className="py-8 text-center">
+                  <p className="text-muted-foreground">
+                    No comments yet. Be the first to share your thoughts!
+                  </p>
                 </div>
-              ))
-            )}
-          </div>
+              ) : (
+                comments.map((comment) => (
+                  <div key={comment.id} className="border-b last:border-b-0 px-4">
+                    <CommentItem
+                      comment={comment}
+                      user={user}
+                      onReply={setReplyingTo}
+                      onDelete={handleDeleteComment}
+                      onRefresh={fetchComments}
+                      poemId={id!}
+                      depth={0}
+                    />
+                  </div>
+                ))
+              )}
+            </div>
+          </ScrollArea>
         </div>
       </div>
     </div>
