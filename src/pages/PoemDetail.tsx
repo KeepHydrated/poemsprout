@@ -416,7 +416,7 @@ const PoemDetail = () => {
               {otherPoems.map((otherPoem) => (
                 <Card
                   key={otherPoem.id}
-                  className="cursor-pointer hover:bg-accent transition-colors border"
+                  className="cursor-pointer hover:bg-card/50 transition-colors border"
                   onClick={() => navigate(`/poem/${otherPoem.id}`)}
                 >
                   <CardContent className="p-3 space-y-2">
@@ -514,7 +514,7 @@ const PoemDetail = () => {
                   {otherPoems.map((otherPoem) => (
                     <Card
                       key={otherPoem.id}
-                      className="cursor-pointer hover:bg-accent transition-colors border"
+                      className="cursor-pointer hover:bg-card/50 transition-colors border"
                       onClick={() => navigate(`/poem/${otherPoem.id}`)}
                     >
                       <CardContent className="p-3 space-y-2">
