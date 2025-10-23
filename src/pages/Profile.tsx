@@ -269,9 +269,9 @@ const Profile = () => {
             {!loadingPoems && publishedPoems.length > 0 && (
               <div className="mb-6 flex items-center justify-between">
                 <h2 className="hidden md:block text-2xl font-semibold text-foreground">Poems</h2>
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 w-full">
                   <Select value={filterType} onValueChange={setFilterType}>
-                    <SelectTrigger className="w-full md:w-[140px]">
+                    <SelectTrigger className="flex-1 md:flex-none md:w-[140px]">
                       <SelectValue placeholder="All Types" />
                     </SelectTrigger>
                     <SelectContent>
@@ -282,7 +282,7 @@ const Profile = () => {
                     </SelectContent>
                   </Select>
                   <Select value={sortBy} onValueChange={(value: "newest" | "oldest" | "most-liked") => setSortBy(value)}>
-                    <SelectTrigger className="w-full md:w-[140px]">
+                    <SelectTrigger className="flex-1 md:flex-none md:w-[140px]">
                       <SelectValue placeholder="Sort by" />
                     </SelectTrigger>
                     <SelectContent>
