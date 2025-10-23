@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { User, Heart, ChevronDown } from "lucide-react";
+import { User, Heart, ChevronDown, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
@@ -194,10 +194,18 @@ const Gallery = () => {
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-secondary/20">
       <div className="container mx-auto px-4 py-16 max-w-6xl">
         {searchQuery && (
-          <div className="mb-6">
+          <div className="mb-6 flex items-center gap-2">
             <p className="text-muted-foreground">
               Showing results for: <span className="font-semibold text-foreground">"{searchQuery}"</span>
             </p>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-6 w-6 rounded-full"
+              onClick={() => navigate("/gallery")}
+            >
+              <X className="h-4 w-4" />
+            </Button>
           </div>
         )}
         <header className="mb-12 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
