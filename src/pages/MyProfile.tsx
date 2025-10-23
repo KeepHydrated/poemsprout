@@ -185,6 +185,17 @@ const MyPoems = () => {
     return new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime();
   });
 
+  // Reset scroll positions when component mounts
+  useEffect(() => {
+    const containers = ['published-poems-container', 'saved-poems-container', 'comments-container'];
+    containers.forEach(id => {
+      const container = document.getElementById(id);
+      if (container) {
+        container.scrollTop = 0;
+      }
+    });
+  }, []);
+
   // Vertical auto-scroll effect for published poems
   useEffect(() => {
     if (activeTab !== 'published' || sortedPublishedPoems.length === 0) return;
