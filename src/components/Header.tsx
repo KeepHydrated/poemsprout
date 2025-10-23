@@ -26,6 +26,13 @@ const Header = () => {
     return () => subscription.unsubscribe();
   }, []);
 
+  // Clear search when navigating away from gallery
+  useEffect(() => {
+    if (!location.pathname.startsWith("/gallery")) {
+      setSearchQuery("");
+    }
+  }, [location.pathname]);
+
   const handleSignOut = async () => {
     await supabase.auth.signOut();
   };
