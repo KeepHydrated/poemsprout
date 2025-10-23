@@ -409,24 +409,24 @@ const Index = () => {
                   variant="outline"
                   size="lg"
                   onClick={handleRandomTopic}
-                  className="gap-2 whitespace-nowrap text-sm md:text-base w-full md:w-auto md:h-10 md:px-4"
+                  className="gap-2 whitespace-nowrap text-xs h-9 px-3 md:text-base w-full md:w-auto md:h-10 md:px-4"
                 >
-                  <Shuffle className="h-4 w-4" />
+                  <Shuffle className="h-3 w-3 md:h-4 md:w-4" />
                   Random Topic
                 </Button>
                 <Button 
                   type="submit" 
                   size="lg" 
-                  className="gap-2 text-sm md:text-base w-full md:w-auto md:h-10 md:px-4"
+                  className="gap-2 text-xs h-9 px-3 md:text-base w-full md:w-auto md:h-10 md:px-4"
                 >
                   {isGenerating ? (
                     <>
-                      <Loader2 className="h-5 w-5 animate-spin" />
+                      <Loader2 className="h-4 w-4 md:h-5 md:w-5 animate-spin" />
                       Generating...
                     </>
                   ) : (
                     <>
-                      <Sparkles className="h-5 w-5" />
+                      <Sparkles className="h-4 w-4 md:h-5 md:w-5" />
                       <span className="md:hidden">Generate</span>
                       <span className="hidden md:inline">Generate Poem</span>
                     </>
