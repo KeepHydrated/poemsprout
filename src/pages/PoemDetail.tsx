@@ -465,7 +465,7 @@ const PoemDetail = () => {
         {/* Desktop Layout - Side by Side */}
         <div className="hidden md:flex gap-8 mb-8 items-start">
           {/* Left: Header Info */}
-          <div className="w-64 flex-shrink-0">
+          <div className="w-80 flex-shrink-0">
             <div className="space-y-4 pt-6">
               <p className="text-sm text-muted-foreground">
                 {new Date(poem.created_at).toLocaleDateString()}
@@ -610,7 +610,7 @@ const PoemDetail = () => {
         {/* Comments Section - Aligned with poem on desktop */}
         <div className="hidden md:flex gap-8">
           {/* Left spacer to match sidebar width */}
-          <div className="w-64 flex-shrink-0"></div>
+          <div className="w-80 flex-shrink-0"></div>
           
           {/* Right: Comments - matches poem width */}
           <div className="flex-1 space-y-6">
