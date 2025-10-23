@@ -320,8 +320,12 @@ const PoemDetail = () => {
           <p className="text-sm text-muted-foreground mb-2">
             {new Date(poem.created_at).toLocaleDateString()}
           </p>
+          {poem.original_topic && (
+            <p className="text-base text-foreground/80 mb-2">
+              {poem.original_topic}
+            </p>
+          )}
           <p className="text-base text-foreground/80 mb-3">
-            {poem.original_topic && <span>{poem.original_topic} • </span>}
             {poem.poem_type}
           </p>
           <div className="flex items-center gap-2">
@@ -349,8 +353,12 @@ const PoemDetail = () => {
               <p className="text-sm text-muted-foreground">
                 {new Date(poem.created_at).toLocaleDateString()}
               </p>
+              {poem.original_topic && (
+                <p className="text-base text-foreground/80">
+                  {poem.original_topic}
+                </p>
+              )}
               <p className="text-base text-foreground/80">
-                {poem.original_topic && <span>{poem.original_topic} • </span>}
                 {poem.poem_type}
               </p>
               
