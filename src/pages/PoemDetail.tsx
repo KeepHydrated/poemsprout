@@ -19,6 +19,7 @@ type PublishedPoem = {
   profiles: {
     display_name: string | null;
     points: number;
+    avatar_url: string | null;
   } | null;
   like_count?: number;
   user_liked?: boolean;
@@ -84,7 +85,7 @@ const PoemDetail = () => {
       // Fetch profile
       const { data: profileData } = await supabase
         .from("profiles")
-        .select("display_name, points")
+        .select("display_name, points, avatar_url")
         .eq("id", poemData.user_id)
         .single();
 
@@ -344,6 +345,27 @@ const PoemDetail = () => {
               {poem.like_count}
             </span>
           </div>
+          
+          {poem.profiles && (
+            <div 
+              className="flex items-center gap-3 mt-4 p-3 bg-card rounded-lg border cursor-pointer hover:bg-accent transition-colors"
+              onClick={() => navigate(`/profile/${poem.user_id}`)}
+            >
+              <Avatar className="h-12 w-12">
+                <AvatarFallback>
+                  {poem.profiles.display_name?.[0]?.toUpperCase() || "U"}
+                </AvatarFallback>
+              </Avatar>
+              <div className="flex flex-col">
+                <span className="text-sm font-semibold text-foreground">
+                  {poem.profiles.display_name || "Anonymous"}
+                </span>
+                <span className="text-xs text-muted-foreground">
+                  {poem.profiles.points} points
+                </span>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Desktop Layout - Side by Side */}
@@ -378,6 +400,27 @@ const PoemDetail = () => {
                   {poem.like_count}
                 </span>
               </div>
+              
+              {poem.profiles && (
+                <div 
+                  className="flex items-center gap-3 mt-4 p-3 bg-card rounded-lg border cursor-pointer hover:bg-accent transition-colors"
+                  onClick={() => navigate(`/profile/${poem.user_id}`)}
+                >
+                  <Avatar className="h-12 w-12">
+                    <AvatarFallback>
+                      {poem.profiles.display_name?.[0]?.toUpperCase() || "U"}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex flex-col">
+                    <span className="text-sm font-semibold text-foreground">
+                      {poem.profiles.display_name || "Anonymous"}
+                    </span>
+                    <span className="text-xs text-muted-foreground">
+                      {poem.profiles.points} points
+                    </span>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
