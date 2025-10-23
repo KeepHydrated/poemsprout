@@ -440,7 +440,7 @@ const PoemDetail = () => {
                       </p>
                     </div>
                     <div className="border-l-2 border-border pl-2">
-                      <p className="text-xs text-foreground/70 line-clamp-3 font-serif">
+                      <p className="text-sm text-foreground/70 line-clamp-3 font-serif leading-relaxed">
                         {otherPoem.content}
                       </p>
                     </div>
@@ -528,7 +528,7 @@ const PoemDetail = () => {
                           </p>
                         </div>
                         <div className="border-l-2 border-border pl-2">
-                          <p className="text-xs text-foreground/70 line-clamp-3 font-serif">
+                          <p className="text-sm text-foreground/70 line-clamp-3 font-serif leading-relaxed">
                             {otherPoem.content}
                           </p>
                         </div>
