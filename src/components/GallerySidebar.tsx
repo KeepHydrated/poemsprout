@@ -207,11 +207,6 @@ const GallerySidebar = () => {
                       {new Date(poem.created_at).toLocaleDateString()}
                     </span>
                     <div className="flex items-center gap-1">
-                      {poem.like_count! > 0 && (
-                        <span className="text-xs text-muted-foreground">
-                          {poem.like_count}
-                        </span>
-                      )}
                       <Button
                         variant="ghost"
                         size="icon"
