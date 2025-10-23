@@ -271,7 +271,7 @@ const Profile = () => {
                 <h2 className="hidden md:block text-2xl font-semibold text-foreground">Poems</h2>
                 <div className="flex items-center gap-3 w-full md:w-auto md:ml-auto">
                   <Select value={filterType} onValueChange={setFilterType}>
-                    <SelectTrigger className="flex-1 md:flex-none md:w-[180px]">
+                    <SelectTrigger className="flex-1 md:flex-none md:w-[140px]">
                       <SelectValue placeholder="All Types" />
                     </SelectTrigger>
                     <SelectContent>
@@ -282,7 +282,7 @@ const Profile = () => {
                     </SelectContent>
                   </Select>
                   <Select value={sortBy} onValueChange={(value: "newest" | "oldest" | "most-liked") => setSortBy(value)}>
-                    <SelectTrigger className="flex-1 md:flex-none md:w-[180px]">
+                    <SelectTrigger className="flex-1 md:flex-none md:w-[140px]">
                       <SelectValue placeholder="Sort by" />
                     </SelectTrigger>
                     <SelectContent>
