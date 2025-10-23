@@ -908,13 +908,15 @@ const CommentItem = ({ comment, user, onReply, onDelete, onRefresh, poemId, dept
 
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
-            <div className="relative flex h-6 w-6 shrink-0 overflow-hidden rounded-full">
-              <img
-                src={comment.profiles?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${avatarSeed}`}
-                alt={authorName}
-                className="aspect-square h-full w-full"
-              />
-            </div>
+            <Avatar className="h-6 w-6">
+              {comment.profiles?.avatar_url ? (
+                <img src={comment.profiles.avatar_url} alt={authorName} className="object-cover" />
+              ) : (
+                <AvatarFallback className="text-xs">
+                  {authorName.charAt(0).toUpperCase()}
+                </AvatarFallback>
+              )}
+            </Avatar>
             <span className="font-medium text-sm">{authorName}</span>
             <span className="text-xs text-muted-foreground">•</span>
             <span className="text-xs text-muted-foreground">{getTimeAgo(comment.created_at)}</span>
