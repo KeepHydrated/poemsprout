@@ -331,9 +331,16 @@ const PoemDetail = () => {
             {poem.poem_type}
           </p>
           
+          <div className="flex items-center gap-2 mb-4">
+            <Heart className="h-5 w-5 text-muted-foreground" />
+            <span className="text-sm text-muted-foreground">
+              {poem.like_count}
+            </span>
+          </div>
+          
           {poem.profiles && (
             <div 
-              className="flex items-center gap-3 mt-4 p-3 bg-card rounded-lg border cursor-pointer hover:bg-accent transition-colors"
+              className="flex items-center gap-3 p-3 bg-card rounded-lg border cursor-pointer hover:bg-accent transition-colors"
               onClick={() => navigate(`/profile/${poem.user_id}`)}
             >
               <Avatar className="h-12 w-12">
@@ -370,6 +377,13 @@ const PoemDetail = () => {
                 {poem.poem_type}
               </p>
               
+              <div className="flex items-center gap-2 pt-2">
+                <Heart className="h-5 w-5 text-muted-foreground" />
+                <span className="text-sm text-muted-foreground">
+                  {poem.like_count}
+                </span>
+              </div>
+              
               {poem.profiles && (
                 <div 
                   className="flex items-center gap-3 mt-4 p-3 bg-card rounded-lg border cursor-pointer hover:bg-accent transition-colors"
@@ -396,7 +410,7 @@ const PoemDetail = () => {
           {/* Right: Poem Content */}
           <div className="flex-1">
             <Card className="border-2 shadow-lg relative">
-              <div className="absolute top-4 right-4 flex items-center gap-2 z-10">
+              <div className="absolute top-4 right-4 z-10">
                 <Button
                   variant="ghost"
                   size="icon"
@@ -407,9 +421,6 @@ const PoemDetail = () => {
                     className={`h-5 w-5 ${poem.user_liked ? 'fill-current text-red-500' : ''}`}
                   />
                 </Button>
-                <span className="text-sm text-muted-foreground">
-                  {poem.like_count}
-                </span>
               </div>
               <CardContent className="pt-6">
                 <div className="text-base whitespace-pre-wrap font-serif text-foreground/90 leading-relaxed">
@@ -423,7 +434,7 @@ const PoemDetail = () => {
         {/* Mobile: Poem Card Only */}
         <div className="md:hidden mb-8">
           <Card className="border-2 shadow-lg relative">
-            <div className="absolute top-4 right-4 flex items-center gap-2 z-10">
+            <div className="absolute top-4 right-4 z-10">
               <Button
                 variant="ghost"
                 size="icon"
@@ -434,9 +445,6 @@ const PoemDetail = () => {
                   className={`h-5 w-5 ${poem.user_liked ? 'fill-current text-red-500' : ''}`}
                 />
               </Button>
-              <span className="text-sm text-muted-foreground">
-                {poem.like_count}
-              </span>
             </div>
             <CardContent className="pt-6">
               <div className="text-base whitespace-pre-wrap font-serif text-foreground/90 leading-relaxed">
