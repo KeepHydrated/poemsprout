@@ -390,7 +390,7 @@ const PoemDetail = () => {
           
           {poem.profiles && (
             <div 
-              className="flex items-center gap-3 p-3 bg-card rounded-lg border cursor-pointer hover:bg-accent transition-colors"
+              className="flex items-center gap-3 p-3 bg-card rounded-lg border cursor-pointer transition-colors"
               onClick={() => navigate(`/profile/${poem.user_id}`)}
             >
               <Avatar className="h-12 w-12">
@@ -488,7 +488,7 @@ const PoemDetail = () => {
               
               {poem.profiles && (
                 <div 
-                  className="flex items-center gap-3 mt-4 p-3 bg-card rounded-lg border cursor-pointer hover:bg-accent transition-colors"
+                  className="flex items-center gap-3 mt-4 p-3 bg-card rounded-lg border cursor-pointer transition-colors"
                   onClick={() => navigate(`/profile/${poem.user_id}`)}
                 >
                   <Avatar className="h-12 w-12">
