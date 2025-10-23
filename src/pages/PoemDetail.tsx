@@ -432,7 +432,7 @@ const PoemDetail = () => {
                         {otherPoem.poem_type}
                       </p>
                     </div>
-                    <div className="border-l-2 border-border pl-2">
+                    <div className="border-l-4 border-primary pl-2">
                       <p className="text-sm text-foreground/70 line-clamp-3 font-serif leading-relaxed">
                         {otherPoem.content}
                       </p>
@@ -512,7 +512,7 @@ const PoemDetail = () => {
                             {otherPoem.poem_type}
                           </p>
                         </div>
-                        <div className="border-l-2 border-border pl-2">
+                        <div className="border-l-4 border-primary pl-2">
                           <p className="text-sm text-foreground/70 line-clamp-3 font-serif leading-relaxed">
                             {otherPoem.content}
                           </p>
@@ -541,8 +541,10 @@ const PoemDetail = () => {
                 </Button>
               </div>
             <CardContent className="pt-6 pr-4 md:pr-16">
-              <div className="text-base whitespace-pre-wrap font-serif text-foreground/90 leading-relaxed">
-                {poem.content}
+              <div className="border-l-4 border-primary pl-4">
+                <div className="text-base whitespace-pre-wrap font-serif text-foreground/90 leading-relaxed">
+                  {poem.content}
+                </div>
               </div>
             </CardContent>
             </Card>
@@ -670,8 +672,10 @@ const PoemDetail = () => {
               </Button>
             </div>
             <CardContent className="pt-6 pr-4 md:pr-16">
-              <div className="text-base whitespace-pre-wrap font-serif text-foreground/90 leading-relaxed">
-                {poem.content}
+              <div className="border-l-4 border-primary pl-4">
+                <div className="text-base whitespace-pre-wrap font-serif text-foreground/90 leading-relaxed">
+                  {poem.content}
+                </div>
               </div>
             </CardContent>
           </Card>

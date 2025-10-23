@@ -240,7 +240,7 @@ const GallerySidebar = () => {
                   </p>
                 </CardHeader>
                 <CardContent className="pt-0">
-                  <blockquote className="border-l-2 border-accent pl-3 text-sm whitespace-pre-wrap font-serif text-foreground/80 leading-relaxed line-clamp-6 mb-3">
+                  <blockquote className="border-l-4 border-primary pl-3 text-sm whitespace-pre-wrap font-serif text-foreground/80 leading-relaxed line-clamp-6 mb-3">
                     {poem.content}
                   </blockquote>
                   <button

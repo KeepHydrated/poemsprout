@@ -306,7 +306,7 @@ const Gallery = () => {
                   </p>
                 </CardHeader>
                 <CardContent className="pt-0">
-                  <blockquote className="border-l-2 border-accent pl-3 text-base whitespace-pre-wrap font-serif text-foreground/80 leading-relaxed mb-3">
+                  <blockquote className="border-l-4 border-primary pl-3 text-base whitespace-pre-wrap font-serif text-foreground/80 leading-relaxed mb-3">
                     {poem.content}
                   </blockquote>
                   <CardDescription className="flex items-center gap-1 text-xs">
