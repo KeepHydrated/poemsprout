@@ -444,16 +444,6 @@ const PoemDetail = () => {
                         {otherPoem.content}
                       </p>
                     </div>
-                    <div className="flex items-center gap-2 pt-1">
-                      <Avatar className="h-6 w-6">
-                        <AvatarFallback className="text-xs">
-                          {otherPoem.profiles?.display_name?.[0]?.toUpperCase() || "U"}
-                        </AvatarFallback>
-                      </Avatar>
-                      <span className="text-xs text-muted-foreground">
-                        {otherPoem.profiles?.display_name || "Anonymous"} • {otherPoem.profiles?.points || 0} pts
-                      </span>
-                    </div>
                   </CardContent>
                 </Card>
               ))}
@@ -541,16 +531,6 @@ const PoemDetail = () => {
                           <p className="text-xs text-foreground/70 line-clamp-3 font-serif">
                             {otherPoem.content}
                           </p>
-                        </div>
-                        <div className="flex items-center gap-2 pt-1">
-                          <Avatar className="h-6 w-6">
-                            <AvatarFallback className="text-xs">
-                              {otherPoem.profiles?.display_name?.[0]?.toUpperCase() || "U"}
-                            </AvatarFallback>
-                          </Avatar>
-                          <span className="text-xs text-muted-foreground">
-                            {otherPoem.profiles?.display_name || "Anonymous"} • {otherPoem.profiles?.points || 0} pts
-                          </span>
                         </div>
                       </CardContent>
                     </Card>
