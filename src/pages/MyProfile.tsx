@@ -410,8 +410,7 @@ const MyPoems = () => {
 
               <TabsContent value="published">
                 {!loading && publishedPoems.length > 0 && (
-                  <div className="mb-6 flex items-center justify-between">
-                    <h2 className="text-2xl font-semibold text-foreground hidden md:block">Published Poems</h2>
+                  <div className="mb-6 flex items-center justify-end">
                     <Select value={sortBy} onValueChange={(value: "newest" | "oldest" | "most-liked") => setSortBy(value)}>
                       <SelectTrigger className="w-[180px]">
                         <SelectValue placeholder="Sort by" />
@@ -482,10 +481,6 @@ const MyPoems = () => {
               </TabsContent>
 
               <TabsContent value="saved">
-                <div className="mb-6">
-                  <h2 className="text-2xl font-semibold text-foreground hidden md:block">Saved Drafts</h2>
-                </div>
-
                 {savedPoems.length === 0 ? (
                   <div className="text-center py-12">
                     <p className="text-muted-foreground mb-4">You don't have any saved drafts</p>
@@ -564,10 +559,6 @@ const MyPoems = () => {
               </TabsContent>
 
               <TabsContent value="comments">
-                <div className="mb-6">
-                  <h2 className="text-2xl font-semibold text-foreground hidden md:block">Your Comments</h2>
-                </div>
-
                 {userComments.length === 0 ? (
                   <div className="text-center py-12">
                     <p className="text-muted-foreground mb-4">You haven't left any comments yet</p>
