@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -28,7 +28,6 @@ const GallerySidebar = () => {
   const [user, setUser] = useState<any>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -108,9 +107,9 @@ const GallerySidebar = () => {
           user_liked: userLikesSet.has(poem.id),
         }));
 
-        // Sort by most liked (hot/trending) and take top 10
+        // Sort by most liked (hot/trending) and take top 5
         poemsWithProfiles.sort((a, b) => (b.like_count || 0) - (a.like_count || 0));
-        setPoems(poemsWithProfiles.slice(0, 10));
+        setPoems(poemsWithProfiles.slice(0, 5));
       } else {
         setPoems([]);
       }
@@ -184,7 +183,7 @@ const GallerySidebar = () => {
         </Button>
       </div>
 
-      <div className="flex-1 overflow-hidden">
+      <div className="flex-1">
         {isLoading ? (
           <div className="text-center py-8">
             <p className="text-muted-foreground">Loading poems...</p>
@@ -198,10 +197,7 @@ const GallerySidebar = () => {
             </CardContent>
           </Card>
         ) : (
-          <div 
-            ref={scrollContainerRef}
-            className="custom-scrollbar space-y-4 h-[600px] overflow-y-scroll"
-          >
+          <div className="space-y-4">
             {poems.map((poem) => (
               <Card 
                 key={poem.id} 
