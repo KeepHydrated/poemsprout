@@ -339,6 +339,9 @@ const PoemDetail = () => {
                 className={`h-5 w-5 ${poem.user_liked ? 'fill-current text-red-500' : ''}`}
               />
             </Button>
+            <span className="text-sm text-muted-foreground">
+              {poem.like_count}
+            </span>
           </div>
         </div>
 
@@ -370,6 +373,9 @@ const PoemDetail = () => {
                     className={`h-5 w-5 ${poem.user_liked ? 'fill-current text-red-500' : ''}`}
                   />
                 </Button>
+                <span className="text-sm text-muted-foreground">
+                  {poem.like_count}
+                </span>
               </div>
             </div>
           </div>
