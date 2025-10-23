@@ -52,6 +52,7 @@ const PoemDetail = () => {
   const [sortBy, setSortBy] = useState<"best" | "top" | "new">("best");
   const [sortOpen, setSortOpen] = useState(false);
   const [otherPoems, setOtherPoems] = useState<PublishedPoem[]>([]);
+  const [showAllComments, setShowAllComments] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -653,19 +654,32 @@ const PoemDetail = () => {
                       </p>
                     </div>
                   ) : (
-                    comments.map((comment) => (
-                      <div key={comment.id} className="border-b last:border-b-0 px-4">
-                        <CommentItem
-                          comment={comment}
-                          user={user}
-                          onReply={setReplyingTo}
-                          onDelete={handleDeleteComment}
-                          onRefresh={fetchComments}
-                          poemId={id!}
-                          depth={0}
-                        />
-                      </div>
-                    ))
+                    <>
+                      {(showAllComments ? comments : comments.slice(0, 5)).map((comment) => (
+                        <div key={comment.id} className="border-b last:border-b-0 px-4">
+                          <CommentItem
+                            comment={comment}
+                            user={user}
+                            onReply={setReplyingTo}
+                            onDelete={handleDeleteComment}
+                            onRefresh={fetchComments}
+                            poemId={id!}
+                            depth={0}
+                          />
+                        </div>
+                      ))}
+                      {comments.length > 5 && !showAllComments && (
+                        <div className="px-4 pt-2">
+                          <Button
+                            variant="ghost"
+                            onClick={() => setShowAllComments(true)}
+                            className="w-full"
+                          >
+                            View all {comments.reduce((total, comment) => total + 1 + (comment.replies?.length || 0), 0)} comments
+                          </Button>
+                        </div>
+                      )}
+                    </>
                   )}
                 </div>
               </div>
@@ -802,19 +816,32 @@ const PoemDetail = () => {
                   </p>
                 </div>
               ) : (
-                comments.map((comment) => (
-                  <div key={comment.id} className="border-b last:border-b-0 px-4">
-                    <CommentItem
-                      comment={comment}
-                      user={user}
-                      onReply={setReplyingTo}
-                      onDelete={handleDeleteComment}
-                      onRefresh={fetchComments}
-                      poemId={id!}
-                      depth={0}
-                    />
-                  </div>
-                ))
+                <>
+                  {(showAllComments ? comments : comments.slice(0, 5)).map((comment) => (
+                    <div key={comment.id} className="border-b last:border-b-0 px-4">
+                      <CommentItem
+                        comment={comment}
+                        user={user}
+                        onReply={setReplyingTo}
+                        onDelete={handleDeleteComment}
+                        onRefresh={fetchComments}
+                        poemId={id!}
+                        depth={0}
+                      />
+                    </div>
+                  ))}
+                  {comments.length > 5 && !showAllComments && (
+                    <div className="px-4 pt-2">
+                      <Button
+                        variant="ghost"
+                        onClick={() => setShowAllComments(true)}
+                        className="w-full"
+                      >
+                        View all {comments.reduce((total, comment) => total + 1 + (comment.replies?.length || 0), 0)} comments
+                      </Button>
+                    </div>
+                  )}
+                </>
               )}
             </div>
           </div>
