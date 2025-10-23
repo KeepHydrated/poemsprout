@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -28,6 +28,7 @@ const GallerySidebar = () => {
   const [user, setUser] = useState<any>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -47,16 +48,14 @@ const GallerySidebar = () => {
 
   // Vertical auto-scroll effect
   useEffect(() => {
-    if (poems.length === 0) return;
+    if (poems.length === 0 || !scrollContainerRef.current) return;
     
-    const scrollContainer = document.getElementById('top-poems-scroll');
-    if (!scrollContainer) return;
-
+    const scrollContainer = scrollContainerRef.current;
     const scrollStep = 1;
     const scrollInterval = 50;
 
     const interval = setInterval(() => {
-      if (scrollContainer.scrollTop + scrollContainer.clientHeight >= scrollContainer.scrollHeight) {
+      if (scrollContainer.scrollTop + scrollContainer.clientHeight >= scrollContainer.scrollHeight - 10) {
         scrollContainer.scrollTop = 0;
       } else {
         scrollContainer.scrollTop += scrollStep;
@@ -64,7 +63,7 @@ const GallerySidebar = () => {
     }, scrollInterval);
 
     return () => clearInterval(interval);
-  }, [poems.length]);
+  }, [poems]);
 
   const fetchPoems = async () => {
     try {
@@ -218,7 +217,10 @@ const GallerySidebar = () => {
             </CardContent>
           </Card>
         ) : (
-          <div id="top-poems-scroll" className="space-y-4 max-h-[600px] overflow-y-auto scroll-smooth pr-2">
+          <div 
+            ref={scrollContainerRef}
+            className="space-y-4 h-[600px] overflow-y-auto pr-2"
+          >
             {poems.map((poem) => (
               <Card 
                 key={poem.id} 
