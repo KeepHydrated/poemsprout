@@ -393,9 +393,9 @@ const PoemDetail = () => {
           <div className="flex-1">
             <Card className="border-2 shadow-lg mb-8 max-w-3xl">
               <CardContent className="pt-6">
-                <blockquote className="border-l-4 border-accent pl-4 text-base whitespace-pre-wrap font-serif text-foreground/90 leading-relaxed">
+                <div className="text-base whitespace-pre-wrap font-serif text-foreground/90 leading-relaxed">
                   {poem.content}
-                </blockquote>
+                </div>
               </CardContent>
             </Card>
 
