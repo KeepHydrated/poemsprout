@@ -50,6 +50,7 @@ const PoemDetail = () => {
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<"best" | "top" | "new">("best");
   const [sortOpen, setSortOpen] = useState(false);
+  const [otherPoems, setOtherPoems] = useState<PublishedPoem[]>([]);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -69,6 +70,52 @@ const PoemDetail = () => {
       fetchComments();
     }
   }, [id, user]);
+
+  const fetchOtherPoems = async (userId: string) => {
+    try {
+      const { data: poemsData, error } = await supabase
+        .from("published_poems")
+        .select("id, content, poem_type, original_topic, created_at, user_id")
+        .eq("user_id", userId)
+        .neq("id", id)
+        .order("created_at", { ascending: false })
+        .limit(3);
+
+      if (error) throw error;
+
+      if (poemsData) {
+        // Fetch profile
+        const { data: profileData } = await supabase
+          .from("profiles")
+          .select("display_name, points, avatar_url")
+          .eq("id", userId)
+          .single();
+
+        // Get like counts for all poems
+        const poemIds = poemsData.map(p => p.id);
+        const { data: likesData } = await supabase
+          .from("poem_likes")
+          .select("poem_id")
+          .in("poem_id", poemIds);
+
+        // Count likes per poem
+        const likeCounts = likesData?.reduce((acc, like) => {
+          acc[like.poem_id] = (acc[like.poem_id] || 0) + 1;
+          return acc;
+        }, {} as Record<string, number>) || {};
+
+        const poemsWithData = poemsData.map(poem => ({
+          ...poem,
+          profiles: profileData,
+          like_count: likeCounts[poem.id] || 0,
+        }));
+
+        setOtherPoems(poemsWithData);
+      }
+    } catch (error) {
+      console.error("Error fetching other poems:", error);
+    }
+  };
 
   const fetchPoem = async () => {
     if (!id) return;
@@ -113,6 +160,9 @@ const PoemDetail = () => {
         like_count: likesData?.length || 0,
         user_liked: userLiked,
       });
+
+      // Fetch other poems by this author
+      fetchOtherPoems(poemData.user_id);
     } catch (error) {
       console.error("Error fetching poem:", error);
       toast({
@@ -358,7 +408,59 @@ const PoemDetail = () => {
               </div>
             </div>
           )}
+
+          {/* Other poems by this author - Mobile */}
+          {otherPoems.length > 0 && (
+            <div className="mt-4 space-y-3">
+              <h3 className="text-sm font-semibold text-foreground">More by this author</h3>
+              {otherPoems.map((otherPoem) => (
+                <Card
+                  key={otherPoem.id}
+                  className="cursor-pointer hover:bg-accent transition-colors border"
+                  onClick={() => navigate(`/poem/${otherPoem.id}`)}
+                >
+                  <CardContent className="p-3 space-y-2">
+                    <div className="flex items-start justify-between">
+                      <span className="text-xs text-muted-foreground">
+                        {new Date(otherPoem.created_at).toLocaleDateString()}
+                      </span>
+                      <div className="flex items-center gap-1">
+                        <span className="text-xs text-muted-foreground">{otherPoem.like_count}</span>
+                        <Heart className="h-3 w-3 text-muted-foreground" />
+                      </div>
+                    </div>
+                    <div>
+                      {otherPoem.original_topic && (
+                        <p className="text-xs text-foreground/80 mb-1">
+                          {otherPoem.original_topic}
+                        </p>
+                      )}
+                      <p className="text-xs text-foreground/80 font-semibold">
+                        {otherPoem.poem_type}
+                      </p>
+                    </div>
+                    <div className="border-l-2 border-border pl-2">
+                      <p className="text-xs text-foreground/70 line-clamp-3 font-serif">
+                        {otherPoem.content}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2 pt-1">
+                      <Avatar className="h-6 w-6">
+                        <AvatarFallback className="text-xs">
+                          {otherPoem.profiles?.display_name?.[0]?.toUpperCase() || "U"}
+                        </AvatarFallback>
+                      </Avatar>
+                      <span className="text-xs text-muted-foreground">
+                        {otherPoem.profiles?.display_name || "Anonymous"} • {otherPoem.profiles?.points || 0} pts
+                      </span>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
         </div>
+
 
         {/* Desktop Layout - Side by Side */}
         <div className="hidden md:flex gap-8 mb-8 items-start">
@@ -402,6 +504,57 @@ const PoemDetail = () => {
                       {poem.profiles.points} points
                     </span>
                   </div>
+                </div>
+              )}
+
+              {/* Other poems by this author */}
+              {otherPoems.length > 0 && (
+                <div className="mt-6 space-y-3">
+                  <h3 className="text-sm font-semibold text-foreground">More by this author</h3>
+                  {otherPoems.map((otherPoem) => (
+                    <Card
+                      key={otherPoem.id}
+                      className="cursor-pointer hover:bg-accent transition-colors border"
+                      onClick={() => navigate(`/poem/${otherPoem.id}`)}
+                    >
+                      <CardContent className="p-3 space-y-2">
+                        <div className="flex items-start justify-between">
+                          <span className="text-xs text-muted-foreground">
+                            {new Date(otherPoem.created_at).toLocaleDateString()}
+                          </span>
+                          <div className="flex items-center gap-1">
+                            <span className="text-xs text-muted-foreground">{otherPoem.like_count}</span>
+                            <Heart className="h-3 w-3 text-muted-foreground" />
+                          </div>
+                        </div>
+                        <div>
+                          {otherPoem.original_topic && (
+                            <p className="text-xs text-foreground/80 mb-1">
+                              {otherPoem.original_topic}
+                            </p>
+                          )}
+                          <p className="text-xs text-foreground/80 font-semibold">
+                            {otherPoem.poem_type}
+                          </p>
+                        </div>
+                        <div className="border-l-2 border-border pl-2">
+                          <p className="text-xs text-foreground/70 line-clamp-3 font-serif">
+                            {otherPoem.content}
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-2 pt-1">
+                          <Avatar className="h-6 w-6">
+                            <AvatarFallback className="text-xs">
+                              {otherPoem.profiles?.display_name?.[0]?.toUpperCase() || "U"}
+                            </AvatarFallback>
+                          </Avatar>
+                          <span className="text-xs text-muted-foreground">
+                            {otherPoem.profiles?.display_name || "Anonymous"} • {otherPoem.profiles?.points || 0} pts
+                          </span>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
                 </div>
               )}
             </div>
