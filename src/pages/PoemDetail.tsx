@@ -556,11 +556,11 @@ const PoemDetail = () => {
                   />
                 </Button>
               </div>
-              <CardContent className="pt-6">
-                <div className="text-base whitespace-pre-wrap font-serif text-foreground/90 leading-relaxed">
-                  {poem.content}
-                </div>
-              </CardContent>
+            <CardContent className="pt-6 pr-4 md:pr-16">
+              <div className="text-base whitespace-pre-wrap font-serif text-foreground/90 leading-relaxed">
+                {poem.content}
+              </div>
+            </CardContent>
             </Card>
 
             {/* Comments Section - Desktop */}
@@ -685,7 +685,7 @@ const PoemDetail = () => {
                 />
               </Button>
             </div>
-            <CardContent className="pt-6">
+            <CardContent className="pt-6 pr-4 md:pr-16">
               <div className="text-base whitespace-pre-wrap font-serif text-foreground/90 leading-relaxed">
                 {poem.content}
               </div>
