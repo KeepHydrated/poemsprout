@@ -200,7 +200,11 @@ const GallerySidebar = () => {
         ) : (
           <div className="space-y-4">
             {poems.map((poem) => (
-              <Card key={poem.id} className="border hover:shadow-md transition-shadow">
+              <Card 
+                key={poem.id} 
+                className="border hover:shadow-md transition-shadow cursor-pointer"
+                onClick={() => navigate(`/poem/${poem.id}`)}
+              >
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between gap-1 mb-2">
                     <span className="text-xs text-muted-foreground">
@@ -216,7 +220,10 @@ const GallerySidebar = () => {
                         variant="ghost"
                         size="icon"
                         className="h-8 w-8"
-                        onClick={() => handleLike(poem.id)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleLike(poem.id);
+                        }}
                       >
                         <Heart
                           className={`h-4 w-4 ${poem.user_liked ? 'fill-current text-red-500' : ''}`}
@@ -234,7 +241,10 @@ const GallerySidebar = () => {
                     {poem.content}
                   </blockquote>
                   <button
-                    onClick={() => navigate(`/profile/${poem.user_id}`)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate(`/profile/${poem.user_id}`);
+                    }}
                     className="flex items-center gap-1 text-xs hover:underline cursor-pointer text-muted-foreground w-fit"
                   >
                     <Avatar className="h-4 w-4">
