@@ -317,7 +317,7 @@ const PoemDetail = () => {
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-secondary/20 overflow-y-auto">
       <div className="container mx-auto px-4 pt-2 pb-4 md:py-8 max-w-7xl">
         {/* Mobile Sticky Header */}
-        <div className="lg:hidden sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b pb-4 mb-4 -mx-4 px-4 pt-2">
+        <div className="md:hidden sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b pb-4 mb-4 -mx-4 px-4 pt-2">
           <p className="text-sm text-muted-foreground mb-2">
             {new Date(poem.created_at).toLocaleDateString()}
           </p>
@@ -347,7 +347,7 @@ const PoemDetail = () => {
         </div>
 
         {/* Desktop Layout - Side by Side */}
-        <div className="hidden lg:flex gap-8 mb-8 items-start">
+        <div className="hidden md:flex gap-8 mb-8 items-start">
           {/* Left: Header Info */}
           <div className="w-64 flex-shrink-0">
             <div className="space-y-4 pt-6">
@@ -394,7 +394,7 @@ const PoemDetail = () => {
         </div>
 
         {/* Mobile: Poem Card Only */}
-        <div className="lg:hidden mb-8">
+        <div className="md:hidden mb-8">
           <Card className="border-2 shadow-lg">
             <CardContent className="pt-6">
               <div className="text-base whitespace-pre-wrap font-serif text-foreground/90 leading-relaxed">
