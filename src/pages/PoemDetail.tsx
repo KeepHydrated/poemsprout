@@ -314,7 +314,7 @@ const PoemDetail = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-secondary/20 overflow-y-auto">
-      <div className="container mx-auto px-4 py-8 max-w-7xl">
+      <div className="container mx-auto px-4 py-4 md:py-8 max-w-7xl">
         {/* Mobile Sticky Header */}
         <div className="lg:hidden sticky top-16 z-10 bg-background/95 backdrop-blur-sm border-b pb-4 mb-4 -mx-4 px-4">
           <p className="text-sm text-muted-foreground mb-2">
