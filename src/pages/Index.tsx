@@ -409,7 +409,7 @@ const Index = () => {
                   variant="outline"
                   size="lg"
                   onClick={handleRandomTopic}
-                  className="gap-2 whitespace-nowrap text-sm md:text-lg w-full md:w-auto"
+                  className="gap-2 whitespace-nowrap text-sm md:text-base w-full md:w-auto md:h-10 md:px-4"
                 >
                   <Shuffle className="h-4 w-4" />
                   Random Topic
@@ -417,7 +417,7 @@ const Index = () => {
                 <Button 
                   type="submit" 
                   size="lg" 
-                  className="gap-2 text-sm md:text-lg w-full md:w-auto"
+                  className="gap-2 text-sm md:text-base w-full md:w-auto md:h-10 md:px-4"
                 >
                   {isGenerating ? (
                     <>
