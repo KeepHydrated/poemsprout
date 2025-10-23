@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Heart, Globe, Trash2 } from "lucide-react";
+import { Loader2, Heart, Globe, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
 import type { User } from "@supabase/supabase-js";
 
 interface PublishedPoem {
@@ -33,6 +33,8 @@ const Profile = () => {
   const [loadingPoems, setLoadingPoems] = useState(false);
   const [sortBy, setSortBy] = useState<"newest" | "oldest" | "most-liked">("newest");
   const [filterType, setFilterType] = useState<string>("all");
+  const [currentPage, setCurrentPage] = useState(1);
+  const poemsPerPage = 5;
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -146,27 +148,16 @@ const Profile = () => {
 
   const uniquePoemTypes = Array.from(new Set(publishedPoems.map(p => p.poem_type)));
 
-  // Vertical auto-scroll effect
+  // Reset to page 1 when filters change
   useEffect(() => {
-    if (sortedPoems.length === 0) return;
-    
-    const scrollContainer = document.getElementById('poems-container');
-    if (!scrollContainer) return;
+    setCurrentPage(1);
+  }, [sortBy, filterType]);
 
-    const scrollStep = 1; // pixels per interval
-    const scrollInterval = 50; // milliseconds
-
-    const interval = setInterval(() => {
-      if (scrollContainer.scrollTop + scrollContainer.clientHeight >= scrollContainer.scrollHeight) {
-        // Reset to top when reaching bottom
-        scrollContainer.scrollTop = 0;
-      } else {
-        scrollContainer.scrollTop += scrollStep;
-      }
-    }, scrollInterval);
-
-    return () => clearInterval(interval);
-  }, [sortedPoems.length]);
+  // Calculate pagination
+  const totalPages = Math.ceil(sortedPoems.length / poemsPerPage);
+  const startIndex = (currentPage - 1) * poemsPerPage;
+  const endIndex = startIndex + poemsPerPage;
+  const paginatedPoems = sortedPoems.slice(startIndex, endIndex);
 
   const handleDeletePublished = async (poemId: string) => {
     if (!confirm("Are you sure you want to delete this poem?")) return;
@@ -313,57 +304,83 @@ const Profile = () => {
                 )}
               </div>
             ) : (
-              <div 
-                id="poems-container"
-                className="space-y-6 max-h-[600px] overflow-y-auto scroll-smooth pr-2"
-              >
-                {sortedPoems.map((poem) => (
-                  <Card 
-                    key={poem.id} 
-                    className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
-                    onClick={() => navigate(`/poem/${poem.id}`)}
-                  >
-                    <CardContent className="p-6">
-                      <div className="flex items-start justify-between mb-4">
-                        <span className="text-sm text-muted-foreground">
-                          {formatDate(poem.created_at)}
-                        </span>
-                        <div className="flex items-center gap-2">
-                          <Heart className="h-5 w-5 text-muted-foreground" />
+              <>
+                <div className="space-y-6">
+                  {paginatedPoems.map((poem) => (
+                    <Card 
+                      key={poem.id} 
+                      className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
+                      onClick={() => navigate(`/poem/${poem.id}`)}
+                    >
+                      <CardContent className="p-6">
+                        <div className="flex items-start justify-between mb-4">
                           <span className="text-sm text-muted-foreground">
-                            {likeCounts[poem.id] || 0}
+                            {formatDate(poem.created_at)}
                           </span>
+                          <div className="flex items-center gap-2">
+                            <Heart className="h-5 w-5 text-muted-foreground" />
+                            <span className="text-sm text-muted-foreground">
+                              {likeCounts[poem.id] || 0}
+                            </span>
+                          </div>
                         </div>
-                      </div>
 
-                      <p className="text-sm text-foreground/80 mb-4">
-                        {poem.original_topic} • {poem.poem_type}
-                      </p>
-                      
-                      <blockquote className="border-l-2 border-accent pl-4">
-                        <p className="whitespace-pre-wrap font-serif text-foreground leading-relaxed">
-                          {poem.content}
+                        <p className="text-sm text-foreground/80 mb-4">
+                          {poem.original_topic} • {poem.poem_type}
                         </p>
-                      </blockquote>
+                        
+                        <blockquote className="border-l-4 border-primary pl-4">
+                          <p className="whitespace-pre-wrap font-serif text-foreground leading-relaxed">
+                            {poem.content}
+                          </p>
+                        </blockquote>
 
-                      {isOwnProfile && (
-                        <div className="mt-4 flex justify-end">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleDeletePublished(poem.id);
-                            }}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      )}
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
+                        {isOwnProfile && (
+                          <div className="mt-4 flex justify-end">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDeletePublished(poem.id);
+                              }}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        )}
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+
+                {/* Pagination Controls */}
+                {totalPages > 1 && (
+                  <div className="flex items-center justify-center gap-2 mt-8">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                      disabled={currentPage === 1}
+                    >
+                      <ChevronLeft className="h-4 w-4 mr-1" />
+                      Previous
+                    </Button>
+                    <span className="text-sm text-muted-foreground px-4">
+                      Page {currentPage} of {totalPages}
+                    </span>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                      disabled={currentPage === totalPages}
+                    >
+                      Next
+                      <ChevronRight className="h-4 w-4 ml-1" />
+                    </Button>
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>
