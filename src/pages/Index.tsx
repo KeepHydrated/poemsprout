@@ -476,7 +476,7 @@ const Index = () => {
               <div>
                 {currentGeneratedPoem ? (
                   <div className="space-y-4">
-                    <div className="bg-accent/10 p-4 md:p-6 rounded-lg border-2 border-accent relative">
+                    <div className="bg-accent/10 p-4 md:p-6 rounded-lg relative">
                       {submittedTopic && (
                         <Button
                           variant="outline"
@@ -563,7 +563,7 @@ const Index = () => {
                     )}
                   </div>
                 ) : (
-                  <div className="border-l-4 border-accent pl-4 py-2 h-12"></div>
+                  <div className="py-2 h-12"></div>
                 )}
               </div>
 
