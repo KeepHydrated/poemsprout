@@ -556,7 +556,7 @@ const PoemDetail = () => {
                 </Button>
               </div>
               <CardContent className="pt-6">
-                <div className="text-xl whitespace-pre-wrap font-serif text-foreground/90 leading-loose tracking-wider">
+                <div className="text-base whitespace-pre-wrap font-serif text-foreground/90 leading-relaxed">
                   {poem.content}
                 </div>
               </CardContent>
@@ -685,7 +685,7 @@ const PoemDetail = () => {
               </Button>
             </div>
             <CardContent className="pt-6">
-              <div className="text-xl whitespace-pre-wrap font-serif text-foreground/90 leading-loose tracking-wider">
+              <div className="text-base whitespace-pre-wrap font-serif text-foreground/90 leading-relaxed">
                 {poem.content}
               </div>
             </CardContent>
