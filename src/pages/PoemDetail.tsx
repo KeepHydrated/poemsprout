@@ -813,6 +813,7 @@ type CommentItemProps = {
 };
 
 const CommentItem = ({ comment, user, onReply, onDelete, onRefresh, poemId, depth = 0 }: CommentItemProps) => {
+  const navigate = useNavigate();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [showReply, setShowReply] = useState(false);
   const [replyText, setReplyText] = useState("");
@@ -908,7 +909,10 @@ const CommentItem = ({ comment, user, onReply, onDelete, onRefresh, poemId, dept
 
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
-            <Avatar className="h-6 w-6">
+            <Avatar 
+              className="h-6 w-6 cursor-pointer hover:opacity-80 transition-opacity" 
+              onClick={() => navigate(`/profile/${comment.user_id}`)}
+            >
               {comment.profiles?.avatar_url ? (
                 <img src={comment.profiles.avatar_url} alt={authorName} className="object-cover" />
               ) : (
@@ -917,7 +921,12 @@ const CommentItem = ({ comment, user, onReply, onDelete, onRefresh, poemId, dept
                 </AvatarFallback>
               )}
             </Avatar>
-            <span className="font-medium text-sm">{authorName}</span>
+            <span 
+              className="font-medium text-sm cursor-pointer hover:underline" 
+              onClick={() => navigate(`/profile/${comment.user_id}`)}
+            >
+              {authorName}
+            </span>
             <span className="text-xs text-muted-foreground">•</span>
             <span className="text-xs text-muted-foreground">{getTimeAgo(comment.created_at)}</span>
             {comment.replies && comment.replies.length > 0 && (
