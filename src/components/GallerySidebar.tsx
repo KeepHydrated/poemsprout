@@ -46,25 +46,6 @@ const GallerySidebar = () => {
     fetchPoems();
   }, [user]);
 
-  // Vertical auto-scroll effect
-  useEffect(() => {
-    if (poems.length === 0 || !scrollContainerRef.current) return;
-    
-    const scrollContainer = scrollContainerRef.current;
-    const scrollStep = 1;
-    const scrollInterval = 50;
-
-    const interval = setInterval(() => {
-      if (scrollContainer.scrollTop + scrollContainer.clientHeight >= scrollContainer.scrollHeight - 10) {
-        scrollContainer.scrollTop = 0;
-      } else {
-        scrollContainer.scrollTop += scrollStep;
-      }
-    }, scrollInterval);
-
-    return () => clearInterval(interval);
-  }, [poems]);
-
   const fetchPoems = async () => {
     try {
       const { data, error } = await supabase
@@ -219,7 +200,7 @@ const GallerySidebar = () => {
         ) : (
           <div 
             ref={scrollContainerRef}
-            className="space-y-4 h-[600px] overflow-y-auto pr-2"
+            className="space-y-4 h-[600px] overflow-y-scroll pr-2"
           >
             {poems.map((poem) => (
               <Card 
