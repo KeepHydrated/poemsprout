@@ -661,7 +661,7 @@ const PoemDetail = () => {
               </div>
 
               <ScrollArea className="max-h-[400px] bg-card rounded-lg border">
-                <div className="space-y-2">
+                <div className="space-y-2 py-4">
                   {comments.length === 0 ? (
                     <div className="py-8 text-center">
                       <p className="text-muted-foreground">
@@ -791,7 +791,7 @@ const PoemDetail = () => {
           </div>
 
           <ScrollArea className="max-h-[400px] bg-card rounded-lg border">
-            <div className="space-y-2">
+            <div className="space-y-2 py-4">
               {comments.length === 0 ? (
                 <div className="py-8 text-center">
                   <p className="text-muted-foreground">
