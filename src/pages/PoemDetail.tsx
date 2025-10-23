@@ -660,7 +660,7 @@ const PoemDetail = () => {
                 </div>
               </div>
 
-              <ScrollArea className="h-[400px] bg-card rounded-lg border">
+              <ScrollArea className="max-h-[400px] bg-card rounded-lg border">
                 <div className="space-y-2">
                   {comments.length === 0 ? (
                     <div className="py-8 text-center">
@@ -790,7 +790,7 @@ const PoemDetail = () => {
             </div>
           </div>
 
-          <ScrollArea className="h-[400px] bg-card rounded-lg border">
+          <ScrollArea className="max-h-[400px] bg-card rounded-lg border">
             <div className="space-y-2">
               {comments.length === 0 ? (
                 <div className="py-8 text-center">
