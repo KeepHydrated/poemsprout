@@ -267,7 +267,7 @@ const Likes = () => {
                   </p>
                 </CardHeader>
                 <CardContent className="pt-0">
-                  <blockquote className="border-l-2 border-accent pl-3 text-sm whitespace-pre-wrap font-serif text-foreground/80 leading-relaxed mb-3">
+                  <blockquote className="text-sm whitespace-pre-wrap font-serif text-foreground/80 leading-relaxed mb-3">
                     {poem.content}
                   </blockquote>
                   <CardDescription className="flex items-center gap-1 text-xs">
