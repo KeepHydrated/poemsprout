@@ -240,9 +240,9 @@ const Profile = () => {
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-12 max-w-6xl">
-        <div className="flex flex-col lg:flex-row gap-8">
-          {/* Profile Card - Left sidebar on desktop */}
-          <div className="w-full lg:w-64 flex-shrink-0">
+        <div className="flex flex-col md:flex-row gap-8">
+          {/* Profile Card - Left sidebar on desktop and iPad */}
+          <div className="w-full md:w-64 flex-shrink-0">
             <Card>
               <CardContent className="p-6">
                 <div className="flex flex-col items-center text-center space-y-4">
@@ -268,7 +268,7 @@ const Profile = () => {
           <div className="flex-1 min-w-0">
             {!loadingPoems && publishedPoems.length > 0 && (
               <div className="mb-6 flex items-center justify-between">
-                <h2 className="hidden lg:block text-2xl font-semibold text-foreground">Poems</h2>
+                <h2 className="hidden md:block text-2xl font-semibold text-foreground">Poems</h2>
                 <div className="flex items-center gap-3">
                   <Select value={filterType} onValueChange={setFilterType}>
                     <SelectTrigger className="w-[180px]">
