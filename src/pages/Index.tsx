@@ -474,7 +474,7 @@ const Index = () => {
           <Card className="border-2 shadow-lg rounded-t-none border-t-0">
             <CardContent className="space-y-4 pt-4 md:pt-6 px-3 md:px-6 pb-4 md:pb-6">
               <div>
-                {currentGeneratedPoem ? (
+                {currentGeneratedPoem && (
                   <div className="space-y-4">
                     <div className="bg-accent/10 p-4 md:p-6 rounded-lg relative">
                       {submittedTopic && (
@@ -562,8 +562,6 @@ const Index = () => {
                       </div>
                     )}
                   </div>
-                ) : (
-                  <div className="py-2 h-12"></div>
                 )}
               </div>
 
