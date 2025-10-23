@@ -341,31 +341,15 @@ const PoemDetail = () => {
           </div>
         </div>
 
-        <div className="flex gap-8">
-          {/* Author Profile Sidebar */}
-          <div className="hidden lg:block w-64 flex-shrink-0">
+        {/* Desktop Layout - Side by Side */}
+        <div className="hidden lg:flex gap-8 mb-8">
+          {/* Left: Header Info */}
+          <div className="w-64 flex-shrink-0">
             <div className="sticky top-20 space-y-4">
-            <Card className="border-2">
-              <CardContent className="pt-6 pb-6 text-center">
-                <Avatar className="h-32 w-32 mx-auto mb-4">
-                  <AvatarFallback className="text-4xl bg-primary/10">
-                    {poem.profiles?.display_name?.[0]?.toUpperCase() || "A"}
-                  </AvatarFallback>
-                </Avatar>
-                <h3 className="text-xl font-semibold text-foreground mb-1">
-                  {poem.profiles?.display_name || "Anonymous"}
-                </h3>
-                <p className="text-muted-foreground">
-                  {poem.profiles?.points || 0} points
-                </p>
-              </CardContent>
-            </Card>
-            
-            <div className="space-y-2">
               <p className="text-sm text-muted-foreground">
                 {new Date(poem.created_at).toLocaleDateString()}
               </p>
-              <p className="text-sm text-foreground/80">
+              <p className="text-base text-foreground/80">
                 {poem.original_topic && <span>{poem.original_topic} • </span>}
                 {poem.poem_type}
               </p>
@@ -386,18 +370,30 @@ const PoemDetail = () => {
                 </span>
               </div>
             </div>
-            </div>
           </div>
 
-          {/* Main Content */}
+          {/* Right: Poem Content */}
           <div className="flex-1">
-            <Card className="border-2 shadow-lg mb-8 max-w-3xl">
+            <Card className="border-2 shadow-lg">
               <CardContent className="pt-6">
                 <div className="text-base whitespace-pre-wrap font-serif text-foreground/90 leading-relaxed">
                   {poem.content}
                 </div>
               </CardContent>
             </Card>
+          </div>
+        </div>
+
+        {/* Mobile: Poem Card Only */}
+        <div className="lg:hidden mb-8">
+          <Card className="border-2 shadow-lg">
+            <CardContent className="pt-6">
+              <div className="text-base whitespace-pre-wrap font-serif text-foreground/90 leading-relaxed">
+                {poem.content}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
 
         <div className="space-y-6">
           {user && (
@@ -498,8 +494,6 @@ const PoemDetail = () => {
                 </div>
               ))
             )}
-          </div>
-        </div>
           </div>
         </div>
       </div>
