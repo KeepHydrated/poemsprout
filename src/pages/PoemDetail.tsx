@@ -527,26 +527,43 @@ const PoemDetail = () => {
 
           {/* Right: Poem Content */}
           <div className="flex-1">
-            <Card className="border-2 shadow-lg relative">
-              <div className="absolute top-4 right-4 z-10">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={handleLike}
-                  className="h-9 w-9"
-                >
-                  <Heart
-                    className={`h-5 w-5 ${poem.user_liked ? 'fill-current text-red-500' : ''}`}
-                  />
-                </Button>
-              </div>
-            <CardContent className="pt-6 pr-4 md:pr-16">
-              <div className="border-l-4 border-primary pl-4">
-                <div className="text-base whitespace-pre-wrap font-serif text-foreground/90 leading-relaxed">
-                  {poem.content}
+            <Card className="border-2 shadow-lg">
+              <CardContent className="pt-6 pb-6">
+                {/* Header with date and likes */}
+                <div className="flex items-start justify-between mb-6">
+                  <p className="text-sm text-muted-foreground">
+                    {new Date(poem.created_at).toLocaleDateString()}
+                  </p>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-muted-foreground">
+                      {poem.like_count}
+                    </span>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={handleLike}
+                      className="h-8 w-8 -mr-2"
+                    >
+                      <Heart
+                        className={`h-5 w-5 ${poem.user_liked ? 'fill-current text-red-500' : ''}`}
+                      />
+                    </Button>
+                  </div>
                 </div>
-              </div>
-            </CardContent>
+
+                {/* Title and type */}
+                <p className="text-lg text-foreground/90 mb-6">
+                  {poem.original_topic && <>{poem.original_topic} • </>}
+                  {poem.poem_type}
+                </p>
+
+                {/* Poem content with blue border */}
+                <div className="border-l-4 border-primary pl-4">
+                  <div className="text-base whitespace-pre-wrap font-serif text-foreground/90 leading-relaxed">
+                    {poem.content}
+                  </div>
+                </div>
+              </CardContent>
             </Card>
 
             {/* Comments Section - Desktop */}
@@ -658,20 +675,37 @@ const PoemDetail = () => {
 
         {/* Mobile: Poem Card Only */}
         <div className="md:hidden mb-8">
-          <Card className="border-2 shadow-lg relative">
-            <div className="absolute top-4 right-4 z-10">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={handleLike}
-                className="h-9 w-9"
-              >
-                <Heart
-                  className={`h-5 w-5 ${poem.user_liked ? 'fill-current text-red-500' : ''}`}
-                />
-              </Button>
-            </div>
-            <CardContent className="pt-6 pr-4 md:pr-16">
+          <Card className="border-2 shadow-lg">
+            <CardContent className="pt-6 pb-6">
+              {/* Header with date and likes */}
+              <div className="flex items-start justify-between mb-6">
+                <p className="text-sm text-muted-foreground">
+                  {new Date(poem.created_at).toLocaleDateString()}
+                </p>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-muted-foreground">
+                    {poem.like_count}
+                  </span>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={handleLike}
+                    className="h-8 w-8 -mr-2"
+                  >
+                    <Heart
+                      className={`h-5 w-5 ${poem.user_liked ? 'fill-current text-red-500' : ''}`}
+                    />
+                  </Button>
+                </div>
+              </div>
+
+              {/* Title and type */}
+              <p className="text-base text-foreground/90 mb-6">
+                {poem.original_topic && <>{poem.original_topic} • </>}
+                {poem.poem_type}
+              </p>
+
+              {/* Poem content with blue border */}
               <div className="border-l-4 border-primary pl-4">
                 <div className="text-base whitespace-pre-wrap font-serif text-foreground/90 leading-relaxed">
                   {poem.content}
