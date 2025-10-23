@@ -47,9 +47,11 @@ const GallerySidebar = () => {
 
   // Vertical auto-scroll effect
   useEffect(() => {
+    console.log('Auto-scroll effect running, poems count:', poems.length);
     if (poems.length === 0) return;
     
     const scrollContainer = document.getElementById('top-poems-scroll');
+    console.log('Scroll container found:', scrollContainer);
     if (!scrollContainer) return;
 
     const scrollStep = 1;
