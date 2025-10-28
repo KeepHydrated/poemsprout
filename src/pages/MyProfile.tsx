@@ -559,7 +559,7 @@ const MyPoems = () => {
                 {userComments.length === 0 ? (
                   <div className="text-center py-12">
                     <p className="text-muted-foreground mb-4">You haven't left any comments yet</p>
-                    <Button onClick={() => navigate("/gallery")}>
+                    <Button onClick={() => navigate("/search")}>
                       Browse Poems
                     </Button>
                   </div>

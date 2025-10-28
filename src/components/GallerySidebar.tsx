@@ -176,7 +176,7 @@ const GallerySidebar = () => {
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => navigate("/gallery")}
+          onClick={() => navigate("/search")}
         >
           <ExternalLink className="h-4 w-4 mr-1" />
           View All

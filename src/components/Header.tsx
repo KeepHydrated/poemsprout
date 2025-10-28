@@ -32,7 +32,7 @@ const Header = () => {
 
   // Clear search when navigating away from gallery
   useEffect(() => {
-    if (!location.pathname.startsWith("/gallery")) {
+    if (!location.pathname.startsWith("/search")) {
       setSearchQuery("");
     }
   }, [location.pathname]);
@@ -44,7 +44,7 @@ const Header = () => {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      navigate(`/gallery?search=${encodeURIComponent(searchQuery.trim())}`);
+      navigate(`/search?search=${encodeURIComponent(searchQuery.trim())}`);
       setIsSearchOpen(false);
     }
   };

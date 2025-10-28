@@ -203,7 +203,7 @@ const Gallery = () => {
                 variant="ghost"
                 size="icon"
                 className="h-6 w-6 rounded-full"
-                onClick={() => navigate("/gallery")}
+                onClick={() => navigate("/search")}
               >
                 <X className="h-4 w-4" />
               </Button>
