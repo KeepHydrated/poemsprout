@@ -928,7 +928,7 @@ const CommentItem = ({ comment, user, onReply, onDelete, onRefresh, poemId, dept
         </div>
 
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-1">
+          <div className="flex items-center gap-2 mb-1 flex-wrap">
             <Avatar 
               className="h-6 w-6 cursor-pointer hover:opacity-80 transition-opacity" 
               onClick={() => navigate(`/profile/${comment.user_id}`)}
@@ -942,13 +942,13 @@ const CommentItem = ({ comment, user, onReply, onDelete, onRefresh, poemId, dept
               )}
             </Avatar>
             <span 
-              className="font-medium text-sm cursor-pointer hover:underline" 
+              className="font-medium text-sm cursor-pointer hover:underline truncate max-w-[120px]" 
               onClick={() => navigate(`/profile/${comment.user_id}`)}
             >
               {authorName}
             </span>
             <span className="text-xs text-muted-foreground">•</span>
-            <span className="text-xs text-muted-foreground">{getTimeAgo(comment.created_at)}</span>
+            <span className="text-xs text-muted-foreground whitespace-nowrap">{getTimeAgo(comment.created_at)}</span>
             {comment.replies && comment.replies.length > 0 && (
               <>
                 <span className="text-xs text-muted-foreground">•</span>
