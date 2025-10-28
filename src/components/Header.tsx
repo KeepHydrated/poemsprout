@@ -58,7 +58,8 @@ const Header = () => {
             onClick={() => navigate("/")}
             className="text-2xl font-serif font-bold text-foreground hover:text-primary transition-colors shrink-0"
           >
-            Poem Sprout
+            <span className="md:hidden">P</span>
+            <span className="hidden md:inline">Poem Sprout</span>
           </button>
 
           {/* Search Bar */}
