@@ -68,6 +68,8 @@ const PoemDetail = () => {
 
   useEffect(() => {
     if (id) {
+      setComments([]); // Clear comments when poem changes
+      setIsLoading(true);
       fetchPoem();
       fetchComments();
     }
