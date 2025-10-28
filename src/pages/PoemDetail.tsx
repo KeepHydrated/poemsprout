@@ -413,42 +413,7 @@ const PoemDetail = () => {
             </div>
           )}
 
-          {/* Other poems by this author - Mobile */}
-          {otherPoems.length > 0 && (
-            <div className="mt-16 pt-6 space-y-3 border-t border-border">
-              <h3 className="text-sm font-semibold text-foreground">More by this author</h3>
-              {otherPoems.map((otherPoem) => (
-                <Card
-                  key={otherPoem.id}
-                  className="cursor-pointer transition-colors border"
-                  onClick={() => navigate(`/poem/${otherPoem.id}`)}
-                >
-                  <CardContent className="p-3 space-y-2">
-                    <div className="flex items-start justify-between">
-                      <span className="text-xs text-muted-foreground">
-                        {new Date(otherPoem.created_at).toLocaleDateString()}
-                      </span>
-                      <div className="flex items-center gap-1">
-                        <span className="text-xs text-muted-foreground">{otherPoem.like_count}</span>
-                        <Heart className="h-3 w-3 text-muted-foreground" />
-                      </div>
-                    </div>
-                    <div>
-                      <p className="text-xs text-foreground/80">
-                        {otherPoem.original_topic && <>{otherPoem.original_topic} • </>}
-                        {otherPoem.poem_type}
-                      </p>
-                    </div>
-                    <div className="border-l-4 border-primary pl-2">
-                      <p className="text-sm text-foreground/70 line-clamp-3 font-serif leading-relaxed">
-                        {otherPoem.content}
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          )}
+          {/* Other poems by this author - Hidden on Mobile */}
         </div>
 
 
