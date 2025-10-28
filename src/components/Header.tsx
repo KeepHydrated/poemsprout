@@ -191,7 +191,7 @@ const Header = () => {
 
       {/* Mobile Search Dialog */}
       <Dialog open={isSearchOpen} onOpenChange={setIsSearchOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md top-0 translate-y-0 mt-0 rounded-b-2xl rounded-t-none">
           <DialogHeader>
             <DialogTitle>Search Poems</DialogTitle>
           </DialogHeader>
