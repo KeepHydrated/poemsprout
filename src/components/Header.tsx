@@ -97,6 +97,7 @@ const Header = () => {
                   variant={isActive("/likes") ? "default" : "ghost"}
                   size="icon"
                   onClick={() => navigate("/likes")}
+                  className="hidden md:flex"
                 >
                   <Heart className="h-4 w-4" />
                 </Button>
@@ -236,6 +237,18 @@ const Header = () => {
           </SheetHeader>
           
           <div className="space-y-2">
+            <Button
+              variant="ghost"
+              className="w-full justify-start text-base py-6"
+              onClick={() => {
+                navigate("/likes");
+                setIsProfileOpen(false);
+              }}
+            >
+              <Heart className="mr-3 h-5 w-5" />
+              Likes
+            </Button>
+            
             <Button
               variant="ghost"
               className="w-full justify-start text-base py-6"
