@@ -212,9 +212,9 @@ const Gallery = () => {
           <p className="text-lg text-muted-foreground hidden md:block">
             Explore poems shared by our community
           </p>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 w-full md:w-auto">
             <Select value={filterType} onValueChange={setFilterType}>
-              <SelectTrigger className="w-[180px]">
+              <SelectTrigger className="w-[140px] md:w-[180px]">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -229,7 +229,7 @@ const Gallery = () => {
               </SelectContent>
             </Select>
             <Select value={sortBy} onValueChange={(value: "newest" | "oldest" | "most-liked") => setSortBy(value)}>
-              <SelectTrigger className="w-[180px]">
+              <SelectTrigger className="w-[140px] md:w-[180px]">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
