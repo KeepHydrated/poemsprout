@@ -53,10 +53,10 @@ const Header = () => {
     <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
       <div className="container mx-auto px-4 py-4">
         <div className="max-w-7xl mx-auto">
-          <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center justify-between gap-4 md:justify-start w-full">
           <button
             onClick={() => navigate("/")}
-            className="text-2xl font-serif font-bold text-foreground hover:text-primary transition-colors shrink-0"
+            className="text-2xl font-serif font-bold text-foreground hover:text-primary transition-colors shrink-0 md:order-none order-2 absolute left-1/2 -translate-x-1/2 md:relative md:left-auto md:translate-x-0"
           >
             <span className="md:hidden">P</span>
             <span className="hidden md:inline">Poem Sprout</span>
@@ -76,7 +76,7 @@ const Header = () => {
             </div>
           </form>
 
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex items-center gap-2 shrink-0 md:order-none order-3">
             {user ? (
               <div className="flex items-center gap-3">
                 {/* Mobile Search Button */}
