@@ -209,7 +209,7 @@ const Gallery = () => {
           </div>
         )}
         <header className="mb-12 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-          <p className="text-lg text-muted-foreground">
+          <p className="text-lg text-muted-foreground hidden md:block">
             Explore poems shared by our community
           </p>
           <div className="flex items-center gap-3">
