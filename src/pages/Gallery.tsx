@@ -191,140 +191,144 @@ const Gallery = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-secondary/20">
-      <div className="container mx-auto px-4 py-4 md:py-16 max-w-6xl">
-        {searchQuery && (
-          <div className="mb-6 flex items-center gap-2">
-            <p className="text-muted-foreground">
-              Showing results for: <span className="font-semibold text-foreground">"{searchQuery}"</span>
-            </p>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-6 w-6 rounded-full"
-              onClick={() => navigate("/gallery")}
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
-        )}
-        <header className="mb-6 md:mb-12 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-          <p className="text-lg text-muted-foreground hidden md:block">
-            Explore poems shared by our community
-          </p>
-          <div className="flex items-center gap-3 w-full md:w-auto">
-            <Select value={filterType} onValueChange={setFilterType}>
-              <SelectTrigger className="w-[140px] md:w-[180px]">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Types</SelectItem>
-                <SelectItem value="Sonnet">Sonnet</SelectItem>
-                <SelectItem value="Haiku">Haiku</SelectItem>
-                <SelectItem value="Limerick">Limerick</SelectItem>
-                <SelectItem value="Villanelle">Villanelle</SelectItem>
-                <SelectItem value="Ode">Ode</SelectItem>
-                <SelectItem value="Ballad">Ballad</SelectItem>
-                <SelectItem value="Epic">Epic</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select value={sortBy} onValueChange={(value: "newest" | "oldest" | "most-liked") => setSortBy(value)}>
-              <SelectTrigger className="w-[140px] md:w-[180px]">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="newest">Newest</SelectItem>
-                <SelectItem value="oldest">Oldest</SelectItem>
-                <SelectItem value="most-liked">Most Liked</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </header>
-
-        {isLoading ? (
-          <div className="text-center py-12">
-            <p className="text-muted-foreground">Loading poems...</p>
-          </div>
-        ) : poems.length === 0 ? (
-          <Card className="border-2">
-            <CardContent className="py-12 text-center">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-secondary/20 md:overflow-auto overflow-hidden">
+      <div className="container mx-auto px-4 py-4 md:py-16 max-w-6xl md:h-auto h-screen flex flex-col">
+        <div className="md:static md:mb-0">
+          {searchQuery && (
+            <div className="mb-6 flex items-center gap-2">
               <p className="text-muted-foreground">
-                No poems have been published yet. Be the first to share!
+                Showing results for: <span className="font-semibold text-foreground">"{searchQuery}"</span>
               </p>
-            </CardContent>
-          </Card>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {poems
-              .filter(poem => {
-                // Filter by type
-                const matchesType = filterType === "all" || poem.poem_type === filterType;
-                
-                // Filter by search query
-                const matchesSearch = !searchQuery || 
-                  poem.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                  poem.original_topic?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                  poem.poem_type.toLowerCase().includes(searchQuery.toLowerCase());
-                
-                return matchesType && matchesSearch;
-              })
-              .map((poem) => (
-              <Card 
-                key={poem.id} 
-                className="border hover:shadow-lg transition-shadow cursor-pointer"
-                onClick={() => navigate(`/poem/${poem.id}`)}
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-6 w-6 rounded-full"
+                onClick={() => navigate("/gallery")}
               >
-                <CardHeader className="pb-3">
-                  <div className="flex items-center justify-between gap-2 mb-2">
-                    <span className="text-xs text-muted-foreground">
-                      {new Date(poem.created_at).toLocaleDateString()}
-                    </span>
-                    <div className="flex items-center gap-1">
-                      {poem.like_count! > 0 && (
-                        <span className="text-xs text-muted-foreground">
-                          {poem.like_count}
-                        </span>
-                      )}
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleLike(poem.id);
-                        }}
-                      >
-                        <Heart
-                          className={`h-4 w-4 ${poem.user_liked ? 'fill-current text-red-500' : ''}`}
-                        />
-                      </Button>
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+          )}
+          <header className="mb-6 md:mb-12 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <p className="text-lg text-muted-foreground hidden md:block">
+              Explore poems shared by our community
+            </p>
+            <div className="flex items-center gap-3 w-full md:w-auto">
+              <Select value={filterType} onValueChange={setFilterType}>
+                <SelectTrigger className="w-[140px] md:w-[180px]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Types</SelectItem>
+                  <SelectItem value="Sonnet">Sonnet</SelectItem>
+                  <SelectItem value="Haiku">Haiku</SelectItem>
+                  <SelectItem value="Limerick">Limerick</SelectItem>
+                  <SelectItem value="Villanelle">Villanelle</SelectItem>
+                  <SelectItem value="Ode">Ode</SelectItem>
+                  <SelectItem value="Ballad">Ballad</SelectItem>
+                  <SelectItem value="Epic">Epic</SelectItem>
+                </SelectContent>
+              </Select>
+              <Select value={sortBy} onValueChange={(value: "newest" | "oldest" | "most-liked") => setSortBy(value)}>
+                <SelectTrigger className="w-[140px] md:w-[180px]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="newest">Newest</SelectItem>
+                  <SelectItem value="oldest">Oldest</SelectItem>
+                  <SelectItem value="most-liked">Most Liked</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </header>
+        </div>
+
+        <div className="flex-1 overflow-y-auto md:overflow-visible">
+          {isLoading ? (
+            <div className="text-center py-12">
+              <p className="text-muted-foreground">Loading poems...</p>
+            </div>
+          ) : poems.length === 0 ? (
+            <Card className="border-2">
+              <CardContent className="py-12 text-center">
+                <p className="text-muted-foreground">
+                  No poems have been published yet. Be the first to share!
+                </p>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-4">
+              {poems
+                .filter(poem => {
+                  // Filter by type
+                  const matchesType = filterType === "all" || poem.poem_type === filterType;
+                  
+                  // Filter by search query
+                  const matchesSearch = !searchQuery || 
+                    poem.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    poem.original_topic?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    poem.poem_type.toLowerCase().includes(searchQuery.toLowerCase());
+                  
+                  return matchesType && matchesSearch;
+                })
+                .map((poem) => (
+                <Card 
+                  key={poem.id} 
+                  className="border hover:shadow-lg transition-shadow cursor-pointer"
+                  onClick={() => navigate(`/poem/${poem.id}`)}
+                >
+                  <CardHeader className="pb-3">
+                    <div className="flex items-center justify-between gap-2 mb-2">
+                      <span className="text-xs text-muted-foreground">
+                        {new Date(poem.created_at).toLocaleDateString()}
+                      </span>
+                      <div className="flex items-center gap-1">
+                        {poem.like_count! > 0 && (
+                          <span className="text-xs text-muted-foreground">
+                            {poem.like_count}
+                          </span>
+                        )}
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleLike(poem.id);
+                          }}
+                        >
+                          <Heart
+                            className={`h-4 w-4 ${poem.user_liked ? 'fill-current text-red-500' : ''}`}
+                          />
+                        </Button>
+                      </div>
                     </div>
-                  </div>
-                  <p className="text-xs text-foreground/80 mb-1">
-                    {poem.original_topic && <>{poem.original_topic} • </>}
-                    {poem.poem_type}
-                  </p>
-                </CardHeader>
-                <CardContent className="pt-0">
-                  <blockquote className="border-l-4 border-primary pl-3 text-base whitespace-pre-wrap font-serif text-foreground/80 leading-relaxed mb-3">
-                    {poem.content}
-                  </blockquote>
-                  <CardDescription className="flex items-center gap-1 text-xs">
-                    <Avatar className="h-4 w-4">
-                      <AvatarFallback className="text-[8px]">
-                        {poem.profiles?.display_name?.[0]?.toUpperCase() || "A"}
-                      </AvatarFallback>
-                    </Avatar>
-                    <span className="truncate">
-                      {poem.profiles?.display_name || "Anonymous"}
-                    </span>
-                    <span className="text-muted-foreground">• {poem.profiles?.points || 0} pts</span>
-                  </CardDescription>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        )}
+                    <p className="text-xs text-foreground/80 mb-1">
+                      {poem.original_topic && <>{poem.original_topic} • </>}
+                      {poem.poem_type}
+                    </p>
+                  </CardHeader>
+                  <CardContent className="pt-0">
+                    <blockquote className="border-l-4 border-primary pl-3 text-base whitespace-pre-wrap font-serif text-foreground/80 leading-relaxed mb-3">
+                      {poem.content}
+                    </blockquote>
+                    <CardDescription className="flex items-center gap-1 text-xs">
+                      <Avatar className="h-4 w-4">
+                        <AvatarFallback className="text-[8px]">
+                          {poem.profiles?.display_name?.[0]?.toUpperCase() || "A"}
+                        </AvatarFallback>
+                      </Avatar>
+                      <span className="truncate">
+                        {poem.profiles?.display_name || "Anonymous"}
+                      </span>
+                      <span className="text-muted-foreground">• {poem.profiles?.points || 0} pts</span>
+                    </CardDescription>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
