@@ -192,7 +192,7 @@ const Gallery = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-secondary/20">
-      <div className="container mx-auto px-4 py-16 max-w-6xl">
+      <div className="container mx-auto px-4 py-4 md:py-16 max-w-6xl">
         {searchQuery && (
           <div className="mb-6 flex items-center gap-2">
             <p className="text-muted-foreground">
@@ -208,7 +208,7 @@ const Gallery = () => {
             </Button>
           </div>
         )}
-        <header className="mb-12 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <header className="mb-6 md:mb-12 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <p className="text-lg text-muted-foreground hidden md:block">
             Explore poems shared by our community
           </p>
