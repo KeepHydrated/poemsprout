@@ -215,7 +215,7 @@ const Header = () => {
 
       {/* Mobile Profile Sheet */}
       <Sheet open={isProfileOpen} onOpenChange={setIsProfileOpen}>
-        <SheetContent side="bottom" className="h-auto rounded-t-2xl">
+        <SheetContent side="right" className="w-80">
           <SheetHeader className="text-left mb-6">
             <div className="flex items-center gap-3">
               <Avatar className="h-16 w-16">
