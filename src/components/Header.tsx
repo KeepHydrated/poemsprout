@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { LogIn, LogOut, User as UserIcon, Settings, Heart, Search } from "lucide-react";
@@ -13,6 +14,7 @@ const Header = () => {
   const [user, setUser] = useState<User | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -99,8 +101,9 @@ const Header = () => {
                   <Heart className="h-4 w-4" />
                 </Button>
                 
+                {/* Desktop Dropdown */}
                 <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
+                  <DropdownMenuTrigger asChild className="hidden md:flex">
                     <Avatar className="h-10 w-10 cursor-pointer ring-2 ring-transparent hover:ring-primary/20 transition-all">
                       <AvatarImage src={user.user_metadata?.avatar_url} alt={user.email || "User"} />
                       <AvatarFallback className="bg-primary/10">
@@ -158,6 +161,17 @@ const Header = () => {
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
+
+                {/* Mobile Avatar Button */}
+                <Avatar 
+                  className="h-10 w-10 cursor-pointer md:hidden"
+                  onClick={() => setIsProfileOpen(true)}
+                >
+                  <AvatarImage src={user.user_metadata?.avatar_url} alt={user.email || "User"} />
+                  <AvatarFallback className="bg-primary/10">
+                    {user.email?.[0].toUpperCase() || "U"}
+                  </AvatarFallback>
+                </Avatar>
               </div>
             ) : (
               <Button
@@ -198,6 +212,70 @@ const Header = () => {
           </form>
         </DialogContent>
       </Dialog>
+
+      {/* Mobile Profile Sheet */}
+      <Sheet open={isProfileOpen} onOpenChange={setIsProfileOpen}>
+        <SheetContent side="bottom" className="h-auto rounded-t-2xl">
+          <SheetHeader className="text-left mb-6">
+            <div className="flex items-center gap-3">
+              <Avatar className="h-16 w-16">
+                <AvatarImage src={user?.user_metadata?.avatar_url} alt={user?.email || "User"} />
+                <AvatarFallback className="bg-primary/10 text-lg">
+                  {user?.email?.[0].toUpperCase() || "U"}
+                </AvatarFallback>
+              </Avatar>
+              <div className="flex flex-col">
+                <SheetTitle className="text-lg">
+                  {user?.user_metadata?.display_name || "User"}
+                </SheetTitle>
+                <p className="text-sm text-muted-foreground">
+                  {user?.email}
+                </p>
+              </div>
+            </div>
+          </SheetHeader>
+          
+          <div className="space-y-2">
+            <Button
+              variant="ghost"
+              className="w-full justify-start text-base py-6"
+              onClick={() => {
+                navigate("/my-profile");
+                setIsProfileOpen(false);
+              }}
+            >
+              <UserIcon className="mr-3 h-5 w-5" />
+              Profile
+            </Button>
+            
+            <Button
+              variant="ghost"
+              className="w-full justify-start text-base py-6"
+              onClick={() => {
+                navigate("/settings");
+                setIsProfileOpen(false);
+              }}
+            >
+              <Settings className="mr-3 h-5 w-5" />
+              Settings
+            </Button>
+            
+            <div className="pt-4 border-t">
+              <Button
+                variant="ghost"
+                className="w-full justify-start text-base py-6 text-destructive hover:text-destructive hover:bg-destructive/10"
+                onClick={() => {
+                  handleSignOut();
+                  setIsProfileOpen(false);
+                }}
+              >
+                <LogOut className="mr-3 h-5 w-5" />
+                Sign Out
+              </Button>
+            </div>
+          </div>
+        </SheetContent>
+      </Sheet>
     </header>
   );
 };
