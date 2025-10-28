@@ -488,7 +488,7 @@ const Index = () => {
                           <RefreshCw className={`h-4 w-4 ${isRegenerating ? 'animate-spin' : ''}`} />
                         </Button>
                       )}
-                      <p className="text-foreground whitespace-pre-line leading-relaxed pr-12">
+                      <p className="text-foreground whitespace-pre-line leading-relaxed pr-12 max-w-2xl">
                         {currentGeneratedPoem}
                       </p>
                     </div>
