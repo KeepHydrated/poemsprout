@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { LogIn, LogOut, User as UserIcon, Settings, Heart, Search } from "lucide-react";
 import type { User } from "@supabase/supabase-js";
@@ -11,6 +12,7 @@ import type { User } from "@supabase/supabase-js";
 const Header = () => {
   const [user, setUser] = useState<User | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -41,6 +43,7 @@ const Header = () => {
     e.preventDefault();
     if (searchQuery.trim()) {
       navigate(`/gallery?search=${encodeURIComponent(searchQuery.trim())}`);
+      setIsSearchOpen(false);
     }
   };
 
@@ -75,6 +78,16 @@ const Header = () => {
           <div className="flex items-center gap-2 shrink-0">
             {user ? (
               <div className="flex items-center gap-3">
+                {/* Mobile Search Button */}
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setIsSearchOpen(true)}
+                  className="md:hidden"
+                >
+                  <Search className="h-4 w-4" />
+                </Button>
+                
                 <Button
                   variant={isActive("/likes") ? "default" : "ghost"}
                   size="icon"
@@ -157,6 +170,31 @@ const Header = () => {
         </div>
       </div>
     </div>
+
+      {/* Mobile Search Dialog */}
+      <Dialog open={isSearchOpen} onOpenChange={setIsSearchOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Search Poems</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleSearch} className="space-y-4">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                type="text"
+                placeholder="Search poems..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10"
+                autoFocus
+              />
+            </div>
+            <Button type="submit" className="w-full">
+              Search
+            </Button>
+          </form>
+        </DialogContent>
+      </Dialog>
     </header>
   );
 };
