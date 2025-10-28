@@ -205,15 +205,19 @@ const PoemDetail = () => {
           profiles: profilesMap.get(comment.user_id) || null,
         }));
 
-        // Organize comments into parent-child structure
-        const parentComments = commentsWithProfiles.filter(c => !c.parent_comment_id);
-        const childComments = commentsWithProfiles.filter(c => c.parent_comment_id);
+        // Organize comments into nested parent-child structure recursively
+        const buildCommentTree = (parentId: string | null): Comment[] => {
+          return commentsWithProfiles
+            .filter(c => c.parent_comment_id === parentId)
+            .map(comment => ({
+              ...comment,
+              replies: buildCommentTree(comment.id)
+                .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
+            }))
+            .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+        };
 
-        const commentsTree = parentComments.map(parent => ({
-          ...parent,
-          replies: childComments.filter(child => child.parent_comment_id === parent.id)
-            .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
-        }));
+        const commentsTree = buildCommentTree(null);
 
         setComments(commentsTree);
       }
