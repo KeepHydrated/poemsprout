@@ -1015,7 +1015,7 @@ const CommentItem = ({ comment, user, onReply, onDelete, onRefresh, poemId, dept
               )}
 
               {comment.replies && comment.replies.length > 0 && (
-                <div className={`mt-2 space-y-2 ${depth < 2 ? 'border-l-2 border-border pl-4' : ''}`}>
+                <div className={`mt-2 space-y-2 ${depth < 1 ? 'border-l-2 border-border pl-4' : ''}`}>
                   {comment.replies.map((reply) => (
                     <CommentItem
                       key={reply.id}
@@ -1025,7 +1025,7 @@ const CommentItem = ({ comment, user, onReply, onDelete, onRefresh, poemId, dept
                       onDelete={onDelete}
                       onRefresh={onRefresh}
                       poemId={poemId}
-                      depth={depth < 2 ? depth + 1 : 2}
+                      depth={depth < 1 ? depth + 1 : 1}
                     />
                   ))}
                 </div>
