@@ -523,7 +523,7 @@ const PoemDetail = () => {
             <Card className="border-2 shadow-lg">
               <CardContent className="pt-6 pb-6">
                 {/* Header with date and likes */}
-                <div className="flex items-start justify-between mb-6">
+                <div className="flex items-start justify-between mb-2">
                   <p className="text-sm text-muted-foreground">
                     {new Date(poem.created_at).toLocaleDateString()}
                   </p>
