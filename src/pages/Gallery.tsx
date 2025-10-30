@@ -279,7 +279,7 @@ const Gallery = () => {
                   onClick={() => navigate(`/poem/${poem.id}`)}
                 >
                   <CardHeader className="pb-3">
-                    <div className="flex items-center justify-between gap-2 mb-2">
+                    <div className="flex items-center justify-between gap-2 mb-1">
                       <span className="text-xs text-muted-foreground">
                         {new Date(poem.created_at).toLocaleDateString()}
                       </span>
