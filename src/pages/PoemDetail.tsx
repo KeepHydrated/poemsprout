@@ -1015,20 +1015,38 @@ const CommentItem = ({ comment, user, onReply, onDelete, onRefresh, poemId, dept
               )}
 
               {comment.replies && comment.replies.length > 0 && (
-                <div className={`mt-2 space-y-2 ${depth < 1 ? 'border-l-2 border-border pl-4' : ''}`}>
-                  {comment.replies.map((reply) => (
-                    <CommentItem
-                      key={reply.id}
-                      comment={reply}
-                      user={user}
-                      onReply={onReply}
-                      onDelete={onDelete}
-                      onRefresh={onRefresh}
-                      poemId={poemId}
-                      depth={depth < 1 ? depth + 1 : 1}
-                    />
-                  ))}
-                </div>
+                <>
+                  {depth === 0 ? (
+                    <div className="mt-2 space-y-2 border-l-2 border-border pl-4">
+                      {comment.replies.map((reply) => (
+                        <CommentItem
+                          key={reply.id}
+                          comment={reply}
+                          user={user}
+                          onReply={onReply}
+                          onDelete={onDelete}
+                          onRefresh={onRefresh}
+                          poemId={poemId}
+                          depth={1}
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    comment.replies.map((reply) => (
+                      <div key={reply.id} className="mt-2">
+                        <CommentItem
+                          comment={reply}
+                          user={user}
+                          onReply={onReply}
+                          onDelete={onDelete}
+                          onRefresh={onRefresh}
+                          poemId={poemId}
+                          depth={1}
+                        />
+                      </div>
+                    ))
+                  )}
+                </>
               )}
             </>
           )}
