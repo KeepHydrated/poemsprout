@@ -12,23 +12,67 @@ import type { User } from "@supabase/supabase-js";
 
 const Header = () => {
   const [user, setUser] = useState<User | null>(null);
+  const [profile, setProfile] = useState<{ display_name: string | null; avatar_url: string | null } | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
+  const loadProfile = async (userId: string) => {
+    const { data } = await supabase
+      .from('profiles')
+      .select('display_name, avatar_url')
+      .eq('id', userId)
+      .single();
+
+    if (data) {
+      setProfile(data);
+    }
+  };
+
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
+      if (session?.user) {
+        loadProfile(session.user.id);
+      }
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setUser(session?.user ?? null);
+      if (session?.user) {
+        loadProfile(session.user.id);
+      }
     });
 
     return () => subscription.unsubscribe();
   }, []);
+
+  // Listen for profile changes in real-time
+  useEffect(() => {
+    if (!user) return;
+
+    const channel = supabase
+      .channel('profile-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'profiles',
+          filter: `id=eq.${user.id}`
+        },
+        (payload) => {
+          setProfile(payload.new as { display_name: string | null; avatar_url: string | null });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user]);
 
   // Clear search when navigating away from gallery
   useEffect(() => {
@@ -106,9 +150,9 @@ const Header = () => {
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild className="hidden md:flex">
                     <Avatar className="h-10 w-10 cursor-pointer ring-2 ring-transparent hover:ring-primary/20 transition-all">
-                      <AvatarImage src={user.user_metadata?.avatar_url} alt={user.email || "User"} />
+                      <AvatarImage src={profile?.avatar_url || undefined} alt={profile?.display_name || user.email || "User"} />
                       <AvatarFallback className="bg-primary/10">
-                        {user.email?.[0].toUpperCase() || "U"}
+                        {profile?.display_name?.[0]?.toUpperCase() || user.email?.[0].toUpperCase() || "U"}
                       </AvatarFallback>
                     </Avatar>
                   </DropdownMenuTrigger>
@@ -117,14 +161,14 @@ const Header = () => {
                     <DropdownMenuLabel className="font-normal">
                       <div className="flex items-center gap-3 py-2">
                         <Avatar className="h-12 w-12">
-                          <AvatarImage src={user.user_metadata?.avatar_url} alt={user.email || "User"} />
+                          <AvatarImage src={profile?.avatar_url || undefined} alt={profile?.display_name || user.email || "User"} />
                           <AvatarFallback className="bg-primary/10">
-                            {user.email?.[0].toUpperCase() || "U"}
+                            {profile?.display_name?.[0]?.toUpperCase() || user.email?.[0].toUpperCase() || "U"}
                           </AvatarFallback>
                         </Avatar>
                         <div className="flex flex-col space-y-1">
                           <p className="text-sm font-medium leading-none">
-                            {user.user_metadata?.display_name || "User"}
+                            {profile?.display_name || user.user_metadata?.display_name || "User"}
                           </p>
                           <p className="text-xs leading-none text-muted-foreground">
                             {user.email}
@@ -168,9 +212,9 @@ const Header = () => {
                   className="h-10 w-10 cursor-pointer md:hidden"
                   onClick={() => setIsProfileOpen(true)}
                 >
-                  <AvatarImage src={user.user_metadata?.avatar_url} alt={user.email || "User"} />
+                  <AvatarImage src={profile?.avatar_url || undefined} alt={profile?.display_name || user.email || "User"} />
                   <AvatarFallback className="bg-primary/10">
-                    {user.email?.[0].toUpperCase() || "U"}
+                    {profile?.display_name?.[0]?.toUpperCase() || user.email?.[0].toUpperCase() || "U"}
                   </AvatarFallback>
                 </Avatar>
               </div>
@@ -220,14 +264,14 @@ const Header = () => {
           <SheetHeader className="text-left mb-6">
             <div className="flex items-center gap-3">
               <Avatar className="h-16 w-16">
-                <AvatarImage src={user?.user_metadata?.avatar_url} alt={user?.email || "User"} />
+                <AvatarImage src={profile?.avatar_url || undefined} alt={profile?.display_name || user?.email || "User"} />
                 <AvatarFallback className="bg-primary/10 text-lg">
-                  {user?.email?.[0].toUpperCase() || "U"}
+                  {profile?.display_name?.[0]?.toUpperCase() || user?.email?.[0].toUpperCase() || "U"}
                 </AvatarFallback>
               </Avatar>
               <div className="flex flex-col">
                 <SheetTitle className="text-lg">
-                  {user?.user_metadata?.display_name || "User"}
+                  {profile?.display_name || user?.user_metadata?.display_name || "User"}
                 </SheetTitle>
                 <p className="text-sm text-muted-foreground">
                   {user?.email}
