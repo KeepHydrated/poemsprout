@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { User, Heart, ExternalLink } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 type PublishedPoem = {
   id: string;
@@ -17,6 +17,7 @@ type PublishedPoem = {
   profiles: {
     display_name: string | null;
     points: number;
+    avatar_url: string | null;
   } | null;
   like_count?: number;
   user_liked?: boolean;
@@ -69,7 +70,7 @@ const GallerySidebar = () => {
 
         const { data: profilesData } = await supabase
           .from("profiles")
-          .select("id, display_name, points")
+          .select("id, display_name, points, avatar_url")
           .in("id", userIds);
 
         // Get like counts
@@ -247,6 +248,7 @@ const GallerySidebar = () => {
                     className="flex items-center gap-1 text-xs hover:underline cursor-pointer text-muted-foreground w-fit"
                   >
                     <Avatar className="h-4 w-4">
+                      <AvatarImage src={poem.profiles?.avatar_url || undefined} alt={poem.profiles?.display_name || "User"} />
                       <AvatarFallback className="text-[8px]">
                         {poem.profiles?.display_name?.[0]?.toUpperCase() || "A"}
                       </AvatarFallback>
