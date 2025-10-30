@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Heart, Send, Trash2, ChevronUp, ChevronDown, MessageSquare, Check, Rocket, TrendingUp, Clock, ChevronDown as ChevronDownIcon } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 type PublishedPoem = {
@@ -53,18 +53,37 @@ const PoemDetail = () => {
   const [sortOpen, setSortOpen] = useState(false);
   const [otherPoems, setOtherPoems] = useState<PublishedPoem[]>([]);
   const [showAllComments, setShowAllComments] = useState(false);
+  const [userProfile, setUserProfile] = useState<{ display_name: string | null; avatar_url: string | null } | null>(null);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
+      if (session?.user) {
+        loadUserProfile(session.user.id);
+      }
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
+      if (session?.user) {
+        loadUserProfile(session.user.id);
+      }
     });
 
     return () => subscription.unsubscribe();
   }, []);
+
+  const loadUserProfile = async (userId: string) => {
+    const { data } = await supabase
+      .from('profiles')
+      .select('display_name, avatar_url')
+      .eq('id', userId)
+      .single();
+
+    if (data) {
+      setUserProfile(data);
+    }
+  };
 
   useEffect(() => {
     if (id) {
@@ -398,6 +417,7 @@ const PoemDetail = () => {
               onClick={() => navigate(`/profile/${poem.user_id}`)}
             >
               <Avatar className="h-12 w-12">
+                <AvatarImage src={poem.profiles.avatar_url || undefined} alt={poem.profiles.display_name || "User"} />
                 <AvatarFallback>
                   {poem.profiles.display_name?.[0]?.toUpperCase() || "U"}
                 </AvatarFallback>
@@ -443,6 +463,7 @@ const PoemDetail = () => {
                   onClick={() => navigate(`/profile/${poem.user_id}`)}
                 >
                   <Avatar className="h-12 w-12">
+                    <AvatarImage src={poem.profiles.avatar_url || undefined} alt={poem.profiles.display_name || "User"} />
                     <AvatarFallback>
                       {poem.profiles.display_name?.[0]?.toUpperCase() || "U"}
                     </AvatarFallback>
@@ -544,8 +565,9 @@ const PoemDetail = () => {
                 <Card className="border p-4">
                   <div className="flex items-start gap-3">
                     <Avatar className="h-8 w-8">
+                      <AvatarImage src={userProfile?.avatar_url || undefined} alt={userProfile?.display_name || "User"} />
                       <AvatarFallback>
-                        {user?.email?.[0]?.toUpperCase() || "U"}
+                        {userProfile?.display_name?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase() || "U"}
                       </AvatarFallback>
                     </Avatar>
                     <div className="flex-1 space-y-3">
@@ -706,8 +728,9 @@ const PoemDetail = () => {
             <Card className="border p-4">
               <div className="flex items-start gap-3">
                 <Avatar className="h-8 w-8">
+                  <AvatarImage src={userProfile?.avatar_url || undefined} alt={userProfile?.display_name || "User"} />
                   <AvatarFallback>
-                    {user?.email?.[0]?.toUpperCase() || "U"}
+                    {userProfile?.display_name?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase() || "U"}
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex-1 space-y-3">

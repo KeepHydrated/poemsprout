@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Heart, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Select,
   SelectContent,
@@ -24,6 +24,7 @@ type LikedPoem = {
   profiles: {
     display_name: string | null;
     points: number;
+    avatar_url: string | null;
   } | null;
   like_id: string;
   like_count: number;
@@ -90,7 +91,7 @@ const Likes = () => {
       const userIds = [...new Set(poems?.map(poem => poem.user_id) || [])];
       const { data: profilesData } = await supabase
         .from("profiles")
-        .select("id, display_name, points")
+        .select("id, display_name, points, avatar_url")
         .in("id", userIds);
 
       const profilesMap = new Map(
@@ -276,6 +277,7 @@ const Likes = () => {
                       className="flex items-center gap-1 hover:text-foreground transition-colors cursor-pointer"
                     >
                       <Avatar className="h-4 w-4">
+                        <AvatarImage src={poem.profiles?.avatar_url || undefined} alt={poem.profiles?.display_name || "User"} />
                         <AvatarFallback className="text-[8px]">
                           {poem.profiles?.display_name?.[0]?.toUpperCase() || "A"}
                         </AvatarFallback>

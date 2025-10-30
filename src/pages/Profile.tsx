@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -25,6 +25,7 @@ const Profile = () => {
   const [profileUserId, setProfileUserId] = useState<string | null>(null);
   const [isOwnProfile, setIsOwnProfile] = useState(false);
   const [displayName, setDisplayName] = useState("");
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [points, setPoints] = useState(0);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -50,12 +51,13 @@ const Profile = () => {
         // Fetch the profile data for this user
         const { data: profile } = await supabase
           .from("profiles")
-          .select("display_name, points")
+          .select("display_name, points, avatar_url")
           .eq("id", userId)
           .maybeSingle();
 
         if (profile) {
           setDisplayName(profile.display_name || "Anonymous");
+          setAvatarUrl(profile.avatar_url || null);
           setPoints(profile.points || 0);
         }
 
@@ -78,12 +80,13 @@ const Profile = () => {
         // Fetch profile data
         const { data: profile } = await supabase
           .from("profiles")
-          .select("display_name, points")
+          .select("display_name, points, avatar_url")
           .eq("id", session.user.id)
           .maybeSingle();
 
         if (profile) {
           setDisplayName(profile.display_name || "");
+          setAvatarUrl(profile.avatar_url || null);
           setPoints(profile.points || 0);
         }
 
@@ -238,6 +241,7 @@ const Profile = () => {
               <CardContent className="p-6">
                 <div className="flex flex-col items-center text-center space-y-4">
                   <Avatar className="h-24 w-24">
+                    <AvatarImage src={avatarUrl || undefined} alt={displayName || "User"} />
                     <AvatarFallback className="text-2xl">
                       {displayName?.[0]?.toUpperCase() || "A"}
                     </AvatarFallback>
