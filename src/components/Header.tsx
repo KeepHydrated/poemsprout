@@ -170,9 +170,6 @@ const Header = () => {
                           <p className="text-sm font-medium leading-none">
                             {profile?.display_name || user.user_metadata?.display_name || "User"}
                           </p>
-                          <p className="text-xs leading-none text-muted-foreground">
-                            {user.email}
-                          </p>
                         </div>
                       </div>
                     </DropdownMenuLabel>
