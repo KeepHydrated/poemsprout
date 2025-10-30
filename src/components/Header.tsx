@@ -12,7 +12,7 @@ import type { User } from "@supabase/supabase-js";
 
 const Header = () => {
   const [user, setUser] = useState<User | null>(null);
-  const [profile, setProfile] = useState<{ display_name: string | null; avatar_url: string | null } | null>(null);
+  const [profile, setProfile] = useState<{ display_name: string | null; avatar_url: string | null; points: number } | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -22,7 +22,7 @@ const Header = () => {
   const loadProfile = async (userId: string) => {
     const { data } = await supabase
       .from('profiles')
-      .select('display_name, avatar_url')
+      .select('display_name, avatar_url, points')
       .eq('id', userId)
       .single();
 
@@ -64,7 +64,7 @@ const Header = () => {
           filter: `id=eq.${user.id}`
         },
         (payload) => {
-          setProfile(payload.new as { display_name: string | null; avatar_url: string | null });
+          setProfile(payload.new as { display_name: string | null; avatar_url: string | null; points: number });
         }
       )
       .subscribe();
@@ -169,6 +169,9 @@ const Header = () => {
                         <div className="flex flex-col space-y-1">
                           <p className="text-sm font-medium leading-none">
                             {profile?.display_name || user.user_metadata?.display_name || "User"}
+                          </p>
+                          <p className="text-xs leading-none text-muted-foreground">
+                            {profile?.points || 0} points
                           </p>
                         </div>
                       </div>
