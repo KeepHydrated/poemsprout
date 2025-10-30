@@ -273,9 +273,6 @@ const Header = () => {
                 <SheetTitle className="text-lg">
                   {profile?.display_name || user?.user_metadata?.display_name || "User"}
                 </SheetTitle>
-                <p className="text-sm text-muted-foreground">
-                  {user?.email}
-                </p>
               </div>
             </div>
           </SheetHeader>
