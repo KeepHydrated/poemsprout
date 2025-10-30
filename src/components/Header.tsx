@@ -55,7 +55,7 @@ const Header = () => {
     <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
       <div className="container mx-auto px-4 py-4">
         <div className="max-w-7xl mx-auto">
-          <div className="flex items-center justify-between gap-4 md:justify-start w-full relative">
+          <div className="flex items-center justify-between gap-4 w-full relative">
           {/* Mobile Search Button - Left Side */}
           <Button
             variant="ghost"
@@ -88,7 +88,7 @@ const Header = () => {
             </div>
           </form>
 
-          <div className="flex items-center gap-2 shrink-0 ml-auto md:ml-0">
+          <div className="flex items-center gap-2 shrink-0">
             {user ? (
               <div className="flex items-center gap-3">
                 {/* Mobile Search Button removed from here */}
