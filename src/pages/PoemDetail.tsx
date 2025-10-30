@@ -956,13 +956,10 @@ const CommentItem = ({ comment, user, onReply, onDelete, onRefresh, poemId, dept
               className="h-6 w-6 cursor-pointer hover:opacity-80 transition-opacity" 
               onClick={() => navigate(`/profile/${comment.user_id}`)}
             >
-              {comment.profiles?.avatar_url ? (
-                <img src={comment.profiles.avatar_url} alt={authorName} className="object-cover" />
-              ) : (
-                <AvatarFallback className="text-xs">
-                  {authorName.charAt(0).toUpperCase()}
-                </AvatarFallback>
-              )}
+              <AvatarImage src={comment.profiles?.avatar_url || undefined} alt={authorName} />
+              <AvatarFallback className="text-xs">
+                {authorName.charAt(0).toUpperCase()}
+              </AvatarFallback>
             </Avatar>
             <span 
               className="font-medium text-sm cursor-pointer hover:underline truncate max-w-[120px]" 
