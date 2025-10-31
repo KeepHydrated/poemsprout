@@ -111,14 +111,12 @@ const Index = () => {
   const [generatedPoems, setGeneratedPoems] = useState<Record<string, string>>({});
   const [isGenerating, setIsGenerating] = useState(false);
   const [isRegenerating, setIsRegenerating] = useState(false);
+  const [isLoadingTopic, setIsLoadingTopic] = useState(false);
   const [isPublishDialogOpen, setIsPublishDialogOpen] = useState(false);
   const [isSaveDialogOpen, setIsSaveDialogOpen] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const [recentTopics, setRecentTopics] = useState<string[]>(() => {
-    const saved = localStorage.getItem('recentTopics');
-    return saved ? JSON.parse(saved) : [];
-  });
+  // No more topic tracking - pure AI creativity!
   const [user, setUser] = useState<any>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -137,9 +135,7 @@ const Index = () => {
     return () => subscription.unsubscribe();
   }, []);
 
-  useEffect(() => {
-    localStorage.setItem('recentTopics', JSON.stringify(recentTopics));
-  }, [recentTopics]);
+  // No more topic tracking!
 
 
   const currentPoem = poemTypes[selectedPoem];
@@ -261,32 +257,30 @@ const Index = () => {
   };
 
   const handleRandomTopic = async () => {
+    setIsLoadingTopic(true);
     try {
       const { data, error } = await supabase.functions.invoke('generate-poem', {
-        body: { 
-          generateTopic: true,
-          recentTopics: recentTopics
-        }
+        body: { generateTopic: true }
       });
 
       if (error) throw error;
 
       if (data?.topic) {
         setPoemTopic(data.topic);
-        
-        // Track this topic
-        setRecentTopics(prev => {
-          const updated = [data.topic, ...prev.slice(0, 14)]; // Keep last 15
-          return updated;
+        toast({
+          title: "Topic generated!",
+          description: `Try writing about: ${data.topic}`,
         });
       }
     } catch (error) {
       console.error('Error generating random topic:', error);
       toast({
-        title: "Error",
-        description: "Failed to generate random topic. Please try again.",
+        title: "Failed to generate topic",
+        description: "Please try again.",
         variant: "destructive",
       });
+    } finally {
+      setIsLoadingTopic(false);
     }
   };
 
