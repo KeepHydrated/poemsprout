@@ -7,6 +7,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Heart, Trash2, Upload, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import type { User } from "@supabase/supabase-js";
@@ -406,11 +407,13 @@ const MyPoems = () => {
                               </button>
                             </div>
                             
-                            <blockquote className="border-l-4 border-primary pl-4">
-                              <p className="whitespace-pre-wrap font-serif text-foreground leading-relaxed">
-                                {poem.content}
-                              </p>
-                            </blockquote>
+                            <ScrollArea className="max-h-96">
+                              <blockquote className="border-l-4 border-primary pl-4 pr-4">
+                                <p className="whitespace-pre-wrap font-serif text-foreground leading-relaxed">
+                                  {poem.content}
+                                </p>
+                              </blockquote>
+                            </ScrollArea>
                           </CardContent>
                         </Card>
                       ))}
@@ -510,11 +513,13 @@ const MyPoems = () => {
                               </div>
                             </div>
                             
-                            <blockquote className="border-l-4 border-primary pl-4">
-                              <p className="whitespace-pre-wrap font-serif text-foreground leading-relaxed">
-                                {poem.content}
-                              </p>
-                            </blockquote>
+                            <ScrollArea className="max-h-96">
+                              <blockquote className="border-l-4 border-primary pl-4 pr-4">
+                                <p className="whitespace-pre-wrap font-serif text-foreground leading-relaxed">
+                                  {poem.content}
+                                </p>
+                              </blockquote>
+                            </ScrollArea>
                           </CardContent>
                         </Card>
                       ))}
