@@ -441,10 +441,10 @@ const PoemDetail = () => {
         <div className="hidden md:flex gap-16 mb-8 items-start">
           {/* Left: Header Info */}
           <div className="w-80 flex-shrink-0">
-            <div className="space-y-4 pt-6">
+            <div className="space-y-4">
               {poem.profiles && (
                 <div 
-                  className="flex items-center gap-3 mt-4 p-3 bg-card rounded-lg border cursor-pointer transition-colors"
+                  className="flex items-center gap-3 p-3 bg-card rounded-lg border cursor-pointer transition-colors"
                   onClick={() => navigate(`/profile/${poem.user_id}`)}
                 >
                   <Avatar className="h-12 w-12">
