@@ -396,21 +396,6 @@ const PoemDetail = () => {
       <div className="container mx-auto px-4 pt-2 pb-24 md:py-8 max-w-7xl">
         {/* Mobile Sticky Header */}
         <div className="md:hidden sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b pb-4 mb-4 -mx-4 px-4 pt-2">
-          <p className="text-sm text-muted-foreground mb-2">
-            {new Date(poem.created_at).toLocaleDateString()}
-          </p>
-          <p className="text-base text-foreground/80 mb-3">
-            {poem.original_topic && <>{poem.original_topic} • </>}
-            {poem.poem_type}
-          </p>
-          
-          <div className="flex items-center gap-2 mb-4">
-            <Heart className="h-5 w-5 text-muted-foreground" />
-            <span className="text-sm text-muted-foreground">
-              {poem.like_count}
-            </span>
-          </div>
-          
           {poem.profiles && (
             <div 
               className="flex items-center gap-3 p-3 bg-card rounded-lg border cursor-pointer transition-colors"
