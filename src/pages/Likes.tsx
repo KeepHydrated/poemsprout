@@ -271,21 +271,22 @@ const Likes = () => {
                   <blockquote className="text-sm whitespace-pre-wrap font-serif text-foreground/80 leading-relaxed mb-3">
                     {poem.content}
                   </blockquote>
-                  <CardDescription className="flex items-center gap-1 text-xs">
-                    <button
-                      onClick={() => navigate(`/profile/${poem.user_id}`)}
-                      className="flex items-center gap-1 hover:text-foreground transition-colors cursor-pointer"
-                    >
-                      <Avatar className="h-4 w-4">
-                        <AvatarImage src={poem.profiles?.avatar_url || undefined} alt={poem.profiles?.display_name || "User"} />
-                        <AvatarFallback className="text-[8px]">
-                          {poem.profiles?.display_name?.[0]?.toUpperCase() || "A"}
-                        </AvatarFallback>
-                      </Avatar>
-                      <span className="truncate">
-                        {poem.profiles?.display_name || "Anonymous"}
-                      </span>
-                    </button>
+                  <CardDescription 
+                    className="flex items-center gap-1 text-xs cursor-pointer hover:underline"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate(`/profile/${poem.user_id}`);
+                    }}
+                  >
+                    <Avatar className="h-4 w-4">
+                      <AvatarImage src={poem.profiles?.avatar_url || undefined} alt={poem.profiles?.display_name || "User"} />
+                      <AvatarFallback className="text-[8px]">
+                        {poem.profiles?.display_name?.[0]?.toUpperCase() || "A"}
+                      </AvatarFallback>
+                    </Avatar>
+                    <span className="truncate">
+                      {poem.profiles?.display_name || "Anonymous"}
+                    </span>
                     <span className="text-muted-foreground">• {poem.profiles?.points || 0} pts</span>
                   </CardDescription>
                 </CardContent>
