@@ -345,29 +345,28 @@ const MyPoems = () => {
           {/* Main Content */}
           <div className="flex-1 min-w-0">
             <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as "published" | "saved" | "comments")} className="w-full">
-              <div className="flex justify-center md:justify-start mb-6">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
                 <TabsList>
                   <TabsTrigger value="published">Published</TabsTrigger>
                   <TabsTrigger value="saved">Saved Drafts</TabsTrigger>
                   <TabsTrigger value="comments">Comments</TabsTrigger>
                 </TabsList>
+                
+                {activeTab === "published" && !loading && publishedPoems.length > 0 && (
+                  <Select value={sortBy} onValueChange={(value: "newest" | "oldest" | "most-liked") => setSortBy(value)}>
+                    <SelectTrigger className="w-[180px]">
+                      <SelectValue placeholder="Sort by" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="newest">Newest</SelectItem>
+                      <SelectItem value="oldest">Oldest</SelectItem>
+                      <SelectItem value="most-liked">Most Liked</SelectItem>
+                    </SelectContent>
+                  </Select>
+                )}
               </div>
 
               <TabsContent value="published">
-                {!loading && publishedPoems.length > 0 && (
-                  <div className="mb-6 flex items-center justify-end">
-                    <Select value={sortBy} onValueChange={(value: "newest" | "oldest" | "most-liked") => setSortBy(value)}>
-                      <SelectTrigger className="w-[180px]">
-                        <SelectValue placeholder="Sort by" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="newest">Newest</SelectItem>
-                        <SelectItem value="oldest">Oldest</SelectItem>
-                        <SelectItem value="most-liked">Most Liked</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                )}
 
                 {loading ? (
                   <div className="text-center py-12">
