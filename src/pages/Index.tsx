@@ -267,10 +267,6 @@ const Index = () => {
 
       if (data?.topic) {
         setPoemTopic(data.topic);
-        toast({
-          title: "Topic generated!",
-          description: `Try writing about: ${data.topic}`,
-        });
       }
     } catch (error) {
       console.error('Error generating random topic:', error);
