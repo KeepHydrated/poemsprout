@@ -394,21 +394,15 @@ const MyPoems = () => {
                               <p className="text-sm text-foreground/80">
                                 {poem.original_topic} • {poem.poem_type}
                               </p>
-                              <div className="flex items-center gap-3">
-                                <button
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleDeletePublished(poem.id);
-                                  }}
-                                  className="text-muted-foreground hover:text-destructive transition-colors"
-                                >
-                                  <Trash2 className="h-4 w-4" />
-                                </button>
-                                <div className="flex items-center gap-1 text-muted-foreground">
-                                  <Heart className="h-5 w-5" />
-                                  <span className="text-sm">{likeCounts[poem.id] || 0}</span>
-                                </div>
-                              </div>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleDeletePublished(poem.id);
+                                }}
+                                className="text-muted-foreground hover:text-destructive transition-colors"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </button>
                             </div>
                             
                             <blockquote className="border-l-4 border-primary pl-4">
