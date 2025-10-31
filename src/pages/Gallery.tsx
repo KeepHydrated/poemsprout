@@ -21,6 +21,7 @@ type PublishedPoem = {
   poem_type: string;
   original_topic: string | null;
   created_at: string;
+  user_id: string;
   profiles: {
     display_name: string | null;
     points: number;
@@ -314,7 +315,13 @@ const Gallery = () => {
                     <blockquote className="border-l-4 border-primary pl-3 text-base whitespace-pre-wrap font-serif text-foreground/80 leading-relaxed mb-3">
                       {poem.content}
                     </blockquote>
-                    <CardDescription className="flex items-center gap-1 text-xs">
+                    <CardDescription 
+                      className="flex items-center gap-1 text-xs cursor-pointer hover:underline"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(`/profile/${poem.user_id}`);
+                      }}
+                    >
                       <Avatar className="h-4 w-4">
                         <AvatarImage src={poem.profiles?.avatar_url || undefined} alt={poem.profiles?.display_name || "User"} />
                         <AvatarFallback className="text-[8px]">
