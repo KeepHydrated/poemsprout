@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Heart, Globe, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
+import { Loader2, Heart, Globe, ChevronLeft, ChevronRight } from "lucide-react";
 import type { User } from "@supabase/supabase-js";
 
 interface PublishedPoem {
@@ -161,29 +161,6 @@ const Profile = () => {
   const startIndex = (currentPage - 1) * poemsPerPage;
   const endIndex = startIndex + poemsPerPage;
   const paginatedPoems = sortedPoems.slice(startIndex, endIndex);
-
-  const handleDeletePublished = async (poemId: string) => {
-    if (!confirm("Are you sure you want to delete this poem?")) return;
-
-    const { error } = await supabase
-      .from("published_poems")
-      .delete()
-      .eq("id", poemId);
-
-    if (error) {
-      toast({
-        title: "Error",
-        description: "Failed to delete poem",
-        variant: "destructive",
-      });
-    } else {
-      setPublishedPoems(publishedPoems.filter(p => p.id !== poemId));
-      toast({
-        title: "Success",
-        description: "Poem deleted successfully",
-      });
-    }
-  };
 
   const handleSave = async () => {
     if (!user) return;
@@ -338,21 +315,6 @@ const Profile = () => {
                             {poem.content}
                           </p>
                         </blockquote>
-
-                        {isOwnProfile && (
-                          <div className="mt-4 flex justify-end">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleDeletePublished(poem.id);
-                              }}
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        )}
                       </CardContent>
                     </Card>
                   ))}
