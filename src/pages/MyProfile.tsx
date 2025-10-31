@@ -7,9 +7,9 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Heart, Trash2, Upload, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import type { User } from "@supabase/supabase-js";
 
 interface PublishedPoem {
@@ -384,8 +384,9 @@ const MyPoems = () => {
                   </div>
                 ) : (
                   <>
-                    <div className="space-y-6">
-                      {paginatedPublished.map((poem) => (
+                    <ScrollArea className="h-[600px] pr-4">
+                      <div className="space-y-6">
+                        {paginatedPublished.map((poem) => (
                         <Card 
                           key={poem.id} 
                           className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
@@ -407,17 +408,16 @@ const MyPoems = () => {
                               </button>
                             </div>
                             
-                            <ScrollArea className="max-h-96">
-                              <blockquote className="border-l-4 border-primary pl-4 pr-4">
-                                <p className="whitespace-pre-wrap font-serif text-foreground leading-relaxed">
-                                  {poem.content}
-                                </p>
-                              </blockquote>
-                            </ScrollArea>
+                            <blockquote className="border-l-4 border-primary pl-4">
+                              <p className="whitespace-pre-wrap font-serif text-foreground leading-relaxed">
+                                {poem.content}
+                              </p>
+                            </blockquote>
                           </CardContent>
                         </Card>
-                      ))}
-                    </div>
+                        ))}
+                      </div>
+                    </ScrollArea>
 
                     {/* Pagination */}
                     {totalPublishedPages > 1 && (
@@ -459,8 +459,9 @@ const MyPoems = () => {
                   </div>
                 ) : (
                   <>
-                    <div className="space-y-6">
-                      {paginatedSaved.map((poem) => (
+                    <ScrollArea className="h-[600px] pr-4">
+                      <div className="space-y-6">
+                        {paginatedSaved.map((poem) => (
                         <Card key={poem.id} className="overflow-hidden hover:shadow-lg transition-shadow">
                           <CardContent className="p-6">
                             <div className="flex items-start justify-between mb-4">
@@ -513,17 +514,16 @@ const MyPoems = () => {
                               </div>
                             </div>
                             
-                            <ScrollArea className="max-h-96">
-                              <blockquote className="border-l-4 border-primary pl-4 pr-4">
-                                <p className="whitespace-pre-wrap font-serif text-foreground leading-relaxed">
-                                  {poem.content}
-                                </p>
-                              </blockquote>
-                            </ScrollArea>
+                            <blockquote className="border-l-4 border-primary pl-4">
+                              <p className="whitespace-pre-wrap font-serif text-foreground leading-relaxed">
+                                {poem.content}
+                              </p>
+                            </blockquote>
                           </CardContent>
                         </Card>
-                      ))}
-                    </div>
+                        ))}
+                      </div>
+                    </ScrollArea>
 
                     {/* Pagination */}
                     {totalSavedPages > 1 && (
@@ -565,8 +565,9 @@ const MyPoems = () => {
                   </div>
                 ) : (
                   <>
-                    <div className="space-y-6">
-                      {paginatedComments.map((comment) => (
+                    <ScrollArea className="h-[600px] pr-4">
+                      <div className="space-y-6">
+                        {paginatedComments.map((comment) => (
                         <Card 
                           key={comment.id} 
                           className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
@@ -596,8 +597,9 @@ const MyPoems = () => {
                             )}
                           </CardContent>
                         </Card>
-                      ))}
-                    </div>
+                        ))}
+                      </div>
+                    </ScrollArea>
 
                     {/* Pagination */}
                     {totalCommentsPages > 1 && (
