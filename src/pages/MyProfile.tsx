@@ -345,7 +345,7 @@ const MyPoems = () => {
           {/* Main Content */}
           <div className="flex-1 min-w-0">
             <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as "published" | "saved" | "comments")} className="w-full">
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+              <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-6">
                 <TabsList>
                   <TabsTrigger value="published">Published</TabsTrigger>
                   <TabsTrigger value="saved">Saved Drafts</TabsTrigger>
