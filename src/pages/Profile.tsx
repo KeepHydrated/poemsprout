@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Heart, Globe, ChevronLeft, ChevronRight } from "lucide-react";
 import type { User } from "@supabase/supabase-js";
@@ -286,39 +287,41 @@ const Profile = () => {
               </div>
             ) : (
               <>
-                <div className="space-y-6">
-                  {paginatedPoems.map((poem) => (
-                    <Card 
-                      key={poem.id} 
-                      className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
-                      onClick={() => navigate(`/poem/${poem.id}`)}
-                    >
-                      <CardContent className="p-6">
-                        <div className="flex items-start justify-between mb-4">
-                          <span className="text-sm text-muted-foreground">
-                            {formatDate(poem.created_at)}
-                          </span>
-                          <div className="flex items-center gap-2">
-                            <Heart className="h-5 w-5 text-muted-foreground" />
+                <ScrollArea className="h-[600px] pr-4">
+                  <div className="space-y-6">
+                    {paginatedPoems.map((poem) => (
+                      <Card 
+                        key={poem.id} 
+                        className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
+                        onClick={() => navigate(`/poem/${poem.id}`)}
+                      >
+                        <CardContent className="p-6">
+                          <div className="flex items-start justify-between mb-4">
                             <span className="text-sm text-muted-foreground">
-                              {likeCounts[poem.id] || 0}
+                              {formatDate(poem.created_at)}
                             </span>
+                            <div className="flex items-center gap-2">
+                              <Heart className="h-5 w-5 text-muted-foreground" />
+                              <span className="text-sm text-muted-foreground">
+                                {likeCounts[poem.id] || 0}
+                              </span>
+                            </div>
                           </div>
-                        </div>
 
-                        <p className="text-sm text-foreground/80 mb-4">
-                          {poem.original_topic} • {poem.poem_type}
-                        </p>
-                        
-                        <blockquote className="border-l-4 border-primary pl-4">
-                          <p className="whitespace-pre-wrap font-serif text-foreground leading-relaxed">
-                            {poem.content}
+                          <p className="text-sm text-foreground/80 mb-4">
+                            {poem.original_topic} • {poem.poem_type}
                           </p>
-                        </blockquote>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
+                          
+                          <blockquote className="border-l-4 border-primary pl-4">
+                            <p className="whitespace-pre-wrap font-serif text-foreground leading-relaxed">
+                              {poem.content}
+                            </p>
+                          </blockquote>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                </ScrollArea>
 
                 {/* Pagination Controls */}
                 {totalPages > 1 && (
