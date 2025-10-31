@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { User, Heart, ChevronDown, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Select,
   SelectContent,
@@ -244,21 +245,21 @@ const Gallery = () => {
           </header>
         </div>
 
-        <div className="flex-1 overflow-y-auto md:overflow-visible">
-          {isLoading ? (
-            <div className="text-center py-12">
-              <p className="text-muted-foreground">Loading poems...</p>
-            </div>
-          ) : poems.length === 0 ? (
-            <Card className="border-2">
-              <CardContent className="py-12 text-center">
-                <p className="text-muted-foreground">
-                  No poems have been published yet. Be the first to share!
-                </p>
-              </CardContent>
-            </Card>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-4">
+        {isLoading ? (
+          <div className="text-center py-12">
+            <p className="text-muted-foreground">Loading poems...</p>
+          </div>
+        ) : poems.length === 0 ? (
+          <Card className="border-2">
+            <CardContent className="py-12 text-center">
+              <p className="text-muted-foreground">
+                No poems have been published yet. Be the first to share!
+              </p>
+            </CardContent>
+          </Card>
+        ) : (
+          <ScrollArea className="h-[600px]">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-4 pr-4">
               {poems
                 .filter(poem => {
                   // Filter by type
@@ -329,8 +330,8 @@ const Gallery = () => {
                 </Card>
               ))}
             </div>
-          )}
-        </div>
+          </ScrollArea>
+        )}
       </div>
     </div>
   );
